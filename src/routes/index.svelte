@@ -1,4 +1,6 @@
 <script>
+	import AudioWrapper from "../components/AudioWrapper.svelte";
+
 	import Static from "./Static.svelte";
 </script>
 
@@ -41,5 +43,6 @@
 <svelte:head>
 	<title>Frequency Generator</title>
 </svelte:head>
-
-<Static />
+<AudioWrapper>
+	<Static />
+</AudioWrapper>
