@@ -4,6 +4,8 @@
     $: console.group("Static Oscillator");
 
     export let node;
+
+    let play = false;
     let vol = "50";
     let pan = "0";
     let freq = Math.round((440 + Number.EPSILON) * 1000) / 1000;
@@ -29,6 +31,19 @@
 
     node.frequency.setValueAtTime(440, $audioCtx.currentTime);
 
+    function playHandler() {
+        if (play) {
+            oscillatorGainNode.gain.setValueAtTime(
+                vol / 100,
+                $audioCtx.currentTime
+            );
+            play = false;
+        } else if (!play) {
+            oscillatorGainNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+            play = true;
+        }
+    }
+
     $: {
         //frequency slider control
         freq = 2 ** freqVal;
@@ -46,7 +61,9 @@
 
 <div>static oscillator</div>
 <section class="oscillator-container">
-    <button class="play">Play</button>
+    <button
+        class="play"
+        on:click={playHandler}>{play ? 'Play' : 'Pause'}</button>
     <select name="wav-type" class="wav-select">
         <option>Sine</option>
         <option>Triangle</option>
@@ -77,7 +94,7 @@
             step={0.001}
             bind:value={freqVal}
             class="slider frequency" />
-        <div>{freq}</div>
+        <div>{Math.round(freq)}</div>
     </div>
     <button class="pitch-selector">Select a Pitch</button>
 </section>
