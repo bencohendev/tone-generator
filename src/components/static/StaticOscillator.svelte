@@ -10,6 +10,7 @@
     let pan = "0";
     let freq = Math.round((440 + Number.EPSILON) * 1000) / 1000;
     let freqVal = Math.log2(440);
+    let wavType = "Sine";
     //create nodes. oscillatorGainNode used for volume control. onOffNode used for playing and pausing. Pan Node for panning
     const oscillatorGainNode = $audioCtx.createGain();
     const onOffNode = $audioCtx.createGain();
@@ -55,6 +56,9 @@
         );
         //pan control
         panNode.setPosition(pan / 100, 0, 0);
+
+        //Wave Type Selector
+        node.type = wavType.toLowerCase();
     }
     console.groupEnd();
 </script>
@@ -64,7 +68,7 @@
     <button
         class="play"
         on:click={playHandler}>{play ? 'Play' : 'Pause'}</button>
-    <select name="wav-type" class="wav-select">
+    <select name="wav-type" class="wav-select" bind:value={wavType}>
         <option>Sine</option>
         <option>Triangle</option>
         <option>Sawtooth</option>
