@@ -53,7 +53,7 @@
 		<li>
 			<a
 				aria-current={segment === undefined ? 'page' : undefined}
-				href="Static">Static</a>
+				href="/">Static</a>
 		</li>
 		<li>
 			<a

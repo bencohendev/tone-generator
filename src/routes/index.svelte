@@ -1,7 +1,11 @@
 <script>
-	import AudioWrapper from "../components/AudioWrapper.svelte";
-
 	import Static from "./Static.svelte";
+	import { context } from "../store.js";
+	import { onMount } from "svelte";
+
+	onMount(() => {
+		context.set(new (window.AudioContext || window.webkitAudioContext)());
+	});
 </script>
 
 <style>
@@ -43,6 +47,5 @@
 <svelte:head>
 	<title>Frequency Generator</title>
 </svelte:head>
-<AudioWrapper>
-	<Static />
-</AudioWrapper>
+
+<Static />
