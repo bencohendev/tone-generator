@@ -15,19 +15,19 @@
     let showPitchSelector = false;
     //create nodes. oscillatorGainNode used for volume control. onOffNode used for playing and pausing. Pan Node for panning
     const oscillatorGainNode = $audioCtx.createGain();
-    const onOffNode = $audioCtx.createGain();
+    //  const onOffNode = $audioCtx.createGain();
     const panNode = $audioCtx.createPanner();
 
     //initialize node values
-    oscillatorGainNode.gain.setValueAtTime(0.15, $audioCtx.currentTime);
-    onOffNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
+    oscillatorGainNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
+    //  onOffNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
     panNode.panningModel = "equalpower";
     panNode.setPosition(0, 0, 0);
 
     //connect node chain
     node.connect(oscillatorGainNode);
-    oscillatorGainNode.connect(onOffNode);
-    onOffNode.connect(panNode);
+    oscillatorGainNode.connect(panNode);
+    // onOffNode.connect(panNode);
     panNode.connect($audioCtx.destination);
 
     node.start();
@@ -49,23 +49,17 @@
     function pitchSelector() {
         showPitchSelector = true;
     }
-
+    //pitch selector function
     function handleMessage(event) {
         if (event.detail.text === "close") {
             showPitchSelector = false;
         }
         if (event.detail.text === "pitch") {
-            console.log(event.detail.pitchVal.pitchVal);
-            // node.frequency.setValueAtTime(
-            //     event.detail.pitchVal.pitchVal,
-            //     $audioCtx.currentTime
-            // );
             return (freqVal = Math.log2(event.detail.pitchVal.pitchVal));
         }
     }
     $: {
         //frequency slider control
-        console.log(freqVal);
         freq = 2 ** freqVal;
         node.frequency.setValueAtTime(freq, $audioCtx.currentTime);
         //volume control
