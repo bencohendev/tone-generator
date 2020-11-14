@@ -1,5 +1,6 @@
 <script>
     import { audioCtx } from "../../store";
+    import PitchSelector from "../PitchSelector.svelte";
 
     $: console.group("Static Oscillator");
 
@@ -11,6 +12,7 @@
     let freq = Math.round((440 + Number.EPSILON) * 1000) / 1000;
     let freqVal = Math.log2(440);
     let wavType = "Sine";
+    let showPitchSelector = false;
     //create nodes. oscillatorGainNode used for volume control. onOffNode used for playing and pausing. Pan Node for panning
     const oscillatorGainNode = $audioCtx.createGain();
     const onOffNode = $audioCtx.createGain();
@@ -44,9 +46,26 @@
             play = true;
         }
     }
+    function pitchSelector() {
+        showPitchSelector = true;
+    }
 
+    function handleMessage(event) {
+        if (event.detail.text === "close") {
+            showPitchSelector = false;
+        }
+        if (event.detail.text === "pitch") {
+            console.log(event.detail.pitchVal.pitchVal);
+            // node.frequency.setValueAtTime(
+            //     event.detail.pitchVal.pitchVal,
+            //     $audioCtx.currentTime
+            // );
+            return (freqVal = Math.log2(event.detail.pitchVal.pitchVal));
+        }
+    }
     $: {
         //frequency slider control
+        console.log(freqVal);
         freq = 2 ** freqVal;
         node.frequency.setValueAtTime(freq, $audioCtx.currentTime);
         //volume control
@@ -100,5 +119,7 @@
             class="slider frequency" />
         <div>{Math.round(freq)}</div>
     </div>
-    <button class="pitch-selector">Select a Pitch</button>
+    <button class="pitch-selector" on:click={pitchSelector}>Select a Pitch</button>
 </section>
+
+<PitchSelector {showPitchSelector} on:message={handleMessage} />
