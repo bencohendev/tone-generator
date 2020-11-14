@@ -1,8 +1,8 @@
 <script>
-    import { context } from "../store.js";
+    import { audioCtx } from "../store.js";
 
     console.group("series");
-    //   console.log($context);
+    //   console.log($audioCtx);
     console.groupEnd();
 </script>
 

@@ -1,10 +1,12 @@
 <script>
 	import Static from "./Static.svelte";
-	import { context } from "../store.js";
+	import { audioCtx } from "../store.js";
 	import { onMount } from "svelte";
 
 	onMount(() => {
-		context.set(new (window.AudioContext || window.webkitAudioContext)());
+		audioCtx.set(
+			new (window.AudioContext || window.webkitAudioContext)()
+		);
 	});
 </script>
 

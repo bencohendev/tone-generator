@@ -1,15 +1,34 @@
 <script>
-    import { context } from "../store.js";
+    import { audioCtx } from "../store.js";
+    import StaticOscillator from "../components/static/StaticOscillator.svelte";
+    $: console.group("static");
 
     let node;
-    //node.start();
+    let nodes = [];
 
-    console.group("static");
-    $: if ($context) {
-        node = $context.createOscillator();
-        console.log(node, "node");
+    let onOff = 0;
+    //node.start();
+    function newOscillator(onOff) {
+        const oscillatorNode = $audioCtx.createOscillator();
+
+        nodes = [...nodes, oscillatorNode];
+
+        // console.log(nodes);
     }
+
+    // $: if ($audioCtx) {
+    //     node = $audioCtx.createOscillator();
+    //     console.log(node, "node");
+    // }
     console.groupEnd();
 </script>
 
-<div>This is the page</div>
+<div>This is the static page</div>
+<section class="oscillator-control">
+    <button class="create-oscillator" on:click={newOscillator}>Create Oscillator</button>
+    <button class="play-all">Play All</button>
+    <button class="mute-all">Mute All</button>
+</section>
+{#each nodes as node}
+    <StaticOscillator {node} />
+{/each}
