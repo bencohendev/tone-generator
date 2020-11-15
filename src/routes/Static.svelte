@@ -10,6 +10,8 @@
     let panVal;
     let onOffVal;
     let freqVal;
+    let playAllStatus = false
+    let muteAllStatus = false
    
     onMount(() => {
 		audioCtx.set(
@@ -23,14 +25,32 @@
         nodes = [...nodes, oscillatorNode];
     }
 
+    function handleMessage(e) {
+        console.log(e)
+        if(e.detail.text === 'playAll') {
+            playAllStatus = false
+            console.log(playAllStatus)
+        }
+        if(e.detail.text === 'muteAll') {
+            muteAllStatus = false
+            console.log(playAllStatus)
+        }
+    }
+
+    function playAllHandler() {
+        playAllStatus = true
+    }
+    function muteAllHandler() {
+        muteAllStatus = true
+    }
     console.groupEnd();
 </script>
 
 <div>This is the static page</div>
 <section class="oscillator-control">
     <button class="create-oscillator" on:click={newOscillator}>Create Oscillator</button>
-    <button class="play-all">Play All</button>
-    <button class="mute-all">Mute All</button>
+    <button class="play-all" on:click={playAllHandler}>Play All</button>
+    <button class="mute-all" on:click={muteAllHandler}>Mute All</button>
     <div class="overtone-preset-container">
         <select name="fundamental-select" id="fundamental-select">
             {#each $octaves as octave, i}
@@ -47,5 +67,5 @@
     </div>
 </section>
 {#each nodes as node}
-    <StaticOscillator {node} {panVal} {onOffVal} {freqVal}/>
+    <StaticOscillator {node} {panVal} {onOffVal} {freqVal} {playAllStatus} {muteAllStatus} on:message={handleMessage}/>
 {/each}
