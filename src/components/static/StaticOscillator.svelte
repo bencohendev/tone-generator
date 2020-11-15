@@ -1,5 +1,5 @@
 <script>
-        import { createEventDispatcher, onMount } from "svelte";
+    import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
     import { audioCtx } from "../../store";
     import PitchSelector from "../PitchSelector.svelte";
@@ -13,14 +13,12 @@
     export let playAllStatus;
     export let muteAllStatus;
 
-    let play = false;
+    let play = onOffVal === 1 ? true : false;
     let vol = 50;
     let freq = Math.round((440 + Number.EPSILON) * 1000) / 1000;
     let wavType = "Sine";
     let showPitchSelector = false;
     const dispatch = createEventDispatcher();
-
-
     //create nodes. oscillatorGainNode used for volume control. onOffNode used for playing and pausing. Pan Node for panning
     const oscillatorGainNode = $audioCtx.createGain();
     const onOffNode = $audioCtx.createGain();
@@ -38,9 +36,12 @@
     onOffNode.connect(panNode);
     panNode.connect($audioCtx.destination);
 
-    node.start();
-
+    onMount(() => node.start());
     node.frequency.setValueAtTime(freqVal, $audioCtx.currentTime);
+
+    onDestroy(() => {
+        onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+    });
 
     function playHandler() {
         if (!play) {
@@ -53,18 +54,18 @@
     }
 
     function playAll() {
-        dispatch('message', {text: 'playAll'})
+        dispatch("message", { text: "playAll" });
         if (!play && playAllStatus) {
             onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
             play = true;
-        } 
+        }
     }
     function muteAll() {
-        dispatch('message', {text: 'muteAll'})
+        dispatch("message", { text: "muteAll" });
         if (play && muteAllStatus) {
             onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
             play = false;
-        } 
+        }
     }
     function pitchSelector() {
         showPitchSelector = true;
@@ -93,11 +94,10 @@
         //Wave Type Selector
         node.type = wavType.toLowerCase();
 
-        playAllStatus = playAllStatus ? playAll() : false
-        muteAllStatus = muteAllStatus ? muteAll() : false
-        
+        playAllStatus = playAllStatus ? playAll() : false;
+        muteAllStatus = muteAllStatus ? muteAll() : false;
+        console.log(freqVal);
     }
-  //  console.log(playAllStatus)
 
     console.groupEnd();
 </script>
@@ -124,8 +124,9 @@
     <div class="slide-container">
         <input
             type="range"
-            min="-100"
-            max="100"
+            min="-1"
+            max="1"
+            step={0.01}
             bind:value={panVal}
             class="slider pan" />
     </div>
