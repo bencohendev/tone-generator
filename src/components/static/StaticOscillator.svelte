@@ -1,12 +1,17 @@
+<script context="module">
+</script>
+
 <script>
     import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
-    import { audioCtx } from "../../store";
+    import { audioCtx, nodeActivated } from "../../store";
     import PitchSelector from "../PitchSelector.svelte";
 
     $: console.group("Static Oscillator");
 
     export let node;
+    export let nodes;
+    export let i;
     export let panVal = 0;
     export let onOffVal = 0;
     export let freqVal = Math.log2(440);
@@ -36,7 +41,13 @@
     onOffNode.connect(panNode);
     panNode.connect($audioCtx.destination);
 
-    onMount(() => node.start());
+    onMount(() => {
+        console.log(nodes);
+        console.log("xyz", node.start());
+        // console.log($nodeActivated);
+        // !$nodeActivated ? node.start() : ($nodeActivated = true);
+        // $nodeActivated = true;
+    });
     node.frequency.setValueAtTime(freqVal, $audioCtx.currentTime);
 
     onDestroy(() => {
@@ -44,6 +55,7 @@
     });
 
     function playHandler() {
+        console.log(freqVal);
         if (!play) {
             onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
             play = true;
@@ -81,7 +93,9 @@
     }
     $: {
         //frequency slider control
+        node.freqVal = freqVal;
         freq = 2 ** freqVal;
+
         node.frequency.setValueAtTime(freq, $audioCtx.currentTime);
         //volume control
         oscillatorGainNode.gain.setValueAtTime(
@@ -96,7 +110,6 @@
 
         playAllStatus = playAllStatus ? playAll() : false;
         muteAllStatus = muteAllStatus ? muteAll() : false;
-        console.log(freqVal);
     }
 
     console.groupEnd();

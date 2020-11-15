@@ -18,6 +18,7 @@
 
     onMount(() => {
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
+        newOscillator();
     });
 
     function newOscillator(panVal, onOffVal, freqVal) {
@@ -134,10 +135,12 @@
         </select>
     </div>
 </section>
-{#key selectedOvertones}
-    {#each nodes as node}
+{#key nodes}
+    {#each nodes as node, i}
         <StaticOscillator
             {node}
+            {nodes}
+            {i}
             panVal={node.panVal}
             onOffVal={node.onOffVal}
             freqVal={node.freqVal}
