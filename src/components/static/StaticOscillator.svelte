@@ -15,19 +15,19 @@
     let showPitchSelector = false;
     //create nodes. oscillatorGainNode used for volume control. onOffNode used for playing and pausing. Pan Node for panning
     const oscillatorGainNode = $audioCtx.createGain();
-    //  const onOffNode = $audioCtx.createGain();
+      const onOffNode = $audioCtx.createGain();
     const panNode = $audioCtx.createPanner();
 
     //initialize node values
-    oscillatorGainNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
-    //  onOffNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
+    oscillatorGainNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+    onOffNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
     panNode.panningModel = "equalpower";
     panNode.setPosition(0, 0, 0);
 
     //connect node chain
     node.connect(oscillatorGainNode);
-    oscillatorGainNode.connect(panNode);
-    // onOffNode.connect(panNode);
+    oscillatorGainNode.connect(onOffNode);
+    onOffNode.connect(panNode);
     panNode.connect($audioCtx.destination);
 
     node.start();
@@ -36,13 +36,10 @@
 
     function playHandler() {
         if (play) {
-            oscillatorGainNode.gain.setValueAtTime(
-                vol / 100,
-                $audioCtx.currentTime
-            );
+            onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
             play = false;
         } else if (!play) {
-            oscillatorGainNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+            onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
             play = true;
         }
     }

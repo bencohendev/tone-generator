@@ -28,6 +28,10 @@
     <button class="create-oscillator" on:click={newOscillator}>Create Oscillator</button>
     <button class="play-all">Play All</button>
     <button class="mute-all">Mute All</button>
+    <div class="overtone-preset-container">
+        <select name="fundamental-select" id="fundamental-select"></select>
+        <select name="overtone-series-select" id="overtone-series-select"></select>
+    </div>
 </section>
 {#each nodes as node}
     <StaticOscillator {node} />
