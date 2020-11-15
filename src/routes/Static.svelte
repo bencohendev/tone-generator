@@ -1,25 +1,28 @@
 <script>
-    import { audioCtx } from "../store.js";
+    import { audioCtx, pitches, octaves, pitchNames } from "../store.js";
     import StaticOscillator from "../components/static/StaticOscillator.svelte";
+    import { onMount } from "svelte";
+
     $: console.group("static");
 
-    let node;
     let nodes = [];
+    let oscillatorNode 
+    let panVal;
+    let onOffVal;
+    let freqVal;
+   
+    onMount(() => {
+		audioCtx.set(
+			new (window.AudioContext || window.webkitAudioContext)()
+        );
+        newOscillator()
+	});
 
-    let onOff = 0;
-    //node.start();
-    function newOscillator(onOff) {
-        const oscillatorNode = $audioCtx.createOscillator();
-
+    function newOscillator() {
+        oscillatorNode = $audioCtx.createOscillator();
         nodes = [...nodes, oscillatorNode];
-
-        // console.log(nodes);
     }
 
-    // $: if ($audioCtx) {
-    //     node = $audioCtx.createOscillator();
-    //     console.log(node, "node");
-    // }
     console.groupEnd();
 </script>
 
@@ -29,10 +32,20 @@
     <button class="play-all">Play All</button>
     <button class="mute-all">Mute All</button>
     <div class="overtone-preset-container">
-        <select name="fundamental-select" id="fundamental-select"></select>
-        <select name="overtone-series-select" id="overtone-series-select"></select>
+        <select name="fundamental-select" id="fundamental-select">
+            {#each $octaves as octave, i}
+                {#each $pitches as pitch, j}
+                    <option
+                        >{$pitchNames[j]}{i}</option>
+                {/each}
+            {/each}
+        </select>
+        <select name="overtone-series-select" id="overtone-series-select">
+            <option>1 - 3 - 5</option>
+            <option>1 - 3 - 5 - 7</option>
+        </select>
     </div>
 </section>
 {#each nodes as node}
-    <StaticOscillator {node} />
+    <StaticOscillator {node} {panVal} {onOffVal} {freqVal}/>
 {/each}

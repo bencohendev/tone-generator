@@ -1,5 +1,5 @@
 <script>
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onMount } from "svelte";
     import {pitches, pitchNames, octaves} from "../store.js"
 
     export let showPitchSelector;

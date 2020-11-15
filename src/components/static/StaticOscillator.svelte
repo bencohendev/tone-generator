@@ -5,24 +5,26 @@
     $: console.group("Static Oscillator");
 
     export let node;
+    export let panVal = 0;
+    export let onOffVal = 0;
+    export let freqVal = Math.log2(440);
 
     let play = false;
-    let vol = "50";
-    let pan = "0";
+    let vol = 50;
     let freq = Math.round((440 + Number.EPSILON) * 1000) / 1000;
-    let freqVal = Math.log2(440);
     let wavType = "Sine";
     let showPitchSelector = false;
+
     //create nodes. oscillatorGainNode used for volume control. onOffNode used for playing and pausing. Pan Node for panning
     const oscillatorGainNode = $audioCtx.createGain();
-      const onOffNode = $audioCtx.createGain();
+    const onOffNode = $audioCtx.createGain();
     const panNode = $audioCtx.createPanner();
 
     //initialize node values
-    oscillatorGainNode.gain.setValueAtTime(0, $audioCtx.currentTime);
-    onOffNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
+    oscillatorGainNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
+    onOffNode.gain.setValueAtTime(onOffVal, $audioCtx.currentTime);
     panNode.panningModel = "equalpower";
-    panNode.setPosition(0, 0, 0);
+    panNode.setPosition(panVal, 0, 0);
 
     //connect node chain
     node.connect(oscillatorGainNode);
@@ -32,15 +34,15 @@
 
     node.start();
 
-    node.frequency.setValueAtTime(440, $audioCtx.currentTime);
+    node.frequency.setValueAtTime(freqVal, $audioCtx.currentTime);
 
     function playHandler() {
-        if (play) {
+        if (!play) {
             onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-            play = false;
-        } else if (!play) {
-            onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
             play = true;
+        } else if (play) {
+            onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+            play = false;
         }
     }
     function pitchSelector() {
@@ -65,7 +67,7 @@
             $audioCtx.currentTime
         );
         //pan control
-        panNode.setPosition(pan / 100, 0, 0);
+        panNode.setPosition(panVal / 100, 0, 0);
 
         //Wave Type Selector
         node.type = wavType.toLowerCase();
@@ -77,7 +79,7 @@
 <section class="oscillator-container">
     <button
         class="play"
-        on:click={playHandler}>{play ? 'Play' : 'Pause'}</button>
+        on:click={playHandler}>{play ? 'Pause' : 'Play'}</button>
     <select name="wav-type" class="wav-select" bind:value={wavType}>
         <option>Sine</option>
         <option>Triangle</option>
@@ -97,14 +99,14 @@
             type="range"
             min="-100"
             max="100"
-            bind:value={pan}
+            bind:value={panVal}
             class="slider pan" />
     </div>
     <div class="slide-container">
         <input
             type="range"
             min={3}
-            max={14.5}
+            max={14.4}
             step={0.001}
             bind:value={freqVal}
             class="slider frequency" />
