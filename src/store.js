@@ -1,6 +1,5 @@
 import { writable, readable } from "svelte/store";
 export let audioCtx = writable(null);
-export let nodeActivated = writable(false);
 export let pitches = readable([
     32.7032,
     34.6478,

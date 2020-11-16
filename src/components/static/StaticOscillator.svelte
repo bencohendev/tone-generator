@@ -4,14 +4,12 @@
 <script>
     import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
-    import { audioCtx, nodeActivated } from "../../store";
+    import { audioCtx} from "../../store";
     import PitchSelector from "../PitchSelector.svelte";
 
     $: console.group("Static Oscillator");
 
     export let node;
-    export let nodes;
-    export let i;
     export let panVal = 0;
     export let onOffVal = 0;
     export let freqVal = Math.log2(440);
@@ -42,16 +40,18 @@
     panNode.connect($audioCtx.destination);
 
     onMount(() => {
-        console.log(nodes);
-        console.log("xyz", node.start());
-        // console.log($nodeActivated);
-        // !$nodeActivated ? node.start() : ($nodeActivated = true);
-        // $nodeActivated = true;
+        console.log('mounted',node)
+        if (!node.started) {
+       node.start();
+       node.started = true;
+        }
+
     });
     node.frequency.setValueAtTime(freqVal, $audioCtx.currentTime);
 
     onDestroy(() => {
         onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+        play = false
     });
 
     function playHandler() {
@@ -69,6 +69,7 @@
         dispatch("message", { text: "playAll" });
         if (!play && playAllStatus) {
             onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
+            node.onOffVal = 1
             play = true;
         }
     }
@@ -76,6 +77,8 @@
         dispatch("message", { text: "muteAll" });
         if (play && muteAllStatus) {
             onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+            onOffVal = 0
+
             play = false;
         }
     }
@@ -103,10 +106,13 @@
             $audioCtx.currentTime
         );
         //pan control
+        node.panVal = panVal
         panNode.setPosition(panVal / 100, 0, 0);
 
         //Wave Type Selector
         node.type = wavType.toLowerCase();
+
+        node.onOffVal = onOffVal
 
         playAllStatus = playAllStatus ? playAll() : false;
         muteAllStatus = muteAllStatus ? muteAll() : false;
