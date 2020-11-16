@@ -40,9 +40,10 @@
         <button on:click={closePitchSelector} class="close">X</button>
         <div>
             {#each $octaves as octave}
-                {#each $pitches as pitch, i}
+                {#each $pitches as pitch, i}                
                     <button
-                        on:click={() => sendPitch(pitch, octave)}>{$pitchNames[i]}</button>
+                        on:click={() => sendPitch(pitch, octave)}>{$pitchNames[i]}
+                    </button>
                 {/each}
             {/each}
         </div>

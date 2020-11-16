@@ -122,17 +122,17 @@
 </script>
 
 <style lang="scss">
-    .oscillator-container{
-        .slide-container{
-            input {
-                margin: 10px;
-            }
-        }
-    }
+  .oscillator-control {
+      display: flex;
+      margin: 10px;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 5px 4px 8px 8px #888888;
+      padding: 50px;
+  }
 </style>
-
-<div>static oscillator</div>
-<section class="oscillator-container">
+<section class="oscillator-control">
+    <div>
     <button
         class="play"
         on:click={playHandler}>{play ? 'Pause' : 'Play'}</button>
@@ -142,15 +142,18 @@
         <option>Sawtooth</option>
         <option>Square</option>
     </select>
-    <div class="slide-container">
+    <div class="slide-container volume">
+        
         <input
             type="range"
             min="0"
             max="100"
             bind:value={vol}
             class="slider volume" />
+            <div> Volume</div>
     </div>
-    <div class="slide-container">
+    <div class="slide-container pan">
+        
         <input
             type="range"
             min="-1"
@@ -158,8 +161,11 @@
             step={0.01}
             bind:value={panVal}
             class="slider pan" />
+            <div>Pan</div>
     </div>
-    <div class="slide-container">
+</div>
+<div>
+    <div class="slide-container Frequency">
         <input
             type="range"
             min={3}
@@ -167,9 +173,10 @@
             step={0.001}
             bind:value={freqVal}
             class="slider frequency" />
-        <div>{Math.round(freq)}</div>
+        <div>Frequency : {Math.round(freq)}</div>
     </div>
     <button class="pitch-selector" on:click={pitchSelector}>Select a Pitch</button>
+</div>
 </section>
 
 <PitchSelector {showPitchSelector} on:message={handleMessage} />

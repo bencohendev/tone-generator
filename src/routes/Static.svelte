@@ -111,12 +111,21 @@
     console.groupEnd();
 </script>
 
-<style>
-    
-</style>
+<style lang="scss">
+    .static{
+        align-items: center;
+        justify-content:center;
 
-<div>This is the static page</div>
-<section class="oscillator-control">
+    .oscillator-master-control {
+        display: flex;
+        margin-bottom: 40px;
+    }
+    }
+</style>
+<section class="static">
+
+<section class="oscillator-master-control">
+
     <button
         class="create-oscillator"
         on:click={() => newOscillator(panVal, onOffVal, freqVal)}>Create
@@ -147,7 +156,8 @@
         </select>
     </div>
 </section>
-{#key nodes}
+<section class="oscillator-container">
+    {#key nodes}
     {#each nodes as node, i}
         <StaticOscillator
             {node}        
@@ -159,3 +169,5 @@
             on:message={handleMessage} />
     {/each}
 {/key}
+</section>
+</section>
