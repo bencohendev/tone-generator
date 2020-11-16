@@ -111,6 +111,10 @@
     console.groupEnd();
 </script>
 
+<style>
+    
+</style>
+
 <div>This is the static page</div>
 <section class="oscillator-control">
     <button

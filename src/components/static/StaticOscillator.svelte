@@ -121,6 +121,16 @@
     console.groupEnd();
 </script>
 
+<style lang="scss">
+    .oscillator-container{
+        .slide-container{
+            input {
+                margin: 10px;
+            }
+        }
+    }
+</style>
+
 <div>static oscillator</div>
 <section class="oscillator-container">
     <button
