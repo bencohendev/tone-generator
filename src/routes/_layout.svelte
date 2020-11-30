@@ -12,15 +12,8 @@
 		padding: 2em;
 		margin: 0 auto;
 		box-sizing: border-box;
-		display: flex;
+		//	display: flex;
 
-		section{
-			display: flex;
-			flex-wrap: wrap;
-		}
-		div {
-			display: flex;
-		}
 		button {
 			padding: 5px;
 			border-radius: 2px;
