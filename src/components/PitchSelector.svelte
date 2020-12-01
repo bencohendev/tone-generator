@@ -22,7 +22,7 @@
         grid-template-rows: 10% 75%;
         box-shadow: 5px 4px 8px 8px #888888;
         position: fixed;
-        width: 75%;
+        width: 50%;
         top: 20%;
         background: white;
 
