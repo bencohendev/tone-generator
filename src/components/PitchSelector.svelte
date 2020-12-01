@@ -10,9 +10,14 @@
         dispatch("message", { text: "close" });
     }
 
-    function sendPitch(pitch, octave) {
+    function sendPitch(pitch, octave, pitchName, i) {
         let pitchVal = pitch * octave;
-        dispatch("message", { text: "pitch", pitchVal: { pitchVal } });
+        dispatch("message", {
+            text: "pitch",
+            pitchVal,
+            pitchName,
+            i,
+        });
     }
 </script>
 
@@ -64,7 +69,7 @@
                     {#each $pitches as pitch, i}
                         <button
                             class="pitch-button"
-                            on:click={() => sendPitch(pitch, octave)}>{$pitchNames[i]}
+                            on:click={() => sendPitch(pitch, octave, $pitchNames[i], i)}>{$pitchNames[i]}
                         </button>
                     {/each}
                 </div>

@@ -1,71 +1,151 @@
 <script>
     import { audioCtx, pitches, octaves, pitchNames } from "../store.js";
-    import StaticOscillator from "../components/static/StaticOscillator.svelte";
     import { onMount } from "svelte";
-    console.group('series');
-    //let nodes = [];
-    let oscillatorNode;
-    // let panVal = 0;
-    // let onOffVal = 0;
-    // let freqVal;
-    let vol = 50;
+    import PitchSelector from "../components/PitchSelector.svelte";
 
-    // let playAllStatus = false;
-    // let muteAllStatus = false;
-    // let selectedFundamental = 207.6523;
-    // let selectedOvertones;
+    console.group("series");
+    let oscillatorNode;
+    let onOffVal = 0;
+    let node = {};
+    let vol = 50;
+    let play = onOffVal === 1 ? true : false;
+    let wavType = "sine";
+    let showPitchSelector = false;
+    let lowerClicked = false;
+    let upperClicked = false;
+    let lowerVal;
+    let upperVal;
+    let bpm = 60;
+    let numOfPitches = 1;
+    let playOnce = false;
 
     onMount(() => {
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
+        const oscillatorGainNode = $audioCtx.createGain();
+        const onOffNode = $audioCtx.createGain();
+        const panNode = $audioCtx.createPanner();
+
         oscillatorNode = $audioCtx.createOscillator();
         oscillatorNode.freqVal = 440;
         oscillatorNode.panVal = 0;
         oscillatorNode.onOffVal = 0;
-        oscillatorNode.started = false;    
+        oscillatorNode.started = false;
+
+        //initialize node values
+        oscillatorGainNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
+        onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+        panNode.panningModel = "equalpower";
+        panNode.setPosition(0, 0, 0);
+
+        //connect node chain
+        oscillatorNode.connect(oscillatorGainNode);
+        oscillatorGainNode.connect(onOffNode);
+        onOffNode.connect(panNode);
+        panNode.connect($audioCtx.destination);
+
+        oscillatorNode.start();
+        return (node = {
+            oscillatorNode,
+            oscillatorGainNode,
+            onOffNode,
+            panNode,
+        });
     });
 
-    // function newOscillator(panVal, onOffVal, freqVal) {
-    //     oscillatorNode = $audioCtx.createOscillator();
-    //     oscillatorNode.freqVal = freqVal;
-    //     oscillatorNode.panVal = panVal;
-    //     oscillatorNode.onOffVal = onOffVal;
-    //     console.log(oscillatorNode.panVal, 'static')
-    //     oscillatorNode.started = false;
+    function playHandler() {
+        if (!play) {
+            node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
+            play = true;
+        } else if (play) {
+            node.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+            play = false;
+        }
+    }
 
-    //     nodes = [...nodes, oscillatorNode];
-    // }
+    //pitch selector function
+    function handleMessage(event) {
+        console.log(event);
+        if (event.detail.text === "close") {
+            showPitchSelector = false;
+        }
+        if (event.detail.text === "pitch") {
+            showPitchSelector = false;
+            if (lowerClicked) {
+                lowerClicked = false;
+                return (lowerVal = event.detail);
+            }
+            if (upperClicked) {
+                upperClicked = false;
+                return (upperVal = event.detail);
+            }
+        }
+    }
+    function pitchSelector(event) {
+        console.log(event);
+        if (event.srcElement.id === "lower-val") {
+            showPitchSelector = true;
+            lowerClicked = true;
+        }
+        if (event.srcElement.id === "upper-val") {
+            showPitchSelector = true;
+            upperClicked = true;
+        }
+    }
 
-   
+    $: {
+        //if statement checks to ensure all node values are returned
+        if (node.panNode) {
+            //volume control
+            node.oscillatorGainNode.gain.setValueAtTime(
+                vol / 100,
+                $audioCtx.currentTime
+            );
+
+            //Wave Type Selector
+            node.oscillatorNode.type = wavType.toLowerCase();
+        }
+
+        numOfPitches = numOfPitches;
+        bpm = bpm;
+        playOnce = playOnce;
+        console.log(playOnce);
+    }
+
     console.groupEnd();
 </script>
 
 <style lang="scss">
-    .series{
+    .series {
         align-items: center;
-        justify-content:center;
+        justify-content: center;
     }
 </style>
 
 <section class="series">
-
     <select>Select An Instrument
         <option>Electric Guitar</option>
         <option>Tenor Sax</option>
     </select>
     <div>Or Manually Choose a Pitch Range</div>
-    <select>
-        <option>initial pitch</option>
-    </select>
-    <select>
-        <option>final pitch</option>
-    </select>
+    <button
+        id="lower-val"
+        class="pitch-selector"
+        on:click={pitchSelector}>{lowerVal ? lowerVal.pitchName + lowerVal.i : 'Select a Pitch'}</button>
+    <button
+        id="upper-val"
+        class="pitch-selector"
+        on:click={pitchSelector}>{upperVal ? upperVal.pitchName + lowerVal.i : 'Select a Pitch'}</button>
+
     <div>Set Number of Pitches in Series and Speed</div>
-    <input type="number" label="number of pitches">
-    <input type="number" label="play speed">
+    <input type="number" label="number of pitches" bind:value={numOfPitches} />
+    <input type="number" label="play speed" bind:value={bpm} />
     <div>Check to only play pitch set once</div>
-    <input type="checkbox">
-    <select>
-        <option>sine</option>
+    <input type="checkbox" bind:checked={playOnce} />
+    <select name="wav-type" class="wav-select" bind:value={wavType}>
+        <option>Sine</option>
+        <option>Triangle</option>
+        <option>Sawtooth</option>
+        <option>Square</option>
     </select>
     <div class="slide-container volume">
         <input
@@ -76,4 +156,8 @@
             class="slider volume" />
         <div>Volume</div>
     </div>
+    <button
+        class="play"
+        on:click={playHandler}>{play ? 'Pause' : 'Play'}</button>
 </section>
+<PitchSelector {showPitchSelector} on:message={handleMessage} />

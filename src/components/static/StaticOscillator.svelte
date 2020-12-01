@@ -1,4 +1,3 @@
-
 <script>
     import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
@@ -89,7 +88,7 @@
         }
         if (event.detail.text === "pitch") {
             showPitchSelector = false;
-            return (freqVal = Math.log2(event.detail.pitchVal.pitchVal));
+            return (freqVal = Math.log2(event.detail.pitchVal));
         }
     }
     $: {
