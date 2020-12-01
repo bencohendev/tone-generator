@@ -1,11 +1,12 @@
-
 <script>
     import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
     import { audioCtx } from "../../store";
     import PitchSelector from "../PitchSelector.svelte";
 
-    $: console.group("Static Oscillator");
+    $: console.group("Series Oscillator");
+
+    console.groupEnd();
 
     export let node;
     export let panVal = 0;
@@ -92,6 +93,7 @@
             return (freqVal = Math.log2(event.detail.pitchVal.pitchVal));
         }
     }
+
     $: {
         //frequency slider control
         node.freqVal = freqVal;
@@ -116,7 +118,6 @@
         muteAllStatus = muteAllStatus ? muteAll() : false;
     }
 
-    console.groupEnd();
 </script>
 
 <style lang="scss">
@@ -132,48 +133,6 @@
 
 <section class="oscillator-control">
     <div>
-        <button
-            class="play"
-            on:click={playHandler}>{play ? 'Pause' : 'Play'}</button>
-        <select name="wav-type" class="wav-select" bind:value={wavType}>
-            <option>Sine</option>
-            <option>Triangle</option>
-            <option>Sawtooth</option>
-            <option>Square</option>
-        </select>
-        <div class="slide-container volume">
-            <input
-                type="range"
-                min="0"
-                max="100"
-                bind:value={vol}
-                class="slider volume" />
-            <div>Volume</div>
-        </div>
-        <div class="slide-container pan">
-            <input
-                type="range"
-                min="-1"
-                max="1"
-                step={0.01}
-                bind:value={panVal}
-                class="slider pan" />
-            <div>Pan</div>
-        </div>
-    </div>
-    <div>
-        <div class="slide-container Frequency">
-            <input
-                type="range"
-                min={3}
-                max={14.4}
-                step={0.001}
-                bind:value={freqVal}
-                class="slider frequency" />
-            <div>Frequency : {Math.round(freq)}</div>
-        </div>
-        <button class="pitch-selector" on:click={pitchSelector}>Select a Pitch</button>
+        
     </div>
 </section>
-
-<PitchSelector {showPitchSelector} on:message={handleMessage} />
