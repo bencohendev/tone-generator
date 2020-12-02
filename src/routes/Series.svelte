@@ -20,6 +20,7 @@
     let playOnce = false;
     let freqRange = [];
     let allPitches = [];
+    let intervalID = null;
 
     onMount(() => {
         populateAllPitches();
@@ -36,13 +37,16 @@
 
         //initialize node values
         oscillatorGainNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
+        seriesGainNode.gain.setValueAtTime(0, Audio.context.currentTime);
         onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
         panNode.panningModel = "equalpower";
         panNode.setPosition(0, 0, 0);
 
         //connect node chain
         oscillatorNode.connect(oscillatorGainNode);
-        oscillatorGainNode.connect(onOffNode);
+        oscillatorGainNode.connect(seriesGainNode);
+        seriesGainNode.connect(onOffNode)   
+
         onOffNode.connect(panNode);
         panNode.connect($audioCtx.destination);
 
@@ -122,13 +126,11 @@
         bpm = bpm;
         playOnce = playOnce;
         if (lowerVal && upperVal) {
-            console.log(lowerVal.pitchVal, upperVal.pitchVal);
             freqRange = allPitches.filter(
                 (pitch) =>
                     pitch.frequency >= lowerVal.pitchVal &&
                     pitch.frequency <= upperVal.pitchVal
             );
-            console.log(freqRange);
         }
 
         if (play) {
@@ -139,26 +141,26 @@
                     if (i === parseInt(numOfPitches) + 1) {
                         selectedOscillatorNode.seriesGainNode.gain.setTargetAtTime(
                             0,
-                            Audio.context.currentTime,
+                            $audioCtx.context.currentTime,
                             0.001
                         );
                         i = 0;
                     } else {
                         const pitchToPlay =
-                            selectedFreqArray[
+                            freqRange[
                                 Math.floor(Math.random() * freqRange.length)
                             ];
                         changeFrequency(pitchToPlay.frequency);
-                        selectedOscillatorNode.seriesGainNode.gain.setTargetAtTime(
+                        oscillatorNode.seriesGainNode.gain.setTargetAtTime(
                             1,
-                            Audio.context.currentTime,
+                            $audioCtx.context.currentTime,
                             0.001
                         );
                     }
                     setTimeout(() => {
-                        selectedOscillatorNode.seriesGainNode.gain.setTargetAtTime(
+                        oscillatorNode.seriesGainNode.gain.setTargetAtTime(
                             0,
-                            Audio.context.currentTime,
+                            $audioCtx.context.currentTime,
                             0.001
                         );
                     }, bpm - bpm / 4);

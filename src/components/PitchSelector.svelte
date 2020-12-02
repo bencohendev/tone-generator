@@ -24,12 +24,7 @@
         });
     }
 
-    $: {
-        // lowerVal = lowerVal;
-        // upperVal = upperVal;
-        console.log(lowerVal);
-        console.log(upperVal);
-    }
+
 </script>
 
 <style lang="scss">
@@ -78,13 +73,13 @@
                 <div class="pitch-row">
                     <div class="octave-name">{i + 1}</div>
                     {#each $pitches as pitch, i}
-                        {#if lowerVal && lowerVal.pitchVal > pitch * octave}
+                        {#if upperClicked && (lowerVal && lowerVal.pitchVal >= pitch * octave)}
                             <button
                                 class="pitch-button"
                                 disabled
                                 on:click={() => sendPitch(pitch, octave, $pitchNames[i], i)}>{$pitchNames[i]}
                             </button>
-                        {:else if upperVal && upperVal.pitchVal < pitch * octave}
+                        {:else if lowerClicked && (upperVal && upperVal.pitchVal <= pitch * octave)}
                             <button
                                 class="pitch-button"
                                 disabled
