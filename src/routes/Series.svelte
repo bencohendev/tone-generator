@@ -18,8 +18,11 @@
     let bpm = 60;
     let numOfPitches = 1;
     let playOnce = false;
+    let freqRange = [];
+    let allPitches = [];
 
     onMount(() => {
+        populateAllPitches();
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
         const oscillatorGainNode = $audioCtx.createGain();
         const onOffNode = $audioCtx.createGain();
@@ -51,7 +54,19 @@
             panNode,
         });
     });
+    let pitchMultiplier = 1;
 
+    let populateAllPitches = () => {
+        for (let i = 0; i < 9; i++) {
+            for (let j = 1; j <= $pitches.length; j++) {
+                allPitches.push({
+                    pitch: $pitchNames[j] + i,
+                    frequency: $pitches[j] * pitchMultiplier,
+                });
+            }
+            pitchMultiplier = pitchMultiplier * 2;
+        }
+    };
     function playHandler() {
         if (!play) {
             node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
@@ -64,7 +79,6 @@
 
     //pitch selector function
     function handleMessage(event) {
-        console.log(event);
         if (event.detail.text === "close") {
             showPitchSelector = false;
         }
@@ -81,7 +95,6 @@
         }
     }
     function pitchSelector(event) {
-        console.log(event);
         if (event.srcElement.id === "lower-val") {
             showPitchSelector = true;
             lowerClicked = true;
@@ -108,7 +121,52 @@
         numOfPitches = numOfPitches;
         bpm = bpm;
         playOnce = playOnce;
-        console.log(playOnce);
+        if (lowerVal && upperVal) {
+            console.log(lowerVal.pitchVal, upperVal.pitchVal);
+            freqRange = allPitches.filter(
+                (pitch) =>
+                    pitch.frequency >= lowerVal.pitchVal &&
+                    pitch.frequency <= upperVal.pitchVal
+            );
+            console.log(freqRange);
+        }
+
+        if (play) {
+            if (!playOnce) {
+                let i = 0;
+                intervalID = setInterval(() => {
+                    i++;
+                    if (i === parseInt(numOfPitches) + 1) {
+                        selectedOscillatorNode.seriesGainNode.gain.setTargetAtTime(
+                            0,
+                            Audio.context.currentTime,
+                            0.001
+                        );
+                        i = 0;
+                    } else {
+                        const pitchToPlay =
+                            selectedFreqArray[
+                                Math.floor(Math.random() * freqRange.length)
+                            ];
+                        changeFrequency(pitchToPlay.frequency);
+                        selectedOscillatorNode.seriesGainNode.gain.setTargetAtTime(
+                            1,
+                            Audio.context.currentTime,
+                            0.001
+                        );
+                    }
+                    setTimeout(() => {
+                        selectedOscillatorNode.seriesGainNode.gain.setTargetAtTime(
+                            0,
+                            Audio.context.currentTime,
+                            0.001
+                        );
+                    }, bpm - bpm / 4);
+                }, bpm);
+
+                () => clearInterval(intervalID);
+            }
+        }
     }
 
     console.groupEnd();
@@ -160,4 +218,10 @@
         class="play"
         on:click={playHandler}>{play ? 'Pause' : 'Play'}</button>
 </section>
-<PitchSelector {showPitchSelector} on:message={handleMessage} />
+<PitchSelector
+    {showPitchSelector}
+    {lowerVal}
+    {upperVal}
+    {lowerClicked}
+    {upperClicked}
+    on:message={handleMessage} />

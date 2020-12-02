@@ -3,6 +3,10 @@
     import { pitches, pitchNames, octaves } from "../store.js";
 
     export let showPitchSelector;
+    export let lowerVal;
+    export let upperVal;
+    export let lowerClicked;
+    export let upperClicked;
 
     const dispatch = createEventDispatcher();
 
@@ -18,6 +22,13 @@
             pitchName,
             i,
         });
+    }
+
+    $: {
+        // lowerVal = lowerVal;
+        // upperVal = upperVal;
+        console.log(lowerVal);
+        console.log(upperVal);
     }
 </script>
 
@@ -67,10 +78,24 @@
                 <div class="pitch-row">
                     <div class="octave-name">{i + 1}</div>
                     {#each $pitches as pitch, i}
-                        <button
-                            class="pitch-button"
-                            on:click={() => sendPitch(pitch, octave, $pitchNames[i], i)}>{$pitchNames[i]}
-                        </button>
+                        {#if lowerVal && lowerVal.pitchVal > pitch * octave}
+                            <button
+                                class="pitch-button"
+                                disabled
+                                on:click={() => sendPitch(pitch, octave, $pitchNames[i], i)}>{$pitchNames[i]}
+                            </button>
+                        {:else if upperVal && upperVal.pitchVal < pitch * octave}
+                            <button
+                                class="pitch-button"
+                                disabled
+                                on:click={() => sendPitch(pitch, octave, $pitchNames[i], i)}>{$pitchNames[i]}
+                            </button>
+                        {:else}
+                            <button
+                                class="pitch-button"
+                                on:click={() => sendPitch(pitch, octave, $pitchNames[i], i)}>{$pitchNames[i]}
+                            </button>
+                        {/if}
                     {/each}
                 </div>
             {/each}
