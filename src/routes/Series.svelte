@@ -74,15 +74,81 @@
             pitchMultiplier = pitchMultiplier * 2;
         }
     };
-    function playHandler() {
-        if (lowerVal && upperVal)
-            if (!play) {
-                node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-                play = true;
-            } else if (play) {
-                node.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
-                play = false;
+
+    function seriesPlayer() {
+        console.log(playSpeed);
+        if (!play && !intervalID) {
+            play = true;
+            bpm = (60 / playSpeed) * 1000;
+            console.log(bpm);
+            node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
+            if (!playOnce) {
+                let i = 0;
+                intervalID = setInterval(() => {
+                    i++;
+                    if (i === parseInt(numOfPitches) + 1) {
+                        node.seriesGainNode.gain.setValueAtTime(
+                            0,
+                            $audioCtx.currentTime
+                        );
+                        i = 0;
+                    } else {
+                        const pitchToPlay =
+                            freqRange[
+                                Math.floor(Math.random() * freqRange.length)
+                            ];
+                        node.oscillatorNode.frequency.setValueAtTime(
+                            pitchToPlay.frequency,
+                            $audioCtx.currentTime
+                        );
+                        node.seriesGainNode.gain.setTargetAtTime(
+                            1,
+                            $audioCtx.currentTime,
+                            0.0001
+                        );
+                    }
+                    setTimeout(() => {
+                        node.seriesGainNode.gain.setTargetAtTime(
+                            0,
+                            $audioCtx.currentTime,
+                            0.001
+                        );
+                    }, bpm - bpm / 4);
+                }, bpm);
+            } else if (playOnce) {
+                for (let i = 0; i < numOfPitches; i++) {
+                    setTimeout(() => {
+                        const pitchToPlay =
+                            freqRange[
+                                Math.floor(Math.random() * freqRange.length)
+                            ];
+                        node.oscillatorNode.frequency.setValueAtTime(
+                            pitchToPlay.frequency,
+                            $audioCtx.currentTime
+                        );
+                        node.seriesGainNode.gain.setTargetAtTime(
+                            1,
+                            $audioCtx.currentTime,
+                            0.001
+                        );
+                        setTimeout(() => {
+                            node.seriesGainNode.gain.setTargetAtTime(
+                                0,
+                                $audioCtx.currentTime,
+                                0.001
+                            );
+                        }, bpm - bpm / 4);
+                    }, bpm * i);
+                }
+                setTimeout(() => {
+                    play = false;
+                }, bpm * numOfPitches);
             }
+        } else if (play) {
+            clearInterval(intervalID);
+            intervalID = null;
+            play = false;
+        }
     }
 
     //pitch selector function
@@ -105,7 +171,7 @@
         }
     }
     function pitchSelector(event) {
-        console.log(lowerVal)
+        console.log(lowerVal);
         if (event.srcElement.id === "lower-val") {
             showPitchSelector = true;
             lowerClicked = true;
@@ -118,18 +184,38 @@
         }
     }
 
-    let handleSelectedInstrument= (selectedInstrument) => {
+    let handleSelectedInstrument = (selectedInstrument) => {
         switch (selectedInstrument) {
-            case 'Electric Guitar':
-                lowerVal={text: 'pitch', frequency: 82.406, pitchName: 'e', i:2}
-                upperVal={text: 'pitch', frequency: 1174.656, pitchName: 'd', i:6}           
-            break;
-            case 'Tenor Saxophone': 
-                lowerVal={text: 'pitch', frequency: 103, pitchName: 'g#', i:3}
-                upperVal={text: 'pitch', frequency: 622, pitchName: 'eb', i:7}
-            break;
+            case "Electric Guitar":
+                lowerVal = {
+                    text: "pitch",
+                    frequency: 82.406,
+                    pitchName: "e",
+                    i: 2,
+                };
+                upperVal = {
+                    text: "pitch",
+                    frequency: 1174.656,
+                    pitchName: "d",
+                    i: 6,
+                };
+                break;
+            case "Tenor Saxophone":
+                lowerVal = {
+                    text: "pitch",
+                    frequency: 103,
+                    pitchName: "g#",
+                    i: 3,
+                };
+                upperVal = {
+                    text: "pitch",
+                    frequency: 622,
+                    pitchName: "eb",
+                    i: 7,
+                };
+                break;
         }
-    }
+    };
 
     $: {
         //if statement checks to ensure all node values are returned
@@ -151,73 +237,15 @@
                         pitch.frequency <= upperVal.frequency
                 );
             }
-            if (play && !intervalID) {
-                bpm = (60 / playSpeed) * 1000;
-                node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-                if (!playOnce) {
-                    let i = 0;
-                    intervalID = setInterval(() => {
-                        i++;
-                        if (i === parseInt(numOfPitches) + 1) {
-                            node.seriesGainNode.gain.setValueAtTime(
-                                0,
-                                $audioCtx.currentTime
-                            );
-                            i = 0;
-                        } else {
-                            const pitchToPlay =
-                                freqRange[
-                                    Math.floor(Math.random() * freqRange.length)
-                                ];
-                            node.oscillatorNode.frequency.setValueAtTime(
-                                pitchToPlay.frequency,
-                                $audioCtx.currentTime
-                            );
-                            node.seriesGainNode.gain.setTargetAtTime(
-                                1,
-                                $audioCtx.currentTime,
-                                0.0001
-                            );
-                        }
-                        setTimeout(() => {
-                            node.seriesGainNode.gain.setTargetAtTime(
-                                0,
-                                $audioCtx.currentTime,
-                                0.001
-                            );
-                        }, bpm - bpm / 4);
-                    }, bpm);
-                } else if (playOnce) {
-                    for (let i = 0; i < numOfPitches; i++) {
-                        setTimeout(() => {
-                            const pitchToPlay =
-                                freqRange[
-                                    Math.floor(Math.random() * freqRange.length)
-                                ];
-                            node.oscillatorNode.frequency.setValueAtTime(
-                                pitchToPlay.frequency,
-                                $audioCtx.currentTime
-                            );
-                            node.seriesGainNode.gain.setTargetAtTime(
-                                1,
-                                $audioCtx.currentTime,
-                                0.001
-                            );
-                            setTimeout(() => {
-                                node.seriesGainNode.gain.setTargetAtTime(
-                                    0,
-                                    $audioCtx.currentTime,
-                                    0.001
-                                );
-                            }, bpm - bpm / 4);
-                        }, bpm * i);
-                    }
-                }
-            } else if (!play) {
-                clearInterval(intervalID);
-                intervalID = null;
-            }
         }
+        if (playOnce) {
+            play = false;
+            seriesPlayer();
+        }
+
+        // if (intervalID) {
+        //     intervalID = (60 / playSpeed) * 1000;
+        // }
     }
 
     console.groupEnd();
@@ -233,33 +261,32 @@
 <section class="series">
     <!-- svelte-ignore a11y-no-onchange -->
     <select
-    name="select-instrument"
-    id="select-instrument"
-    bind:value={selectedInstrument}
-    on:change={()=>handleSelectedInstrument(selectedInstrument, lowerVal, upperVal)}
-    >
-    <option>Select and Instrument</option>
+        name="select-instrument"
+        id="select-instrument"
+        bind:value={selectedInstrument}
+        on:change={() => handleSelectedInstrument(selectedInstrument, lowerVal, upperVal)}>
+        <option>Select and Instrument</option>
         <option>Electric Guitar</option>
         <option>Tenor Saxophone</option>
     </select>
     <div>Or Manually Choose a Pitch Range</div>
     {#key lowerVal}
-    <button
-        id="lower-val"
-        class="pitch-selector"
-        on:click={pitchSelector}>{lowerVal ? lowerVal.pitchName + lowerVal.i : 'Select a Pitch'}</button>
-        {/key}
-        {#key upperVal}
-    <button
-        id="upper-val"
-        class="pitch-selector"
-        on:click={pitchSelector}>{upperVal ? upperVal.pitchName + upperVal.i : 'Select a Pitch'}</button>
+        <button
+            id="lower-val"
+            class="pitch-selector"
+            on:click={pitchSelector}>{lowerVal ? lowerVal.pitchName + lowerVal.i : 'Select a Pitch'}</button>
+    {/key}
+    {#key upperVal}
+        <button
+            id="upper-val"
+            class="pitch-selector"
+            on:click={pitchSelector}>{upperVal ? upperVal.pitchName + upperVal.i : 'Select a Pitch'}</button>
     {/key}
     <div>Set Number of Pitches in Series and Speed</div>
     <input type="number" label="number of pitches" bind:value={numOfPitches} />
     <input type="number" label="play speed" bind:value={playSpeed} />
     <div>Check to only play pitch set once</div>
-    <input type="checkbox" bind:checked={playOnce} />
+    <input type="checkbox" bind:checked={playOnce} disabled={play} />
     <select name="wav-type" class="wav-select" bind:value={wavType}>
         <option>Sine</option>
         <option>Triangle</option>
@@ -276,11 +303,14 @@
         <div>Volume</div>
     </div>
 
-    <button class="play" disabled={!(lowerVal && upperVal)} on:click={playHandler}>{play ? 'Pause' : 'Play'}
-        </button>
-        {#if !(lowerVal && upperVal)}
+    <button
+        class="play"
+        disabled={!(lowerVal && upperVal)}
+        on:click={seriesPlayer}>{play ? 'Pause' : 'Play'}
+    </button>
+    {#if !(lowerVal && upperVal)}
         <div>Please Select a Pitch Range</div>
-        {/if}
+    {/if}
 </section>
 <PitchSelector
     {showPitchSelector}
