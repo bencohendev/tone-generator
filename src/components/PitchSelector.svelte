@@ -15,10 +15,10 @@
     }
 
     function sendPitch(pitch, octave, pitchName, i) {
-        let pitchVal = pitch * octave;
+        let frequency = pitch * octave;
         dispatch("message", {
             text: "pitch",
-            pitchVal,
+            frequency,
             pitchName,
             i,
         });
@@ -70,25 +70,14 @@
             {#each $octaves as octave, i}
                 <div class="pitch-row">
                     <div class="octave-name">{i + 1}</div>
-                    {#each $pitches as pitch, i}
-                        {#if upperClicked && lowerVal && lowerVal.pitchVal >= pitch * octave}
+                    {#each $pitches as pitch, j}
+
                             <button
                                 class="pitch-button"
-                                disabled
-                                on:click={() => sendPitch(pitch, octave, $pitchNames[i], i)}>{$pitchNames[i]}
+                                disabled={(lowerClicked && upperVal && upperVal.frequency <= pitch * octave) || (upperClicked && lowerVal && lowerVal.frequency >= pitch * octave)}
+                                on:click={() => sendPitch(pitch, octave, $pitchNames[j], i+1)}>{$pitchNames[j]}
                             </button>
-                        {:else if lowerClicked && upperVal && upperVal.pitchVal <= pitch * octave}
-                            <button
-                                class="pitch-button"
-                                disabled
-                                on:click={() => sendPitch(pitch, octave, $pitchNames[i], i)}>{$pitchNames[i]}
-                            </button>
-                        {:else}
-                            <button
-                                class="pitch-button"
-                                on:click={() => sendPitch(pitch, octave, $pitchNames[i], i)}>{$pitchNames[i]}
-                            </button>
-                        {/if}
+                        
                     {/each}
                 </div>
             {/each}

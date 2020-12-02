@@ -22,6 +22,7 @@
     let freqRange = [];
     let allPitches = [];
     let intervalID = null;
+    let selectedInstrument;
 
     onMount(() => {
         populateAllPitches();
@@ -104,6 +105,7 @@
         }
     }
     function pitchSelector(event) {
+        console.log(lowerVal)
         if (event.srcElement.id === "lower-val") {
             showPitchSelector = true;
             lowerClicked = true;
@@ -113,6 +115,19 @@
             showPitchSelector = true;
             upperClicked = true;
             lowerClicked = false;
+        }
+    }
+
+    let handleSelectedInstrument= (selectedInstrument) => {
+        switch (selectedInstrument) {
+            case 'Electric Guitar':
+                lowerVal={text: 'pitch', frequency: 82.406, pitchName: 'e', i:2}
+                upperVal={text: 'pitch', frequency: 1174.656, pitchName: 'd', i:6}           
+            break;
+            case 'Tenor Saxophone': 
+                lowerVal={text: 'pitch', frequency: 103, pitchName: 'g#', i:3}
+                upperVal={text: 'pitch', frequency: 622, pitchName: 'eb', i:7}
+            break;
         }
     }
 
@@ -132,8 +147,8 @@
             if (lowerVal && upperVal) {
                 freqRange = allPitches.filter(
                     (pitch) =>
-                        pitch.frequency >= lowerVal.pitchVal &&
-                        pitch.frequency <= upperVal.pitchVal
+                        pitch.frequency >= lowerVal.frequency &&
+                        pitch.frequency <= upperVal.frequency
                 );
             }
             if (play && !intervalID) {
@@ -197,38 +212,10 @@
                             }, bpm - bpm / 4);
                         }, bpm * i);
                     }
-                    // intervalID = setInterval(() => {
-                    //     i++;
-                    //     if (i === parseInt(numOfPitches) + 1) {
-                    //         node.seriesGainNode.gain.setValueAtTime(
-                    //             0,
-                    //             $audioCtx.currentTime
-                    //         );
-                    //         i = 0;
-                    //     } else {
-                    //         const pitchToPlay =
-                    //             freqRange[
-                    //                 Math.floor(Math.random() * freqRange.length)
-                    //             ];
-                    //         node.oscillatorNode.frequency.setValueAtTime(
-                    //             pitchToPlay.frequency,
-                    //             $audioCtx.currentTime
-                    //         );
-                    //         node.seriesGainNode.gain.setValueAtTime(
-                    //             1,
-                    //             $audioCtx.currentTime
-                    //         );
-                    //     }
-                    //     setTimeout(() => {
-                    //         node.seriesGainNode.gain.setValueAtTime(
-                    //             0,
-                    //             $audioCtx.currentTime
-                    //         );
-                    //     }, bpm - bpm / 4);
-                    // }, bpm);
                 }
             } else if (!play) {
                 clearInterval(intervalID);
+                intervalID = null;
             }
         }
     }
@@ -244,20 +231,30 @@
 </style>
 
 <section class="series">
-    <select>Select An Instrument
+    <!-- svelte-ignore a11y-no-onchange -->
+    <select
+    name="select-instrument"
+    id="select-instrument"
+    bind:value={selectedInstrument}
+    on:change={()=>handleSelectedInstrument(selectedInstrument, lowerVal, upperVal)}
+    >
+    <option>Select and Instrument</option>
         <option>Electric Guitar</option>
-        <option>Tenor Sax</option>
+        <option>Tenor Saxophone</option>
     </select>
     <div>Or Manually Choose a Pitch Range</div>
+    {#key lowerVal}
     <button
         id="lower-val"
         class="pitch-selector"
         on:click={pitchSelector}>{lowerVal ? lowerVal.pitchName + lowerVal.i : 'Select a Pitch'}</button>
+        {/key}
+        {#key upperVal}
     <button
         id="upper-val"
         class="pitch-selector"
-        on:click={pitchSelector}>{upperVal ? upperVal.pitchName + lowerVal.i : 'Select a Pitch'}</button>
-
+        on:click={pitchSelector}>{upperVal ? upperVal.pitchName + upperVal.i : 'Select a Pitch'}</button>
+    {/key}
     <div>Set Number of Pitches in Series and Speed</div>
     <input type="number" label="number of pitches" bind:value={numOfPitches} />
     <input type="number" label="play speed" bind:value={playSpeed} />
@@ -278,12 +275,12 @@
             class="slider volume" />
         <div>Volume</div>
     </div>
-    {#if !(lowerVal && upperVal)}
-        <button class="play" disabled> Please Select a Pitch Range </button>
-    {:else}
-        <button class="play" on:click={playHandler}>{play ? 'Pause' : 'Play'}
+
+    <button class="play" disabled={!(lowerVal && upperVal)} on:click={playHandler}>{play ? 'Pause' : 'Play'}
         </button>
-    {/if}
+        {#if !(lowerVal && upperVal)}
+        <div>Please Select a Pitch Range</div>
+        {/if}
 </section>
 <PitchSelector
     {showPitchSelector}

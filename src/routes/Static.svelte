@@ -107,7 +107,6 @@
                 break;
         }
     }
-    console.log(selectedFundamental);
     console.groupEnd();
 </script>
 
