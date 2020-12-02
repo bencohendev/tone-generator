@@ -26,6 +26,7 @@
         populateAllPitches();
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
         const oscillatorGainNode = $audioCtx.createGain();
+        const seriesGainNode = $audioCtx.createGain();
         const onOffNode = $audioCtx.createGain();
         const panNode = $audioCtx.createPanner();
 
@@ -37,7 +38,7 @@
 
         //initialize node values
         oscillatorGainNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
-        seriesGainNode.gain.setValueAtTime(0, Audio.context.currentTime);
+        seriesGainNode.gain.setValueAtTime(0, $audioCtx.currentTime);
         onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
         panNode.panningModel = "equalpower";
         panNode.setPosition(0, 0, 0);
@@ -45,8 +46,7 @@
         //connect node chain
         oscillatorNode.connect(oscillatorGainNode);
         oscillatorGainNode.connect(seriesGainNode);
-        seriesGainNode.connect(onOffNode)   
-
+        seriesGainNode.connect(onOffNode);
         onOffNode.connect(panNode);
         panNode.connect($audioCtx.destination);
 
@@ -54,6 +54,7 @@
         return (node = {
             oscillatorNode,
             oscillatorGainNode,
+            seriesGainNode,
             onOffNode,
             panNode,
         });
@@ -72,6 +73,7 @@
         }
     };
     function playHandler() {
+        if  (lowerVal && upperVal)
         if (!play) {
             node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
             play = true;
@@ -120,7 +122,7 @@
 
             //Wave Type Selector
             node.oscillatorNode.type = wavType.toLowerCase();
-        }
+        
 
         numOfPitches = numOfPitches;
         bpm = bpm;
@@ -131,17 +133,19 @@
                     pitch.frequency >= lowerVal.pitchVal &&
                     pitch.frequency <= upperVal.pitchVal
             );
+            console.log(freqRange)
         }
-
-        if (play) {
+        console.log(play)
+        if (play ) {    
+            node.onOffNode.gain.setTargetAtTime(1, $audioCtx.currentTime, .001)        
             if (!playOnce) {
                 let i = 0;
                 intervalID = setInterval(() => {
                     i++;
                     if (i === parseInt(numOfPitches) + 1) {
-                        selectedOscillatorNode.seriesGainNode.gain.setTargetAtTime(
+                        node.seriesGainNode.gain.setTargetAtTime(
                             0,
-                            $audioCtx.context.currentTime,
+                            $audioCtx.currentTime,
                             0.001
                         );
                         i = 0;
@@ -150,25 +154,29 @@
                             freqRange[
                                 Math.floor(Math.random() * freqRange.length)
                             ];
-                        changeFrequency(pitchToPlay.frequency);
-                        oscillatorNode.seriesGainNode.gain.setTargetAtTime(
+                        console.log(pitchToPlay.frequency);
+                        console.log(node)
+                        node.oscillatorNode.frequency.setValueAtTime(pitchToPlay.frequency, $audioCtx.currentTime)
+                        node.seriesGainNode.gain.setTargetAtTime(
                             1,
-                            $audioCtx.context.currentTime,
+                            $audioCtx.currentTime,
                             0.001
                         );
                     }
                     setTimeout(() => {
-                        oscillatorNode.seriesGainNode.gain.setTargetAtTime(
+                        node.seriesGainNode.gain.setTargetAtTime(
                             0,
-                            $audioCtx.context.currentTime,
+                            $audioCtx.currentTime,
                             0.001
                         );
                     }, bpm - bpm / 4);
                 }, bpm);
-
                 () => clearInterval(intervalID);
             }
+        } else if (!play) {
+            clearInterval(intervalID);
         }
+    }
     }
 
     console.groupEnd();
