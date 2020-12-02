@@ -15,8 +15,9 @@
     let upperClicked = false;
     let lowerVal;
     let upperVal;
-    let bpm = 60;
-    let numOfPitches = 1;
+    let bpm;
+    let playSpeed = 120;
+    let numOfPitches = 4;
     let playOnce = false;
     let freqRange = [];
     let allPitches = [];
@@ -73,20 +74,22 @@
         }
     };
     function playHandler() {
-        if  (lowerVal && upperVal)
-        if (!play) {
-            node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-            play = true;
-        } else if (play) {
-            node.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
-            play = false;
-        }
+        if (lowerVal && upperVal)
+            if (!play) {
+                node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
+                play = true;
+            } else if (play) {
+                node.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+                play = false;
+            }
     }
 
     //pitch selector function
     function handleMessage(event) {
         if (event.detail.text === "close") {
             showPitchSelector = false;
+            upperClicked = false;
+            lowerClicked = false;
         }
         if (event.detail.text === "pitch") {
             showPitchSelector = false;
@@ -104,10 +107,12 @@
         if (event.srcElement.id === "lower-val") {
             showPitchSelector = true;
             lowerClicked = true;
+            upperClicked = false;
         }
         if (event.srcElement.id === "upper-val") {
             showPitchSelector = true;
             upperClicked = true;
+            lowerClicked = false;
         }
     }
 
@@ -115,68 +120,117 @@
         //if statement checks to ensure all node values are returned
         if (node.panNode) {
             //volume control
-            node.oscillatorGainNode.gain.setValueAtTime(
+            node.oscillatorGainNode.gain.setTargetAtTime(
                 vol / 100,
-                $audioCtx.currentTime
+                $audioCtx.currentTime,
+                0.001
             );
 
             //Wave Type Selector
             node.oscillatorNode.type = wavType.toLowerCase();
-        
 
-        numOfPitches = numOfPitches;
-        bpm = bpm;
-        playOnce = playOnce;
-        if (lowerVal && upperVal) {
-            freqRange = allPitches.filter(
-                (pitch) =>
-                    pitch.frequency >= lowerVal.pitchVal &&
-                    pitch.frequency <= upperVal.pitchVal
-            );
-            console.log(freqRange)
-        }
-        console.log(play)
-        if (play ) {    
-            node.onOffNode.gain.setTargetAtTime(1, $audioCtx.currentTime, .001)        
-            if (!playOnce) {
-                let i = 0;
-                intervalID = setInterval(() => {
-                    i++;
-                    if (i === parseInt(numOfPitches) + 1) {
-                        node.seriesGainNode.gain.setTargetAtTime(
-                            0,
-                            $audioCtx.currentTime,
-                            0.001
-                        );
-                        i = 0;
-                    } else {
-                        const pitchToPlay =
-                            freqRange[
-                                Math.floor(Math.random() * freqRange.length)
-                            ];
-                        console.log(pitchToPlay.frequency);
-                        console.log(node)
-                        node.oscillatorNode.frequency.setValueAtTime(pitchToPlay.frequency, $audioCtx.currentTime)
-                        node.seriesGainNode.gain.setTargetAtTime(
-                            1,
-                            $audioCtx.currentTime,
-                            0.001
-                        );
-                    }
-                    setTimeout(() => {
-                        node.seriesGainNode.gain.setTargetAtTime(
-                            0,
-                            $audioCtx.currentTime,
-                            0.001
-                        );
-                    }, bpm - bpm / 4);
-                }, bpm);
-                () => clearInterval(intervalID);
+            if (lowerVal && upperVal) {
+                freqRange = allPitches.filter(
+                    (pitch) =>
+                        pitch.frequency >= lowerVal.pitchVal &&
+                        pitch.frequency <= upperVal.pitchVal
+                );
             }
-        } else if (!play) {
-            clearInterval(intervalID);
+            if (play && !intervalID) {
+                bpm = (60 / playSpeed) * 1000;
+                node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
+                if (!playOnce) {
+                    let i = 0;
+                    intervalID = setInterval(() => {
+                        i++;
+                        if (i === parseInt(numOfPitches) + 1) {
+                            node.seriesGainNode.gain.setValueAtTime(
+                                0,
+                                $audioCtx.currentTime
+                            );
+                            i = 0;
+                        } else {
+                            const pitchToPlay =
+                                freqRange[
+                                    Math.floor(Math.random() * freqRange.length)
+                                ];
+                            node.oscillatorNode.frequency.setValueAtTime(
+                                pitchToPlay.frequency,
+                                $audioCtx.currentTime
+                            );
+                            node.seriesGainNode.gain.setTargetAtTime(
+                                1,
+                                $audioCtx.currentTime,
+                                0.0001
+                            );
+                        }
+                        setTimeout(() => {
+                            node.seriesGainNode.gain.setTargetAtTime(
+                                0,
+                                $audioCtx.currentTime,
+                                0.001
+                            );
+                        }, bpm - bpm / 4);
+                    }, bpm);
+                } else if (playOnce) {
+                    for (let i = 0; i < numOfPitches; i++) {
+                        setTimeout(() => {
+                            const pitchToPlay =
+                                freqRange[
+                                    Math.floor(Math.random() * freqRange.length)
+                                ];
+                            node.oscillatorNode.frequency.setValueAtTime(
+                                pitchToPlay.frequency,
+                                $audioCtx.currentTime
+                            );
+                            node.seriesGainNode.gain.setTargetAtTime(
+                                1,
+                                $audioCtx.currentTime,
+                                0.001
+                            );
+                            setTimeout(() => {
+                                node.seriesGainNode.gain.setTargetAtTime(
+                                    0,
+                                    $audioCtx.currentTime,
+                                    0.001
+                                );
+                            }, bpm - bpm / 4);
+                        }, bpm * i);
+                    }
+                    // intervalID = setInterval(() => {
+                    //     i++;
+                    //     if (i === parseInt(numOfPitches) + 1) {
+                    //         node.seriesGainNode.gain.setValueAtTime(
+                    //             0,
+                    //             $audioCtx.currentTime
+                    //         );
+                    //         i = 0;
+                    //     } else {
+                    //         const pitchToPlay =
+                    //             freqRange[
+                    //                 Math.floor(Math.random() * freqRange.length)
+                    //             ];
+                    //         node.oscillatorNode.frequency.setValueAtTime(
+                    //             pitchToPlay.frequency,
+                    //             $audioCtx.currentTime
+                    //         );
+                    //         node.seriesGainNode.gain.setValueAtTime(
+                    //             1,
+                    //             $audioCtx.currentTime
+                    //         );
+                    //     }
+                    //     setTimeout(() => {
+                    //         node.seriesGainNode.gain.setValueAtTime(
+                    //             0,
+                    //             $audioCtx.currentTime
+                    //         );
+                    //     }, bpm - bpm / 4);
+                    // }, bpm);
+                }
+            } else if (!play) {
+                clearInterval(intervalID);
+            }
         }
-    }
     }
 
     console.groupEnd();
@@ -206,7 +260,7 @@
 
     <div>Set Number of Pitches in Series and Speed</div>
     <input type="number" label="number of pitches" bind:value={numOfPitches} />
-    <input type="number" label="play speed" bind:value={bpm} />
+    <input type="number" label="play speed" bind:value={playSpeed} />
     <div>Check to only play pitch set once</div>
     <input type="checkbox" bind:checked={playOnce} />
     <select name="wav-type" class="wav-select" bind:value={wavType}>
@@ -224,9 +278,12 @@
             class="slider volume" />
         <div>Volume</div>
     </div>
-    <button
-        class="play"
-        on:click={playHandler}>{play ? 'Pause' : 'Play'}</button>
+    {#if !(lowerVal && upperVal)}
+        <button class="play" disabled> Please Select a Pitch Range </button>
+    {:else}
+        <button class="play" on:click={playHandler}>{play ? 'Pause' : 'Play'}
+        </button>
+    {/if}
 </section>
 <PitchSelector
     {showPitchSelector}
