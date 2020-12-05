@@ -3,6 +3,8 @@
 
     import { audioCtx } from "../../store";
     import PitchSelector from "../PitchSelector.svelte";
+    import {fade} from "svelte/transition"
+
 
     $: console.group("Static Oscillator");
 
@@ -12,6 +14,7 @@
     export let freqVal = Math.log2(440);
     export let playAllStatus;
     export let muteAllStatus;
+    export let i;
 
     let play = onOffVal === 1 ? true : false;
     let vol = 50;
@@ -37,7 +40,6 @@
     panNode.connect($audioCtx.destination);
 
     onMount(() => {
-        console.log("mounted", node);
         if (!node.started) {
             node.start();
             node.started = true;
@@ -51,7 +53,6 @@
     });
 
     function playHandler() {
-        console.log(freqVal);
         if (!play) {
             onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
             play = true;
@@ -77,6 +78,9 @@
 
             play = false;
         }
+    }
+    function closeStaticOscillator() {
+        dispatch("message", {text: "closeOscillator"});
     }
     function pitchSelector() {
         showPitchSelector = true;
@@ -124,13 +128,16 @@
         margin: 10px;
         align-items: center;
         justify-content: center;
-        box-shadow: 5px 4px 8px 8px #888888;
+        box-shadow: 0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12);
         padding: 50px;
     }
 </style>
 
-<section class="oscillator-control">
+<section class="oscillator-control" >
     <div>
+        <div class="close-container">
+            <button on:click={()=>dispatch('closeStaticOscillator', i)} class="close">X</button>
+        </div>
         <button
             class="play"
             on:click={playHandler}>{play ? 'Pause' : 'Play'}</button>

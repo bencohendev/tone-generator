@@ -257,7 +257,7 @@
     {/key}
     <div>Set Number of Pitches in Series and Speed</div>
     <input type="number" label="number of pitches" bind:value={numOfPitches} />
-    <input type="number" label="play speed" bind:value={playSpeed} />
+    <input type="number" label="play speed" bind:value={playSpeed} disabled={play}/>
     <div>Check to only play pitch set once</div>
     <input type="checkbox" bind:checked={playOnce} />
     <select name="wav-type" class="wav-select" bind:value={wavType}>

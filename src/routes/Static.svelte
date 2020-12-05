@@ -1,5 +1,7 @@
 <script>
     import { audioCtx, pitches, octaves, pitchNames } from "../store.js";
+    import {fade} from "svelte/transition"
+
     import StaticOscillator from "../components/static/StaticOscillator.svelte";
     import { onMount } from "svelte";
 
@@ -26,19 +28,25 @@
         oscillatorNode.freqVal = freqVal;
         oscillatorNode.panVal = panVal;
         oscillatorNode.onOffVal = onOffVal;
-        console.log(oscillatorNode.panVal, 'static')
         oscillatorNode.started = false;
 
         nodes = [...nodes, oscillatorNode];
     }
 
     function handleMessage(e) {
+
         if (e.detail.text === "playAll") {
             playAllStatus = false;
         }
         if (e.detail.text === "muteAll") {
             muteAllStatus = false;
         }
+    }
+
+    function handleCloseStaticOscillator(e) {
+        let nodeCopy = nodes
+        nodeCopy.splice(e.detail, 1)
+        nodes=[...nodeCopy]
     }
 
     function playAllHandler() {
@@ -155,17 +163,20 @@
         </select>
     </div>
 </section>
-<section class="oscillator-container">
+<section class="oscillator-container" >
     {#key nodes}
     {#each nodes as node, i}
         <StaticOscillator
-            {node}        
+            {node}      
+            {i}  
             panVal={node.panVal}
             onOffVal={node.onOffVal}
             freqVal={node.freqVal}
             {playAllStatus}
             {muteAllStatus}
-            on:message={handleMessage} />
+            on:message={handleMessage}
+            on:closeStaticOscillator={handleCloseStaticOscillator} 
+            />
     {/each}
 {/key}
 </section>
