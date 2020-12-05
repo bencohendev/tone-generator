@@ -1,8 +1,12 @@
 <script>
-    import { createEventDispatcher, onMount } from "svelte";
+    import { createEventDispatcher } from "svelte";
     import { pitches, pitchNames, octaves } from "../store.js";
 
     export let showPitchSelector;
+    export let lowerVal;
+    export let upperVal;
+    export let lowerClicked;
+    export let upperClicked;
 
     const dispatch = createEventDispatcher();
 
@@ -10,9 +14,14 @@
         dispatch("message", { text: "close" });
     }
 
-    function sendPitch(pitch, octave) {
-        let pitchVal = pitch * octave;
-        dispatch("message", { text: "pitch", pitchVal: { pitchVal } });
+    function sendPitch(pitch, octave, pitchName, i) {
+        let frequency = pitch * octave;
+        dispatch("message", {
+            text: "pitch",
+            frequency,
+            pitchName,
+            i,
+        });
     }
 </script>
 
@@ -61,11 +70,14 @@
             {#each $octaves as octave, i}
                 <div class="pitch-row">
                     <div class="octave-name">{i + 1}</div>
-                    {#each $pitches as pitch, i}
-                        <button
-                            class="pitch-button"
-                            on:click={() => sendPitch(pitch, octave)}>{$pitchNames[i]}
-                        </button>
+                    {#each $pitches as pitch, j}
+
+                            <button
+                                class="pitch-button"
+                                disabled={(lowerClicked && upperVal && upperVal.frequency <= pitch * octave) || (upperClicked && lowerVal && lowerVal.frequency >= pitch * octave)}
+                                on:click={() => sendPitch(pitch, octave, $pitchNames[j], i+1)}>{$pitchNames[j]}
+                            </button>
+                        
                     {/each}
                 </div>
             {/each}
