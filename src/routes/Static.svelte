@@ -79,9 +79,9 @@
                     (freqVal = Math.log2(selectedFundamental * 5))
                 );
                 selectedOvertones = "Select Overtone Set";
-                onOffVal = 0;
-                panVal = 0
-                freqVal = Math.log2(440)
+                //onOffVal = 0;
+                //panVal = 0
+               // freqVal = Math.log2(440)
                 break;
             case "1 - 3 - 5 - 7":
             onOffVal = 1
@@ -164,7 +164,6 @@
     </div>
 </section>
 <section class="oscillator-container" >
-    {#key nodes}
     {#each nodes as node, i}
         <StaticOscillator
             {node}      
@@ -178,6 +177,5 @@
             on:closeStaticOscillator={handleCloseStaticOscillator} 
             />
     {/each}
-{/key}
 </section>
 </section>

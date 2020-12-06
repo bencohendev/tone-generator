@@ -55,6 +55,7 @@
     function playHandler() {
         if (!play) {
             onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
+            console.log(node)
             play = true;
         } else if (play) {
             onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
@@ -92,7 +93,7 @@
         }
         if (event.detail.text === "pitch") {
             showPitchSelector = false;
-            return (freqVal = Math.log2(event.detail.pitchVal));
+            return (freqVal = Math.log2(event.detail.frequency));
         }
     }
     $: {
@@ -133,7 +134,7 @@
     }
 </style>
 
-<section class="oscillator-control" >
+<section class="oscillator-control" transition:fade>
     <div>
         <div class="close-container">
             <button on:click={()=>dispatch('closeStaticOscillator', i)} class="close">X</button>

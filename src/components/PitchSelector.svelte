@@ -3,10 +3,10 @@
     import { pitches, pitchNames, octaves } from "../store.js";
 
     export let showPitchSelector;
-    export let lowerVal;
-    export let upperVal;
-    export let lowerClicked;
-    export let upperClicked;
+    export let lowerVal = null;
+    export let upperVal = null;
+    export let lowerClicked = null;
+    export let upperClicked = null;
 
     const dispatch = createEventDispatcher();
 
