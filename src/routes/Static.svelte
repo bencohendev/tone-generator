@@ -12,7 +12,7 @@
     let panVal;
     let onOffVal;
     let freqVal;
-
+    let id = 0;
     let playAllStatus = false;
     let muteAllStatus = false;
     let selectedFundamental = 207.6523;
@@ -29,7 +29,8 @@
         oscillatorNode.panVal = panVal;
         oscillatorNode.onOffVal = onOffVal;
         oscillatorNode.started = false;
-
+        oscillatorNode.id = id;
+        id++;
         nodes = [...nodes, oscillatorNode];
     }
 
@@ -45,6 +46,7 @@
 
     function handleCloseStaticOscillator(e) {
         let nodeCopy = nodes
+        console.log(e.detail)
         nodeCopy.splice(e.detail, 1)
         nodes=[...nodeCopy]
     }
@@ -55,6 +57,8 @@
     function muteAllHandler() {
         muteAllStatus = true;
     }
+
+    $: if(nodes) console.log(nodes ,' static')
 
     function handleSelectedOvertones(selectedFundamental) {
         switch (selectedOvertones) {
@@ -79,9 +83,9 @@
                     (freqVal = Math.log2(selectedFundamental * 5))
                 );
                 selectedOvertones = "Select Overtone Set";
-                //onOffVal = 0;
-                //panVal = 0
-               // freqVal = Math.log2(440)
+                onOffVal = 0;
+                panVal = 0
+               freqVal = Math.log2(440)
                 break;
             case "1 - 3 - 5 - 7":
             onOffVal = 1
@@ -164,10 +168,12 @@
     </div>
 </section>
 <section class="oscillator-container" >
-    {#each nodes as node, i}
+    {#each nodes as node , i (node.id)}
+    <div transition:fade>
+        {#key node}
         <StaticOscillator
             {node}      
-            {i}  
+            {i} 
             panVal={node.panVal}
             onOffVal={node.onOffVal}
             freqVal={node.freqVal}
@@ -176,6 +182,8 @@
             on:message={handleMessage}
             on:closeStaticOscillator={handleCloseStaticOscillator} 
             />
+            {/key}
+</div>
     {/each}
 </section>
 </section>

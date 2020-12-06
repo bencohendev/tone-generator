@@ -55,7 +55,7 @@
     function playHandler() {
         if (!play) {
             onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-            console.log(node)
+            console.log(node, i)
             play = true;
         } else if (play) {
             onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
@@ -134,7 +134,7 @@
     }
 </style>
 
-<section class="oscillator-control" transition:fade>
+<section class="oscillator-control">
     <div>
         <div class="close-container">
             <button on:click={()=>dispatch('closeStaticOscillator', i)} class="close">X</button>
