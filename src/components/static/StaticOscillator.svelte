@@ -3,18 +3,17 @@
 
     import { audioCtx } from "../../store";
     import PitchSelector from "../PitchSelector.svelte";
-    import {fade} from "svelte/transition"
-
 
     $: console.group("Static Oscillator");
 
     export let node;
-    export let panVal = 0;
-    export let onOffVal = 0;
-    export let freqVal = Math.log2(440);
     export let playAllStatus;
     export let muteAllStatus;
     export let i;
+
+    export let panVal;
+    export let onOffVal;
+    export let freqSliderVal;
 
     let play = onOffVal === 1 ? true : false;
     let vol = 50;
@@ -22,6 +21,7 @@
     let wavType = "Sine";
     let showPitchSelector = false;
     const dispatch = createEventDispatcher();
+
     //create nodes. oscillatorGainNode used for volume control. onOffNode used for playing and pausing. Pan Node for panning
     const oscillatorGainNode = $audioCtx.createGain();
     const onOffNode = $audioCtx.createGain();
@@ -39,13 +39,14 @@
     onOffNode.connect(panNode);
     panNode.connect($audioCtx.destination);
 
+    node.frequency.setValueAtTime(freqSliderVal, $audioCtx.currentTime);
+
     onMount(() => {
         if (!node.started) {
             node.start();
             node.started = true;
         }
     });
-    node.frequency.setValueAtTime(freqVal, $audioCtx.currentTime);
 
     onDestroy(() => {
         onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
@@ -75,30 +76,27 @@
         if (play && muteAllStatus) {
             onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
             onOffVal = 0;
-
             play = false;
         }
     }
-    function closeStaticOscillator() {
-        dispatch("message", {text: "closeOscillator"});
-    }
+
     function pitchSelector() {
         showPitchSelector = true;
     }
-    //pitch selector function
-    function handleMessage(event) {
+
+    function handlePitchSelector(event) {
         if (event.detail.text === "close") {
             showPitchSelector = false;
         }
         if (event.detail.text === "pitch") {
             showPitchSelector = false;
-            return (freqVal = Math.log2(event.detail.pitchVal));
+            return (freqSliderVal = Math.log2(event.detail.frequency));
         }
     }
     $: {
         //frequency slider control
-        node.freqVal = freqVal;
-        freq = 2 ** freqVal;
+        node.freqSliderVal = freqSliderVal;
+        freq = 2 ** freqSliderVal;
 
         node.frequency.setValueAtTime(freq, $audioCtx.currentTime);
         //volume control
@@ -128,15 +126,19 @@
         margin: 10px;
         align-items: center;
         justify-content: center;
-        box-shadow: 0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12);
+        box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
+            0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+            0px 1px 8px 0px rgba(0, 0, 0, 0.12);
         padding: 50px;
     }
 </style>
 
-<section class="oscillator-control" >
+<section class="oscillator-control">
     <div>
         <div class="close-container">
-            <button on:click={()=>dispatch('closeStaticOscillator', i)} class="close">X</button>
+            <button
+                on:click={() => dispatch('closeStaticOscillator', i)}
+                class="close">X</button>
         </div>
         <button
             class="play"
@@ -174,7 +176,7 @@
                 min={3}
                 max={14.4}
                 step={0.001}
-                bind:value={freqVal}
+                bind:value={freqSliderVal}
                 class="slider frequency" />
             <div>Frequency : {Math.round(freq)}</div>
         </div>
@@ -182,4 +184,4 @@
     </div>
 </section>
 
-<PitchSelector {showPitchSelector} on:message={handleMessage} />
+<PitchSelector {showPitchSelector} on:message={handlePitchSelector} />
