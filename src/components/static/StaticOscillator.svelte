@@ -3,15 +3,14 @@
 
     import { audioCtx } from "../../store";
     import PitchSelector from "../PitchSelector.svelte";
-    import {fade} from "svelte/transition"
-
+    import { fade } from "svelte/transition";
 
     $: console.group("Static Oscillator");
 
     export let node;
     export let panVal = 0;
     export let onOffVal = 0;
-    export let freqVal = Math.log2(440);
+    export let freqSliderVal = Math.log2(440);
     export let playAllStatus;
     export let muteAllStatus;
     export let i;
@@ -45,7 +44,7 @@
             node.started = true;
         }
     });
-    node.frequency.setValueAtTime(freqVal, $audioCtx.currentTime);
+    node.frequency.setValueAtTime(freqSliderVal, $audioCtx.currentTime);
 
     onDestroy(() => {
         onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
@@ -55,7 +54,7 @@
     function playHandler() {
         if (!play) {
             onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-            console.log(node, i)
+            console.log(node, i);
             play = true;
         } else if (play) {
             onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
@@ -81,7 +80,7 @@
         }
     }
     function closeStaticOscillator() {
-        dispatch("message", {text: "closeOscillator"});
+        dispatch("message", { text: "closeOscillator" });
     }
     function pitchSelector() {
         showPitchSelector = true;
@@ -93,13 +92,13 @@
         }
         if (event.detail.text === "pitch") {
             showPitchSelector = false;
-            return (freqVal = Math.log2(event.detail.frequency));
+            return (freqSliderVal = Math.log2(event.detail.frequency));
         }
     }
     $: {
         //frequency slider control
-        node.freqVal = freqVal;
-        freq = 2 ** freqVal;
+        node.freqSliderVal = freqSliderVal;
+        freq = 2 ** freqSliderVal;
 
         node.frequency.setValueAtTime(freq, $audioCtx.currentTime);
         //volume control
@@ -129,7 +128,9 @@
         margin: 10px;
         align-items: center;
         justify-content: center;
-        box-shadow: 0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12);
+        box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
+            0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+            0px 1px 8px 0px rgba(0, 0, 0, 0.12);
         padding: 50px;
     }
 </style>
@@ -137,7 +138,9 @@
 <section class="oscillator-control">
     <div>
         <div class="close-container">
-            <button on:click={()=>dispatch('closeStaticOscillator', i)} class="close">X</button>
+            <button
+                on:click={() => dispatch('closeStaticOscillator', i)}
+                class="close">X</button>
         </div>
         <button
             class="play"
@@ -175,7 +178,7 @@
                 min={3}
                 max={14.4}
                 step={0.001}
-                bind:value={freqVal}
+                bind:value={freqSliderVal}
                 class="slider frequency" />
             <div>Frequency : {Math.round(freq)}</div>
         </div>
