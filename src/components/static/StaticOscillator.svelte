@@ -3,17 +3,17 @@
 
     import { audioCtx } from "../../store";
     import PitchSelector from "../PitchSelector.svelte";
-    import { fade } from "svelte/transition";
 
     $: console.group("Static Oscillator");
 
     export let node;
-    export let panVal = 0;
-    export let onOffVal = 0;
-    export let freqSliderVal = Math.log2(440);
     export let playAllStatus;
     export let muteAllStatus;
     export let i;
+
+    export let panVal;
+    export let onOffVal;
+    export let freqSliderVal;
 
     let play = onOffVal === 1 ? true : false;
     let vol = 50;
@@ -21,6 +21,7 @@
     let wavType = "Sine";
     let showPitchSelector = false;
     const dispatch = createEventDispatcher();
+
     //create nodes. oscillatorGainNode used for volume control. onOffNode used for playing and pausing. Pan Node for panning
     const oscillatorGainNode = $audioCtx.createGain();
     const onOffNode = $audioCtx.createGain();
@@ -38,13 +39,14 @@
     onOffNode.connect(panNode);
     panNode.connect($audioCtx.destination);
 
+    node.frequency.setValueAtTime(freqSliderVal, $audioCtx.currentTime);
+
     onMount(() => {
         if (!node.started) {
             node.start();
             node.started = true;
         }
     });
-    node.frequency.setValueAtTime(freqSliderVal, $audioCtx.currentTime);
 
     onDestroy(() => {
         onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
@@ -54,7 +56,6 @@
     function playHandler() {
         if (!play) {
             onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-            console.log(node, i);
             play = true;
         } else if (play) {
             onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
@@ -75,18 +76,15 @@
         if (play && muteAllStatus) {
             onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
             onOffVal = 0;
-
             play = false;
         }
     }
-    function closeStaticOscillator() {
-        dispatch("message", { text: "closeOscillator" });
-    }
+
     function pitchSelector() {
         showPitchSelector = true;
     }
-    //pitch selector function
-    function handleMessage(event) {
+
+    function handlePitchSelector(event) {
         if (event.detail.text === "close") {
             showPitchSelector = false;
         }
@@ -186,4 +184,4 @@
     </div>
 </section>
 
-<PitchSelector {showPitchSelector} on:message={handleMessage} />
+<PitchSelector {showPitchSelector} on:message={handlePitchSelector} />

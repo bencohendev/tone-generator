@@ -8,10 +8,10 @@
     $: console.group("static");
 
     let nodes = [];
-    let oscillatorNode;
-    let panVal;
-    let onOffVal;
-    let freqVal;
+    let newNode;
+    let panVal = 0;
+    let onOffVal = 0;
+    let freqVal = 440;
     let id = 0;
     let playAllStatus = false;
     let muteAllStatus = false;
@@ -20,22 +20,21 @@
 
     onMount(() => {
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
-        newOscillator();
+        newOscillator(panVal, onOffVal, freqVal);
     });
 
     function newOscillator(panVal, onOffVal, freqVal) {
-        oscillatorNode = $audioCtx.createOscillator();
-        console.log(freqVal, "freqval");
-        oscillatorNode.freqVal = freqVal;
-        oscillatorNode.panVal = panVal;
-        oscillatorNode.onOffVal = onOffVal;
-        oscillatorNode.started = false;
-        oscillatorNode.id = id;
+        newNode = $audioCtx.createOscillator();
+        newNode.freqVal = freqVal;
+        newNode.panVal = panVal;
+        newNode.onOffVal = onOffVal;
+        newNode.started = false;
+        newNode.id = id;
         id++;
-        nodes = [...nodes, oscillatorNode];
+        nodes = [...nodes, newNode];
     }
 
-    function handleMessage(e) {
+    function handlePitchSelector(e) {
         if (e.detail.text === "playAll") {
             playAllStatus = false;
         }
@@ -46,7 +45,6 @@
 
     function handleCloseStaticOscillator(e) {
         let nodeCopy = nodes;
-        console.log(e.detail);
         nodeCopy.splice(e.detail, 1);
         nodes = [...nodeCopy];
     }
@@ -58,8 +56,6 @@
         muteAllStatus = true;
     }
 
-    $: if (nodes) console.log(nodes, " static");
-
     function handleSelectedOvertones(selectedFundamental) {
         switch (selectedOvertones) {
             case "1 - 3 - 5":
@@ -68,24 +64,24 @@
                 newOscillator(
                     (panVal = -1),
                     onOffVal,
-                    (freqVal = Math.log2(selectedFundamental))
+                    (freqVal = selectedFundamental)
                 );
 
                 newOscillator(
                     (panVal = 1),
                     onOffVal,
-                    (freqVal = Math.log2(selectedFundamental * 3))
+                    (freqVal = selectedFundamental * 3)
                 );
 
                 newOscillator(
                     (panVal = -1),
                     onOffVal,
-                    (freqVal = Math.log2(selectedFundamental * 5))
+                    (freqVal = selectedFundamental * 5)
                 );
                 selectedOvertones = "Select Overtone Set";
                 onOffVal = 0;
                 panVal = 0;
-                freqVal = Math.log2(440);
+                freqVal = 440;
                 break;
             case "1 - 3 - 5 - 7":
                 onOffVal = 1;
@@ -93,29 +89,29 @@
                 newOscillator(
                     (panVal = -1),
                     onOffVal,
-                    (freqVal = Math.log2(selectedFundamental))
+                    (freqVal = selectedFundamental)
                 );
 
                 newOscillator(
                     (panVal = 1),
                     onOffVal,
-                    (freqVal = Math.log2(selectedFundamental * 3))
+                    (freqVal = selectedFundamental * 3)
                 );
 
                 newOscillator(
                     (panVal = -1),
                     onOffVal,
-                    (freqVal = Math.log2(selectedFundamental * 5))
+                    (freqVal = selectedFundamental * 5)
                 );
                 newOscillator(
                     (panVal = 1),
                     onOffVal,
-                    (freqVal = Math.log2(selectedFundamental * 8))
+                    (freqVal = selectedFundamental * 8)
                 );
                 selectedOvertones = "Select Overtone Set";
                 onOffVal = 0;
                 panVal = 0;
-                freqVal = Math.log2(440);
+                freqVal = 440;
                 break;
         }
     }
@@ -176,10 +172,10 @@
                     {i}
                     panVal={node.panVal}
                     onOffVal={node.onOffVal}
-                    freqSliderVal={node.freqVal}
+                    freqSliderVal={Math.log2(node.freqVal)}
                     {playAllStatus}
                     {muteAllStatus}
-                    on:message={handleMessage}
+                    on:message={handlePitchSelector}
                     on:closeStaticOscillator={handleCloseStaticOscillator} />
             </div>
         {/each}
