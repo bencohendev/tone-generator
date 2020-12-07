@@ -9,16 +9,16 @@
     $: console.group("Static Oscillator");
 
     export let node;
-    export let panVal = 0;
-    export let onOffVal = 0;
-    export let freqVal = Math.log2(440);
+    export let pan = 0;
+    export let onOff;
+    export let freq;
     export let playAllStatus;
     export let muteAllStatus;
     export let i;
-
-    let play = onOffVal === 1 ? true : false;
+    let freqVal =  Math.log2(freq)
+    let play = onOff === 1 ? true : false;
     let vol = 50;
-    let freq = Math.round((440 + Number.EPSILON) * 1000) / 1000;
+    let frequency = Math.round((440 + Number.EPSILON) * 1000) / 1000;
     let wavType = "Sine";
     let showPitchSelector = false;
     const dispatch = createEventDispatcher();
@@ -29,9 +29,9 @@
 
     //initialize node values
     oscillatorGainNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
-    onOffNode.gain.setValueAtTime(onOffVal, $audioCtx.currentTime);
+    onOffNode.gain.setValueAtTime(onOff, $audioCtx.currentTime);
     panNode.panningModel = "equalpower";
-    panNode.setPosition(panVal, 0, 0);
+    panNode.setPosition(pan, 0, 0);
 
     //connect node chain
     node.connect(oscillatorGainNode);
@@ -44,6 +44,7 @@
             node.start();
             node.started = true;
         }
+        console.log('mounted', node)
     });
     node.frequency.setValueAtTime(freqVal, $audioCtx.currentTime);
 
@@ -55,7 +56,7 @@
     function playHandler() {
         if (!play) {
             onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-            console.log(node, i)
+            console.log(onOffNode, i)
             play = true;
         } else if (play) {
             onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
@@ -67,7 +68,7 @@
         dispatch("message", { text: "playAll" });
         if (!play && playAllStatus) {
             onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-            node.onOffVal = 1;
+            node.onOff = 1;
             play = true;
         }
     }
@@ -75,7 +76,7 @@
         dispatch("message", { text: "muteAll" });
         if (play && muteAllStatus) {
             onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
-            onOffVal = 0;
+            onOff = 0;
 
             play = false;
         }
@@ -97,24 +98,27 @@
         }
     }
     $: {
+        console.log(frequency, ' frequency')
+        console.log(freqVal, ' freqVal')
+        console.log(freq, ' freq')
         //frequency slider control
-        node.freqVal = freqVal;
-        freq = 2 ** freqVal;
+        node.freq = freqVal;
+        frequency = 2 ** freqVal;
 
-        node.frequency.setValueAtTime(freq, $audioCtx.currentTime);
+        node.frequency.setValueAtTime(frequency, $audioCtx.currentTime);
         //volume control
         oscillatorGainNode.gain.setValueAtTime(
             vol / 100,
             $audioCtx.currentTime
         );
         //pan control
-        node.panVal = panVal;
-        panNode.setPosition(panVal / 100, 0, 0);
+        node.pan = pan;
+        panNode.setPosition(pan / 100, 0, 0);
 
         //Wave Type Selector
         node.type = wavType.toLowerCase();
 
-        node.onOffVal = onOffVal;
+        node.onOff = onOff;
 
         playAllStatus = playAllStatus ? playAll() : false;
         muteAllStatus = muteAllStatus ? muteAll() : false;
@@ -163,7 +167,7 @@
                 min="-1"
                 max="1"
                 step={0.01}
-                bind:value={panVal}
+                bind:value={pan}
                 class="slider pan" />
             <div>Pan</div>
         </div>
@@ -177,7 +181,7 @@
                 step={0.001}
                 bind:value={freqVal}
                 class="slider frequency" />
-            <div>Frequency : {Math.round(freq)}</div>
+            <div>Frequency : {Math.round(frequency)}</div>
         </div>
         <button class="pitch-selector" on:click={pitchSelector}>Select a Pitch</button>
     </div>
