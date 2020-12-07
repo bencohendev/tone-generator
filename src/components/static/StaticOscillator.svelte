@@ -121,9 +121,9 @@
 </script>
 
 <style lang="scss">
-    .oscillator-control {
+    .card {
         display: flex;
-        margin: 10px;
+        margin-bottom: 10px;
         align-items: center;
         justify-content: center;
         box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
@@ -131,18 +131,27 @@
             0px 1px 8px 0px rgba(0, 0, 0, 0.12);
         padding: 50px;
     }
+
+    .playing {
+        background-color: red;
+    }
+    .paused {
+        background-color: green;
+    }
 </style>
 
-<section class="oscillator-control">
+<section class="card oscillator-control">
     <div>
         <div class="close-container">
             <button
                 on:click={() => dispatch('closeStaticOscillator', i)}
                 class="close">X</button>
         </div>
+
         <button
-            class="play"
-            on:click={playHandler}>{play ? 'Pause' : 'Play'}</button>
+            class="play-button {play ? 'playing' : 'paused'}"
+            on:click={playHandler}>{play ? 'Pause' : 'Play'}
+        </button>
         <select name="wav-type" class="wav-select" bind:value={wavType}>
             <option>Sine</option>
             <option>Triangle</option>
@@ -182,6 +191,5 @@
         </div>
         <button class="pitch-selector" on:click={pitchSelector}>Select a Pitch</button>
     </div>
+    <PitchSelector {showPitchSelector} on:message={handlePitchSelector} />
 </section>
-
-<PitchSelector {showPitchSelector} on:message={handlePitchSelector} />

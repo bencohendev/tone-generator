@@ -31,9 +31,10 @@
         grid-template-rows: 10% 75%;
         box-shadow: 5px 4px 8px 8px #888888;
         position: fixed;
-        width: 50%;
-        top: 20%;
         background: white;
+        max-width: 56em;
+        width: 96%;
+        top: 20vh;
 
         .close-container {
             margin: 10px 10px 0px 0px;
@@ -71,13 +72,11 @@
                 <div class="pitch-row">
                     <div class="octave-name">{i + 1}</div>
                     {#each $pitches as pitch, j}
-
-                            <button
-                                class="pitch-button"
-                                disabled={(lowerClicked && upperVal && upperVal.frequency <= pitch * octave) || (upperClicked && lowerVal && lowerVal.frequency >= pitch * octave)}
-                                on:click={() => sendPitch(pitch, octave, $pitchNames[j], i+1)}>{$pitchNames[j]}
-                            </button>
-                        
+                        <button
+                            class="pitch-button"
+                            disabled={(lowerClicked && upperVal && upperVal.frequency <= pitch * octave) || (upperClicked && lowerVal && lowerVal.frequency >= pitch * octave)}
+                            on:click={() => sendPitch(pitch, octave, $pitchNames[j], i + 1)}>{$pitchNames[j]}
+                        </button>
                     {/each}
                 </div>
             {/each}

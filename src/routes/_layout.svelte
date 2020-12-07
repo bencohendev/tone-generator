@@ -5,6 +5,8 @@
 </script>
 
 <style lang="scss" global>
+	@import "../styles/global.scss";
+
 	main {
 		position: relative;
 		max-width: 56em;
@@ -16,8 +18,6 @@
 
 		button {
 			padding: 5px;
-			border-radius: 2px;
-			box-shadow: 0.1px 0.1px 0.1px 0.1px;
 		}
 	}
 </style>

@@ -1,9 +1,10 @@
 <script>
-    import { audioCtx, pitches, octaves, pitchNames } from "../store.js";
+    import { onMount } from "svelte";
     import { fade } from "svelte/transition";
 
+    import { audioCtx, pitches, octaves, pitchNames } from "../store.js";
+
     import StaticOscillator from "../components/static/StaticOscillator.svelte";
-    import { onMount } from "svelte";
 
     $: console.group("static");
 
@@ -126,6 +127,25 @@
         .oscillator-master-control {
             display: flex;
             margin-bottom: 40px;
+            button {
+                margin: 10px;
+            }
+            .create-oscillator {
+                // background-color: green;
+                // color: white;
+            }
+
+            .mute-all {
+                background-color: red;
+            }
+
+            .overtone-preset-container {
+                display: flex;
+                align-items: center;
+                select {
+                    margin-left: 10px;
+                }
+            }
         }
     }
 </style>
