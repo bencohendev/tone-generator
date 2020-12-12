@@ -5,19 +5,17 @@
 </script>
 
 <style lang="scss" global>
+	@import "../styles/global.scss";
+
 	main {
 		position: relative;
 		max-width: 56em;
 		background-color: white;
-		padding: 2em;
-		margin: 0 auto;
+		margin: 2rem auto 0 auto;
 		box-sizing: border-box;
-		//	display: flex;
 
 		button {
-			padding: 5px;
-			border-radius: 2px;
-			box-shadow: 0.1px 0.1px 0.1px 0.1px;
+			padding: 0.5rem;
 		}
 	}
 </style>

@@ -1,9 +1,9 @@
 <script>
-    import { audioCtx, pitches, octaves, pitchNames } from "../store.js";
-    import { fade } from "svelte/transition";
-
-    import StaticOscillator from "../components/static/StaticOscillator.svelte";
     import { onMount } from "svelte";
+
+    import { audioCtx, pitches, octaves, pitchNames } from "../store.js";
+
+    import StaticOscillator from "../components/StaticOscillator.svelte";
 
     $: console.group("static");
 
@@ -122,10 +122,26 @@
     .static {
         align-items: center;
         justify-content: center;
+        background-color: beige;
 
         .oscillator-master-control {
             display: flex;
-            margin-bottom: 40px;
+            margin-bottom: 4rem;
+            button {
+                margin: 1rem;
+            }
+
+            .mute-all {
+                background-color: red;
+            }
+
+            .overtone-preset-container {
+                display: flex;
+                align-items: center;
+                select {
+                    margin-left: 1rem;
+                }
+            }
         }
     }
 </style>
@@ -136,8 +152,8 @@
             class="create-oscillator"
             on:click={() => newOscillator(panVal, onOffVal, freqVal)}>Create
             Oscillator</button>
-        <button class="play-all" on:click={playAllHandler}>Play All</button>
-        <button class="mute-all" on:click={muteAllHandler}>Mute All</button>
+        <button class="play-all playing" on:click={playAllHandler}>Play All</button>
+        <button class="mute-all paused" on:click={muteAllHandler}>Mute All</button>
         <div class="overtone-preset-container">
             <select
                 name="fundamental-select"
@@ -164,20 +180,16 @@
             </select>
         </div>
     </section>
-    <section class="oscillator-container">
-        {#each nodes as node, i (node.id)}
-            <div transition:fade>
-                <StaticOscillator
-                    {node}
-                    {i}
-                    panVal={node.panVal}
-                    onOffVal={node.onOffVal}
-                    freqSliderVal={Math.log2(node.freqVal)}
-                    {playAllStatus}
-                    {muteAllStatus}
-                    on:message={handlePitchSelector}
-                    on:closeStaticOscillator={handleCloseStaticOscillator} />
-            </div>
-        {/each}
-    </section>
+    {#each nodes as node, i (node.id)}
+        <StaticOscillator
+            {node}
+            {i}
+            panVal={node.panVal}
+            onOffVal={node.onOffVal}
+            freqSliderVal={Math.log2(node.freqVal)}
+            {playAllStatus}
+            {muteAllStatus}
+            on:message={handlePitchSelector}
+            on:closeStaticOscillator={handleCloseStaticOscillator} />
+    {/each}
 </section>

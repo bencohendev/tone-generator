@@ -105,7 +105,7 @@
         }
     }
     function pitchSelector(event) {
-        console.log(lowerVal)
+        console.log(lowerVal);
         if (event.srcElement.id === "lower-val") {
             showPitchSelector = true;
             lowerClicked = true;
@@ -118,18 +118,38 @@
         }
     }
 
-    let handleSelectedInstrument= (selectedInstrument) => {
+    let handleSelectedInstrument = (selectedInstrument) => {
         switch (selectedInstrument) {
-            case 'Electric Guitar':
-                lowerVal={text: 'pitch', frequency: 82.406, pitchName: 'e', i:2}
-                upperVal={text: 'pitch', frequency: 1174.656, pitchName: 'd', i:6}           
-            break;
-            case 'Tenor Saxophone': 
-                lowerVal={text: 'pitch', frequency: 103, pitchName: 'g#', i:3}
-                upperVal={text: 'pitch', frequency: 622, pitchName: 'eb', i:7}
-            break;
+            case "Electric Guitar":
+                lowerVal = {
+                    text: "pitch",
+                    frequency: 82.406,
+                    pitchName: "e",
+                    i: 2,
+                };
+                upperVal = {
+                    text: "pitch",
+                    frequency: 1174.656,
+                    pitchName: "d",
+                    i: 6,
+                };
+                break;
+            case "Tenor Saxophone":
+                lowerVal = {
+                    text: "pitch",
+                    frequency: 103,
+                    pitchName: "g#",
+                    i: 3,
+                };
+                upperVal = {
+                    text: "pitch",
+                    frequency: 622,
+                    pitchName: "eb",
+                    i: 7,
+                };
+                break;
         }
-    }
+    };
 
     $: {
         //if statement checks to ensure all node values are returned
@@ -224,40 +244,52 @@
 </script>
 
 <style lang="scss">
+    .card {
+        margin: 1rem;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
+            0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+            0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+        padding: 5rem;
+    }
     .series {
         align-items: center;
         justify-content: center;
     }
 </style>
 
-<section class="series">
+<section class="series card">
     <!-- svelte-ignore a11y-no-onchange -->
     <select
-    name="select-instrument"
-    id="select-instrument"
-    bind:value={selectedInstrument}
-    on:change={()=>handleSelectedInstrument(selectedInstrument, lowerVal, upperVal)}
-    >
-    <option>Select and Instrument</option>
+        name="select-instrument"
+        id="select-instrument"
+        bind:value={selectedInstrument}
+        on:change={() => handleSelectedInstrument(selectedInstrument, lowerVal, upperVal)}>
+        <option>Select and Instrument</option>
         <option>Electric Guitar</option>
         <option>Tenor Saxophone</option>
     </select>
     <div>Or Manually Choose a Pitch Range</div>
     {#key lowerVal}
-    <button
-        id="lower-val"
-        class="pitch-selector"
-        on:click={pitchSelector}>{lowerVal ? lowerVal.pitchName + lowerVal.i : 'Select a Pitch'}</button>
-        {/key}
-        {#key upperVal}
-    <button
-        id="upper-val"
-        class="pitch-selector"
-        on:click={pitchSelector}>{upperVal ? upperVal.pitchName + upperVal.i : 'Select a Pitch'}</button>
+        <button
+            id="lower-val"
+            class="pitch-selector"
+            on:click={pitchSelector}>{lowerVal ? lowerVal.pitchName + lowerVal.i : 'Select a Pitch'}</button>
+    {/key}
+    {#key upperVal}
+        <button
+            id="upper-val"
+            class="pitch-selector"
+            on:click={pitchSelector}>{upperVal ? upperVal.pitchName + upperVal.i : 'Select a Pitch'}</button>
     {/key}
     <div>Set Number of Pitches in Series and Speed</div>
     <input type="number" label="number of pitches" bind:value={numOfPitches} />
-    <input type="number" label="play speed" bind:value={playSpeed} disabled={play}/>
+    <input
+        type="number"
+        label="play speed"
+        bind:value={playSpeed}
+        disabled={play} />
     <div>Check to only play pitch set once</div>
     <input type="checkbox" bind:checked={playOnce} />
     <select name="wav-type" class="wav-select" bind:value={wavType}>
@@ -276,11 +308,14 @@
         <div>Volume</div>
     </div>
 
-    <button class="play" disabled={!(lowerVal && upperVal)} on:click={playHandler}>{play ? 'Pause' : 'Play'}
-        </button>
-        {#if !(lowerVal && upperVal)}
+    <button
+        class="play"
+        disabled={!(lowerVal && upperVal)}
+        on:click={playHandler}>{play ? 'Pause' : 'Play'}
+    </button>
+    {#if !(lowerVal && upperVal)}
         <div>Please Select a Pitch Range</div>
-        {/if}
+    {/if}
 </section>
 <PitchSelector
     {showPitchSelector}

@@ -1,8 +1,9 @@
 <script>
     import { createEventDispatcher, onDestroy, onMount } from "svelte";
+    import { fade } from "svelte/transition";
 
-    import { audioCtx } from "../../store";
-    import PitchSelector from "../PitchSelector.svelte";
+    import { audioCtx } from "../store";
+    import PitchSelector from "./PitchSelector.svelte";
 
     $: console.group("Static Oscillator");
 
@@ -121,44 +122,89 @@
 </script>
 
 <style lang="scss">
-    .oscillator-control {
-        display: flex;
-        margin: 10px;
+    .card {
+        margin: 0 1rem 1rem 1rem;
         align-items: center;
         justify-content: center;
         box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
             0px 3px 4px 0px rgba(0, 0, 0, 0.14),
             0px 1px 8px 0px rgba(0, 0, 0, 0.12);
-        padding: 50px;
+        background-color: grey;
+    }
+
+    .close-container {
+        display: flex;
+        justify-content: flex-end;
+        .close {
+            margin: 1rem 1rem 0 0;
+        }
+    }
+    // .play-controls-container {
+    //     display: grid;
+    //     justify-content: center;
+    //     .play-button {
+    //         margin-right: 2rem;
+    //         padding: 0 2rem 0 2rem;
+    //     }
+    //     .wav-select {
+    //         margin-right: 2rem;
+    //     }
+    // }
+    // .frequency-container {
+    // }
+
+    .vol-pan-wav-container {
+        display: grid;
+        grid-template-columns: 45% 10% 45%;
+        .volume,
+        .pan {
+            input {
+                width: 60%;
+            }
+            img {
+                width: 20px;
+
+                &.pan-left {
+                    -webkit-transform: scaleX(-1) scaleY(1);
+                    transform: scaleX(-1) scaleY(1);
+                    margin-left: 40px;
+                }
+            }
+        }
     }
 </style>
 
-<section class="oscillator-control">
-    <div>
-        <div class="close-container">
-            <button
-                on:click={() => dispatch('closeStaticOscillator', i)}
-                class="close">X</button>
-        </div>
+<section class="card oscillator-container" transition:fade>
+    <div class="close-container">
         <button
-            class="play"
-            on:click={playHandler}>{play ? 'Pause' : 'Play'}</button>
-        <select name="wav-type" class="wav-select" bind:value={wavType}>
-            <option>Sine</option>
-            <option>Triangle</option>
-            <option>Sawtooth</option>
-            <option>Square</option>
-        </select>
+            on:click={() => dispatch('closeStaticOscillator', i)}
+            class="close">X</button>
+    </div>
+    <div class="vol-pan-wav-container">
         <div class="slide-container volume">
+            <img
+                class="volume-low"
+                src="../icons/volume-low.png"
+                alt="volume" />
             <input
                 type="range"
                 min="0"
                 max="100"
                 bind:value={vol}
                 class="slider volume" />
-            <div>Volume</div>
+            <img
+                class="volume-full"
+                src="../icons/volume-full.png"
+                alt="volume" />
         </div>
+        <select name="wav-type" class="wav-select" bind:value={wavType}>
+            <option>Sine</option>
+            <option>Triangle</option>
+            <option>Sawtooth</option>
+            <option>Square</option>
+        </select>
         <div class="slide-container pan">
+            <img class="pan-left" src="../icons/pan.png" alt="volume" />
             <input
                 type="range"
                 min="-1"
@@ -166,10 +212,14 @@
                 step={0.01}
                 bind:value={panVal}
                 class="slider pan" />
-            <div>Pan</div>
+            <img class="pan-right" src="../icons/pan.png" alt="volume" />
         </div>
     </div>
-    <div>
+    <button
+        class="play-button {play ? 'playing' : 'paused'}"
+        on:click={playHandler}>{play ? 'Pause' : 'Play'}
+    </button>
+    <div class="frequency-container">
         <div class="slide-container Frequency">
             <input
                 type="range"
@@ -182,6 +232,5 @@
         </div>
         <button class="pitch-selector" on:click={pitchSelector}>Select a Pitch</button>
     </div>
+    <PitchSelector {showPitchSelector} on:message={handlePitchSelector} />
 </section>
-
-<PitchSelector {showPitchSelector} on:message={handlePitchSelector} />
