@@ -161,16 +161,19 @@
             position: relative;
 
             img {
-                width: 20px;
+                width: 40px;
             }
 
             .pan-controller {
                 display: grid;
                 position: absolute;
                 top: 3rem;
-                left: -23%;
-                background-color: rgb(221, 221, 221);
+                left: -20%;
                 padding: 1rem;
+                background-color: rgb(221, 221, 221);
+                box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
+                    0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+                    0px 1px 8px 0px rgba(0, 0, 0, 0.12);
                 &::after {
                     content: "";
                     position: absolute;
@@ -180,16 +183,27 @@
                     top: -10px;
                     transform: translate(-50%, 50%) rotate(45deg);
                     background-color: rgb(221, 221, 221);
-                    //box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
                 }
 
                 .pan-buttons {
                     display: grid;
-                    grid-template-columns: 20% 20% 20%;
+                    grid-template-columns: 33% 33% 33%;
                     justify-content: center;
+
                     button {
-                        padding: 0rem;
-                        margin: 1.5rem;
+                        margin: 1rem;
+                        font-size: 10px;
+                        width: 25px;
+                        height: 25px;
+                    }
+                    .pan-left-button {
+                        position: relative;
+                        right: 25%;
+                    }
+
+                    .pan-right-button {
+                        position: relative;
+                        left: 25%;
                     }
                 }
 
@@ -201,6 +215,13 @@
                             -webkit-transform: scaleX(-1) scaleY(1);
                             transform: scaleX(-1) scaleY(1);
                         }
+                    }
+                    &::after {
+                        content: "";
+                        border: solid 1px black;
+                        position: relative;
+                        left: -25%;
+                        top: -1px;
                     }
                 }
             }
@@ -214,6 +235,9 @@
                 left: -100%;
                 background-color: rgb(221, 221, 221);
                 display: flex;
+                box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
+                    0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+                    0px 1px 8px 0px rgba(0, 0, 0, 0.12);
                 &::after {
                     content: "";
                     position: absolute;
