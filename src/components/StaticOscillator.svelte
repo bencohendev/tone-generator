@@ -1,6 +1,8 @@
 <script>
     import { createEventDispatcher, onDestroy, onMount } from "svelte";
     import { fade } from "svelte/transition";
+    import Series from "../routes/Series.svelte";
+    import Static from "../routes/Static.svelte";
 
     import { audioCtx } from "../store";
     import PitchSelector from "./PitchSelector.svelte";
@@ -19,8 +21,10 @@
     let play = onOffVal === 1 ? true : false;
     let vol = 50;
     let freq = Math.round((440 + Number.EPSILON) * 1000) / 1000;
-    let wavType = "Sine";
+    let wavType = "sine";
     let showPitchSelector = false;
+    let showWavSelector = false;
+    let showPanSelector = false;
     const dispatch = createEventDispatcher();
 
     //create nodes. oscillatorGainNode used for volume control. onOffNode used for playing and pausing. Pan Node for panning
@@ -110,7 +114,7 @@
         panNode.setPosition(panVal / 100, 0, 0);
 
         //Wave Type Selector
-        node.type = wavType.toLowerCase();
+        node.type = wavType;
 
         node.onOffVal = onOffVal;
 
@@ -139,35 +143,102 @@
             margin: 1rem 1rem 0 0;
         }
     }
-    // .play-controls-container {
-    //     display: grid;
-    //     justify-content: center;
-    //     .play-button {
-    //         margin-right: 2rem;
-    //         padding: 0 2rem 0 2rem;
-    //     }
-    //     .wav-select {
-    //         margin-right: 2rem;
-    //     }
-    // }
-    // .frequency-container {
-    // }
 
     .vol-pan-wav-container {
         display: grid;
         grid-template-columns: 45% 10% 45%;
-        .volume,
-        .pan {
+
+        .volume {
             input {
                 width: 60%;
             }
             img {
                 width: 20px;
+            }
+        }
 
-                &.pan-left {
-                    -webkit-transform: scaleX(-1) scaleY(1);
-                    transform: scaleX(-1) scaleY(1);
-                    margin-left: 40px;
+        .pan {
+            position: relative;
+
+            img {
+                width: 20px;
+            }
+
+            .pan-controller {
+                display: grid;
+                position: absolute;
+                top: 3rem;
+                left: -23%;
+                background-color: rgb(221, 221, 221);
+                padding: 1rem;
+                &::after {
+                    content: "";
+                    position: absolute;
+                    width: 12px;
+                    height: 12px;
+                    left: 50%;
+                    top: -10px;
+                    transform: translate(-50%, 50%) rotate(45deg);
+                    background-color: rgb(221, 221, 221);
+                    //box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+                }
+
+                .pan-buttons {
+                    display: grid;
+                    grid-template-columns: 20% 20% 20%;
+                    justify-content: center;
+                    button {
+                        padding: 0rem;
+                        margin: 1.5rem;
+                    }
+                }
+
+                .pan-slider {
+                    img {
+                        width: 20px;
+
+                        &.pan-left-icon {
+                            -webkit-transform: scaleX(-1) scaleY(1);
+                            transform: scaleX(-1) scaleY(1);
+                        }
+                    }
+                }
+            }
+        }
+
+        .wav-select-container {
+            position: relative;
+            .wav-select {
+                position: absolute;
+                top: 3rem;
+                left: -100%;
+                background-color: rgb(221, 221, 221);
+                display: flex;
+                &::after {
+                    content: "";
+                    position: absolute;
+                    width: 12px;
+                    height: 12px;
+                    left: 50%;
+                    top: -10px;
+                    transform: translate(-50%, 50%) rotate(45deg);
+                    background-color: rgb(221, 221, 221);
+                    //box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+                }
+
+                .wav-select-box {
+                    margin: 0.5rem;
+                }
+            }
+
+            .wav-select-button {
+                img {
+                    width: 20px;
+                }
+            }
+            .wav-select-box {
+                img {
+                    width: 20px;
                 }
             }
         }
@@ -184,8 +255,9 @@
         <div class="slide-container volume">
             <img
                 class="volume-low"
-                src="../icons/volume-low.png"
-                alt="volume" />
+                src={vol === 0 ? '../icons/volume-off.png' : '../icons/volume-low.png'}
+                alt="volume"
+                on:click={() => (vol = 0)} />
             <input
                 type="range"
                 min="0"
@@ -195,24 +267,83 @@
             <img
                 class="volume-full"
                 src="../icons/volume-full.png"
-                alt="volume" />
+                alt="volume"
+                on:click={() => (vol = 100)} />
         </div>
-        <select name="wav-type" class="wav-select" bind:value={wavType}>
-            <option>Sine</option>
-            <option>Triangle</option>
-            <option>Sawtooth</option>
-            <option>Square</option>
-        </select>
+        <div class="wav-select-container">
+            <button
+                class="wav-select-button"
+                on:click={() => (showWavSelector ? (showWavSelector = false) : (showWavSelector = true))}>
+                <img src="./icons/wav.png" alt="wave type" />
+            </button>
+            {#if showWavSelector}
+                <div class="wav-select">
+                    <button
+                        class="wav-select-box"
+                        on:click={() => (wavType = 'sine')}>
+                        <img src="./icons/sin.png" alt="sin wave" />
+                    </button>
+                    <button
+                        class="wav-select-box"
+                        on:click={() => (wavType = 'square')}>
+                        <img src="./icons/square.png" alt="square wave" />
+                    </button>
+
+                    <button
+                        class="wav-select-box"
+                        on:click={() => (wavType = 'triangle')}>
+                        <img src="./icons/triangle.png" alt="triangle wave" />
+                    </button>
+                    <button
+                        class="wav-select-box"
+                        on:click={() => (wavType = 'sawtooth')}>
+                        <img src="./icons/sawtooth.png" alt="sawtooth wave" />
+                    </button>
+                </div>
+            {/if}
+        </div>
+
         <div class="slide-container pan">
-            <img class="pan-left" src="../icons/pan.png" alt="volume" />
-            <input
-                type="range"
-                min="-1"
-                max="1"
-                step={0.01}
-                bind:value={panVal}
-                class="slider pan" />
-            <img class="pan-right" src="../icons/pan.png" alt="volume" />
+            <button
+                class="pan-button"
+                on:click={() => (showPanSelector ? (showPanSelector = false) : (showPanSelector = true))}><img
+                    src="../icons/pan-button.png"
+                    alt="pan" />
+            </button>
+            {#if showPanSelector}
+                <div class="pan-controller">
+                    <div class="pan-buttons">
+                        <button
+                            class="pan-left-button"
+                            on:click={() => (panVal = -1)}>L</button>
+                        <button
+                            class="pan-center-button"
+                            on:click={() => (panVal = 0)}>C</button>
+                        <button
+                            class="pan-right-button"
+                            on:click={() => (panVal = 1)}>R</button>
+                    </div>
+                    <div class="pan-slider">
+                        <img
+                            class="pan-left-icon"
+                            src="../icons/pan.png"
+                            alt="pan left"
+                            on:click={() => (panVal = -1)} />
+                        <input
+                            type="range"
+                            min="-1"
+                            max="1"
+                            step={0.01}
+                            bind:value={panVal}
+                            class="slider pan" />
+                        <img
+                            class="pan-right-icon"
+                            src="../icons/pan.png"
+                            alt="pan right"
+                            on:click={() => (panVal = 1)} />
+                    </div>
+                </div>
+            {/if}
         </div>
     </div>
     <button
