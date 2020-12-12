@@ -1,5 +1,6 @@
 <script>
     import { createEventDispatcher, onDestroy, onMount } from "svelte";
+    import { fade } from "svelte/transition";
 
     import { audioCtx } from "../../store";
     import PitchSelector from "../PitchSelector.svelte";
@@ -122,36 +123,44 @@
 
 <style lang="scss">
     .card {
-        display: flex;
-        margin-bottom: 10px;
+        margin: 0 1rem 1rem 1rem;
         align-items: center;
         justify-content: center;
         box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
             0px 3px 4px 0px rgba(0, 0, 0, 0.14),
             0px 1px 8px 0px rgba(0, 0, 0, 0.12);
-        padding: 50px;
+        background-color: grey;
     }
 
-    .playing {
-        background-color: red;
+    .close-container {
+        display: flex;
+        justify-content: flex-end;
+        .close {
+            margin: 1rem 1rem 0 0;
+        }
     }
-    .paused {
-        background-color: green;
+    .play-controls-container {
+        display: grid;
+        justify-content: center;
+        .play-button {
+            margin-right: 2rem;
+            padding: 0 2rem 0 2rem;
+        }
+        .wav-select {
+            margin-right: 2rem;
+        }
+    }
+    .frequency-container {
     }
 </style>
 
-<section class="card oscillator-control">
-    <div>
-        <div class="close-container">
-            <button
-                on:click={() => dispatch('closeStaticOscillator', i)}
-                class="close">X</button>
-        </div>
-
+<section class="card oscillator-container" transition:fade>
+    <div class="close-container">
         <button
-            class="play-button {play ? 'playing' : 'paused'}"
-            on:click={playHandler}>{play ? 'Pause' : 'Play'}
-        </button>
+            on:click={() => dispatch('closeStaticOscillator', i)}
+            class="close">X</button>
+    </div>
+    <div>
         <select name="wav-type" class="wav-select" bind:value={wavType}>
             <option>Sine</option>
             <option>Triangle</option>
@@ -178,7 +187,7 @@
             <div>Pan</div>
         </div>
     </div>
-    <div>
+    <div class="frequency-container">
         <div class="slide-container Frequency">
             <input
                 type="range"
@@ -192,4 +201,8 @@
         <button class="pitch-selector" on:click={pitchSelector}>Select a Pitch</button>
     </div>
     <PitchSelector {showPitchSelector} on:message={handlePitchSelector} />
+    <button
+        class="play-button {play ? 'playing' : 'paused'}"
+        on:click={playHandler}>{play ? 'Pause' : 'Play'}
+    </button>
 </section>

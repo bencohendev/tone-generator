@@ -32,16 +32,16 @@
         box-shadow: 5px 4px 8px 8px #888888;
         position: fixed;
         background: white;
-        max-width: 56em;
+        max-width: 56rem;
         width: 96%;
         top: 20vh;
 
         .close-container {
-            margin: 10px 10px 0px 0px;
+            margin: 1rem 1rem 0rem 0rem;
             .close {
-                width: 50px;
-                height: 50px;
-                border-radius: 25px;
+                width: 5rem;
+                height: 5rem;
+                border-radius: 2.5rem;
                 float: right;
             }
         }
@@ -53,9 +53,9 @@
             .pitch-row {
                 display: grid;
                 grid-template-columns: 2% 8% 8% 8% 8% 8% 8% 8% 8% 8% 8% 8% 8%;
-                padding: 10px 0px;
+                padding: 1rem 0px;
                 .pitch-button {
-                    margin: 6px;
+                    margin: 0.5rem;
                 }
             }
         }
