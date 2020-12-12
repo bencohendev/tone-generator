@@ -3,7 +3,7 @@
 
     import { audioCtx, pitches, octaves, pitchNames } from "../store.js";
 
-    import StaticOscillator from "../components/static/StaticOscillator.svelte";
+    import StaticOscillator from "../components/StaticOscillator.svelte";
 
     $: console.group("static");
 

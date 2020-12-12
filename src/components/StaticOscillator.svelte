@@ -2,8 +2,8 @@
     import { createEventDispatcher, onDestroy, onMount } from "svelte";
     import { fade } from "svelte/transition";
 
-    import { audioCtx } from "../../store";
-    import PitchSelector from "../PitchSelector.svelte";
+    import { audioCtx } from "../store";
+    import PitchSelector from "./PitchSelector.svelte";
 
     $: console.group("Static Oscillator");
 
@@ -139,18 +139,38 @@
             margin: 1rem 1rem 0 0;
         }
     }
-    .play-controls-container {
+    // .play-controls-container {
+    //     display: grid;
+    //     justify-content: center;
+    //     .play-button {
+    //         margin-right: 2rem;
+    //         padding: 0 2rem 0 2rem;
+    //     }
+    //     .wav-select {
+    //         margin-right: 2rem;
+    //     }
+    // }
+    // .frequency-container {
+    // }
+
+    .vol-pan-wav-container {
         display: grid;
-        justify-content: center;
-        .play-button {
-            margin-right: 2rem;
-            padding: 0 2rem 0 2rem;
+        grid-template-columns: 45% 10% 45%;
+        .volume,
+        .pan {
+            input {
+                width: 60%;
+            }
+            img {
+                width: 20px;
+
+                &.pan-left {
+                    -webkit-transform: scaleX(-1) scaleY(1);
+                    transform: scaleX(-1) scaleY(1);
+                    margin-left: 40px;
+                }
+            }
         }
-        .wav-select {
-            margin-right: 2rem;
-        }
-    }
-    .frequency-container {
     }
 </style>
 
@@ -160,23 +180,31 @@
             on:click={() => dispatch('closeStaticOscillator', i)}
             class="close">X</button>
     </div>
-    <div>
-        <select name="wav-type" class="wav-select" bind:value={wavType}>
-            <option>Sine</option>
-            <option>Triangle</option>
-            <option>Sawtooth</option>
-            <option>Square</option>
-        </select>
+    <div class="vol-pan-wav-container">
         <div class="slide-container volume">
+            <img
+                class="volume-low"
+                src="../icons/volume-low.png"
+                alt="volume" />
             <input
                 type="range"
                 min="0"
                 max="100"
                 bind:value={vol}
                 class="slider volume" />
-            <div>Volume</div>
+            <img
+                class="volume-full"
+                src="../icons/volume-full.png"
+                alt="volume" />
         </div>
+        <select name="wav-type" class="wav-select" bind:value={wavType}>
+            <option>Sine</option>
+            <option>Triangle</option>
+            <option>Sawtooth</option>
+            <option>Square</option>
+        </select>
         <div class="slide-container pan">
+            <img class="pan-left" src="../icons/pan.png" alt="volume" />
             <input
                 type="range"
                 min="-1"
@@ -184,9 +212,13 @@
                 step={0.01}
                 bind:value={panVal}
                 class="slider pan" />
-            <div>Pan</div>
+            <img class="pan-right" src="../icons/pan.png" alt="volume" />
         </div>
     </div>
+    <button
+        class="play-button {play ? 'playing' : 'paused'}"
+        on:click={playHandler}>{play ? 'Pause' : 'Play'}
+    </button>
     <div class="frequency-container">
         <div class="slide-container Frequency">
             <input
@@ -201,8 +233,4 @@
         <button class="pitch-selector" on:click={pitchSelector}>Select a Pitch</button>
     </div>
     <PitchSelector {showPitchSelector} on:message={handlePitchSelector} />
-    <button
-        class="play-button {play ? 'playing' : 'paused'}"
-        on:click={playHandler}>{play ? 'Pause' : 'Play'}
-    </button>
 </section>
