@@ -146,7 +146,7 @@
     }
 </style>
 
-<section class="static">
+<div class="static">
     <section class="oscillator-master-control">
         <button
             class="create-oscillator"
@@ -192,4 +192,4 @@
             on:message={handlePitchSelector}
             on:closeStaticOscillator={handleCloseStaticOscillator} />
     {/each}
-</section>
+</div>

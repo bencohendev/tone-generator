@@ -1,10 +1,8 @@
 <script>
     import { createEventDispatcher, onDestroy, onMount } from "svelte";
     import { fade } from "svelte/transition";
-    import Series from "../routes/Series.svelte";
-    import Static from "../routes/Static.svelte";
 
-    import { audioCtx } from "../store";
+    import { audioCtx, allPitches } from "../store";
     import PitchSelector from "./PitchSelector.svelte";
 
     $: console.group("Static Oscillator");
@@ -25,6 +23,9 @@
     let showPitchSelector = false;
     let showWavSelector = false;
     let showPanSelector = false;
+    let pitchName;
+    let octave;
+    let closestPitch;
     const dispatch = createEventDispatcher();
 
     //create nodes. oscillatorGainNode used for volume control. onOffNode used for playing and pausing. Pan Node for panning
@@ -95,6 +96,8 @@
         }
         if (event.detail.text === "pitch") {
             showPitchSelector = false;
+            pitchName = event.detail.pitchName;
+            octave = event.detail.i;
             return (freqSliderVal = Math.log2(event.detail.frequency));
         }
     }
@@ -120,6 +123,12 @@
 
         playAllStatus = playAllStatus ? playAll() : false;
         muteAllStatus = muteAllStatus ? muteAll() : false;
+
+        closestPitch = $allPitches.reduce((a, b) => {
+            return Math.abs(b.frequency - freq) < Math.abs(a.frequency - freq)
+                ? b
+                : a;
+        });
     }
 
     console.groupEnd();
@@ -146,9 +155,14 @@
 
     .vol-pan-wav-container {
         display: grid;
-        grid-template-columns: 45% 10% 45%;
+        grid-template-columns: 15% 55% 10% 10%;
+        justify-content: center;
+        margin: 2rem 0;
 
         .volume {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             input {
                 width: 60%;
             }
@@ -267,6 +281,17 @@
             }
         }
     }
+
+    .frequency-container {
+        margin: 0 2rem;
+        .slider.frequency {
+            width: 100%;
+        }
+
+        .frequency-label {
+            text-align: center;
+        }
+    }
 </style>
 
 <section class="card oscillator-container" transition:fade>
@@ -275,7 +300,12 @@
             on:click={() => dispatch('closeStaticOscillator', i)}
             class="close">X</button>
     </div>
+
     <div class="vol-pan-wav-container">
+        <button
+            class="play-button {play ? 'playing' : 'paused'}"
+            on:click={playHandler}>{play ? 'Pause' : 'Play'}
+        </button>
         <div class="slide-container volume">
             <img
                 class="volume-low"
@@ -301,7 +331,7 @@
                 <img src="./icons/wav.png" alt="wave type" />
             </button>
             {#if showWavSelector}
-                <div class="wav-select">
+                <div class="wav-select" transition:fade>
                     <button
                         class="wav-select-box"
                         on:click={() => (wavType = 'sine')}>
@@ -335,7 +365,7 @@
                     alt="pan" />
             </button>
             {#if showPanSelector}
-                <div class="pan-controller">
+                <div class="pan-controller" transition:fade>
                     <div class="pan-buttons">
                         <button
                             class="pan-left-button"
@@ -370,10 +400,7 @@
             {/if}
         </div>
     </div>
-    <button
-        class="play-button {play ? 'playing' : 'paused'}"
-        on:click={playHandler}>{play ? 'Pause' : 'Play'}
-    </button>
+
     <div class="frequency-container">
         <div class="slide-container Frequency">
             <input
@@ -383,9 +410,15 @@
                 step={0.001}
                 bind:value={freqSliderVal}
                 class="slider frequency" />
-            <div>Frequency : {Math.round(freq)}</div>
+            <div class="frequency-label">Frequency : {Math.round(freq)}</div>
+            <div class="frequency-label pitch">
+                {Math.round(freq) === Math.round(closestPitch.frequency) ? closestPitch.pitch : '~' + closestPitch.pitch}
+            </div>
         </div>
         <button class="pitch-selector" on:click={pitchSelector}>Select a Pitch</button>
+        <PitchSelector
+            {showPitchSelector}
+            on:message={handlePitchSelector}
+            bind:pitchName />
     </div>
-    <PitchSelector {showPitchSelector} on:message={handlePitchSelector} />
 </section>

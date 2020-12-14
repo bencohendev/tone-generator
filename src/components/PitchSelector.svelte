@@ -1,5 +1,7 @@
 <script>
     import { createEventDispatcher } from "svelte";
+    import { fade } from "svelte/transition";
+
     import { pitches, pitchNames, octaves } from "../store.js";
 
     export let showPitchSelector;
@@ -63,7 +65,7 @@
 </style>
 
 {#if showPitchSelector}
-    <section class="pitch-selector-container">
+    <section class="pitch-selector-container" transition:fade>
         <div class="close-container">
             <button on:click={closePitchSelector} class="close">X</button>
         </div>
