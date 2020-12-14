@@ -157,7 +157,7 @@
         display: grid;
         grid-template-columns: 15% 55% 10% 10%;
         justify-content: center;
-        margin: 2rem 0;
+        margin: 1rem 0;
 
         .volume {
             display: flex;
