@@ -23,8 +23,8 @@
     let showPitchSelector = false;
     let showWavSelector = false;
     let showPanSelector = false;
+    let inputFrequency = false;
     let pitchName;
-    let octave;
     let closestPitch;
     const dispatch = createEventDispatcher();
 
@@ -293,8 +293,48 @@
             width: 100%;
         }
 
+        .frequency-controls {
+            display: grid;
+            grid-template-columns: 10% 10% 45% 10% 10%;
+        }
+
         .frequency-label {
             text-align: center;
+            /* Chrome, Safari, Edge, Opera */
+            input::-webkit-outer-spin-button,
+            input::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+            /* Firefox */
+            input[type="number"] {
+                -moz-appearance: textfield;
+            }
+            &:hover::after {
+                position: absolute;
+                display: inline-block;
+                bottom: -2px;
+                left: 0;
+                right: 0;
+                margin-left: auto;
+                margin-right: auto;
+                content: "CLICK TO EDIT";
+                font-size: 10px;
+                line-height: 13px;
+                color: #8e420b;
+                border-radius: 3px;
+                letter-spacing: 0.7px;
+                word-spacing: 1px;
+                text-align: center;
+                padding: 1px 2px;
+            }
+        }
+        .frequency-click {
+            display: none;
+        }
+        .frequency-click.show {
+            display: block;
         }
     }
 </style>
@@ -416,13 +456,27 @@
                 bind:value={freqSliderVal}
                 on:change={changeFreqSlider}
                 class="slider frequency" />
-            <div class="frequency-label">
-                <input type="number" bind:value={freq} step={1} />
+        </div>
+        <div class="frequency-controls">
+            <button on:click={() => (freq /= 2)}>/2 </button>
+            <button on:click={() => (freq -= 1)}>-1 </button>
+
+            <div
+                class="frequency-label"
+                on:click={() => (inputFrequency ? (inputFrequency = false) : (inputFrequency = true))}>
+                {#if inputFrequency}
+                    <input type="number" autofocus bind:value={freq} step={1} />
+                {:else}{freq}{/if}
                 Hz
+                <div class="frequency-click" />
             </div>
-            <div class="frequency-label pitch">
-                {Math.round(freq) === Math.round(closestPitch.frequency) ? closestPitch.pitch : '~' + closestPitch.pitch}
-            </div>
+            <button on:click={() => (freq += 1)}>+1 </button>
+            <button on:click={() => (freq *= 2)}>*2 </button>
+        </div>
+        <div
+            class="frequency-label pitch"
+            on:click={() => (freq = closestPitch.frequency)}>
+            {Math.round(freq) === Math.round(closestPitch.frequency) ? closestPitch.pitch : '~' + closestPitch.pitch}
         </div>
         <button class="pitch-selector" on:click={pitchSelector}>Select a Pitch</button>
         <PitchSelector
