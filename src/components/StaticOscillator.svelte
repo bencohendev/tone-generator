@@ -101,12 +101,17 @@
             return (freqSliderVal = Math.log2(event.detail.frequency));
         }
     }
-    $: {
-        //frequency slider control
-        node.freqSliderVal = freqSliderVal;
+    function changeFreqSlider() {
         freq = 2 ** freqSliderVal;
+        node.freqSliderVal = freqSliderVal;
+    }
+    $: {
+        freq = Math.round(freq);
+        console.log(freq);
 
+        // node.frequency.setValueAtTime(freqSliderVal, $audioCtx.currentTime);
         node.frequency.setValueAtTime(freq, $audioCtx.currentTime);
+
         //volume control
         oscillatorGainNode.gain.setValueAtTime(
             vol / 100,
@@ -409,8 +414,12 @@
                 max={14.4}
                 step={0.001}
                 bind:value={freqSliderVal}
+                on:change={changeFreqSlider}
                 class="slider frequency" />
-            <div class="frequency-label">Frequency : {Math.round(freq)}</div>
+            <div class="frequency-label">
+                <input type="number" bind:value={freq} step={1} />
+                Hz
+            </div>
             <div class="frequency-label pitch">
                 {Math.round(freq) === Math.round(closestPitch.frequency) ? closestPitch.pitch : '~' + closestPitch.pitch}
             </div>
