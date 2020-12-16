@@ -7,7 +7,7 @@
 
     $: console.group("Static Oscillator");
 
-    export let node;
+    export let oscillatorNode;
     export let playAllStatus;
     export let muteAllStatus;
     export let i;
@@ -18,39 +18,40 @@
 
     let play = onOffVal === 1 ? true : false;
     let vol = 50;
-    let freq = Math.round((440 + Number.EPSILON) * 1000) / 1000;
+    export let freq = Math.round((440 + Number.EPSILON) * 1000) / 1000;
     let wavType = "sine";
     let showPitchSelector = false;
     let showWavSelector = false;
     let showPanSelector = false;
     let inputFrequency = false;
+    let octave;
     let pitchName;
     let closestPitch;
     const dispatch = createEventDispatcher();
 
-    //create nodes. oscillatorGainNode used for volume control. onOffNode used for playing and pausing. Pan Node for panning
+    //createoscillatorNodes. oscillatorGainNode used for volume control. onOffNode used for playing and pausing. PanoscillatorNode for panning
     const oscillatorGainNode = $audioCtx.createGain();
     const onOffNode = $audioCtx.createGain();
     const panNode = $audioCtx.createPanner();
 
-    //initialize node values
+    //initializeoscillatorNode values
     oscillatorGainNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
     onOffNode.gain.setValueAtTime(onOffVal, $audioCtx.currentTime);
     panNode.panningModel = "equalpower";
     panNode.setPosition(panVal, 0, 0);
 
-    //connect node chain
-    node.connect(oscillatorGainNode);
+    //connectoscillatorNode chain
+    oscillatorNode.connect(oscillatorGainNode);
     oscillatorGainNode.connect(onOffNode);
     onOffNode.connect(panNode);
     panNode.connect($audioCtx.destination);
 
-    node.frequency.setValueAtTime(freqSliderVal, $audioCtx.currentTime);
-
+    oscillatorNode.frequency.setValueAtTime(freq, $audioCtx.currentTime);
+    console.log(freq);
     onMount(() => {
-        if (!node.started) {
-            node.start();
-            node.started = true;
+        if (!oscillatorNode.started) {
+            oscillatorNode.start();
+            oscillatorNode.started = true;
         }
     });
 
@@ -73,7 +74,7 @@
         dispatch("message", { text: "playAll" });
         if (!play && playAllStatus) {
             onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-            node.onOffVal = 1;
+            oscillatorNode.onOffVal = 1;
             play = true;
         }
     }
@@ -98,19 +99,24 @@
             showPitchSelector = false;
             pitchName = event.detail.pitchName;
             octave = event.detail.i;
-            return (freqSliderVal = Math.log2(event.detail.frequency));
+            freqSliderVal = Math.log2(event.detail.frequency);
+            changeFreqSlider();
         }
     }
     function changeFreqSlider() {
         freq = 2 ** freqSliderVal;
-        node.freqSliderVal = freqSliderVal;
+        oscillatorNode.freqSliderVal = freqSliderVal;
+    }
+
+    function handlePanSelector(oscillatorNode) {
+        showPanSelector ? (showPanSelector = false) : (showPanSelector = true);
+        console.log(oscillatorNode);
     }
     $: {
         freq = Math.round(freq);
-        console.log(freq);
 
-        // node.frequency.setValueAtTime(freqSliderVal, $audioCtx.currentTime);
-        node.frequency.setValueAtTime(freq, $audioCtx.currentTime);
+        //oscillatorNode.frequency.setValueAtTime(freqSliderVal, $audioCtx.currentTime);
+        oscillatorNode.frequency.setValueAtTime(freq, $audioCtx.currentTime);
 
         //volume control
         oscillatorGainNode.gain.setValueAtTime(
@@ -118,13 +124,13 @@
             $audioCtx.currentTime
         );
         //pan control
-        node.panVal = panVal;
+        oscillatorNode.panVal = panVal;
         panNode.setPosition(panVal / 100, 0, 0);
 
         //Wave Type Selector
-        node.type = wavType;
+        oscillatorNode.type = wavType;
 
-        node.onOffVal = onOffVal;
+        oscillatorNode.onOffVal = onOffVal;
 
         playAllStatus = playAllStatus ? playAll() : false;
         muteAllStatus = muteAllStatus ? muteAll() : false;
@@ -373,29 +379,41 @@
             <button
                 class="wav-select-button"
                 on:click={() => (showWavSelector ? (showWavSelector = false) : (showWavSelector = true))}>
-                <img src="./icons/wav.png" alt="wave type" />
+                <img src="./icons/{wavType}.png" alt="wave type" />
             </button>
             {#if showWavSelector}
                 <div class="wav-select" transition:fade>
                     <button
                         class="wav-select-box"
-                        on:click={() => (wavType = 'sine')}>
-                        <img src="./icons/sin.png" alt="sin wave" />
+                        on:click={() => {
+                            showWavSelector = false;
+                            wavType = 'sine';
+                        }}>
+                        <img src="./icons/sine.png" alt="sin wave" />
                     </button>
                     <button
                         class="wav-select-box"
-                        on:click={() => (wavType = 'square')}>
+                        on:click={() => {
+                            showWavSelector = false;
+                            wavType = 'square';
+                        }}>
                         <img src="./icons/square.png" alt="square wave" />
                     </button>
 
                     <button
                         class="wav-select-box"
-                        on:click={() => (wavType = 'triangle')}>
+                        on:click={() => {
+                            showWavSelector = false;
+                            wavType = 'triangle';
+                        }}>
                         <img src="./icons/triangle.png" alt="triangle wave" />
                     </button>
                     <button
                         class="wav-select-box"
-                        on:click={() => (wavType = 'sawtooth')}>
+                        on:click={() => {
+                            showWavSelector = false;
+                            wavType = 'sawtooth';
+                        }}>
                         <img src="./icons/sawtooth.png" alt="sawtooth wave" />
                     </button>
                 </div>
@@ -403,9 +421,7 @@
         </div>
 
         <div class="slide-container pan">
-            <button
-                class="pan-button"
-                on:click={() => (showPanSelector ? (showPanSelector = false) : (showPanSelector = true))}><img
+            <button class="pan-button" on:click={handlePanSelector}><img
                     src="../icons/pan-button.png"
                     alt="pan" />
             </button>
