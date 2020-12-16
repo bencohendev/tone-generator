@@ -47,7 +47,6 @@
     panNode.connect($audioCtx.destination);
 
     oscillatorNode.frequency.setValueAtTime(freq, $audioCtx.currentTime);
-    console.log(freq);
     onMount(() => {
         if (!oscillatorNode.started) {
             oscillatorNode.start();
@@ -108,10 +107,10 @@
         oscillatorNode.freqSliderVal = freqSliderVal;
     }
 
-    function handlePanSelector(oscillatorNode) {
+    function handlePanSelector() {
         showPanSelector ? (showPanSelector = false) : (showPanSelector = true);
-        console.log(oscillatorNode);
     }
+
     $: {
         freq = Math.round(freq);
 
@@ -420,8 +419,8 @@
             {/if}
         </div>
 
-        <div class="slide-container pan">
-            <button class="pan-button" on:click={handlePanSelector}><img
+        <div class="slide-container pan" on:click={handlePanSelector}>
+            <button class="pan-button"><img
                     src="../icons/pan-button.png"
                     alt="pan" />
             </button>
