@@ -42,6 +42,13 @@ button:active {
     transform: translateY(1px);
 }
 
+button:disabled {
+    background-color: grey;
+    &:hover {
+     box-shadow: none;   
+    }
+}
+
 select {
     padding: .5rem;
     border: none;

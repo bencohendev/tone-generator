@@ -163,14 +163,6 @@
                 name="fundamental-select"
                 id="fundamental-select"
                 bind:value={selectedOctave}>
-                <!-- <option>Select Fundamental</option>
-                {#each $octaves as octave, i}
-                    {#each $pitches as pitch, j}
-                        <option value={pitch * octave}>
-                            {$pitchNames[j]}{i}
-                        </option>
-                    {/each}
-                {/each} -->
                 <option>Octave</option>
                 {#each $octaves as octave, i}
                     <option value={octave}>{i}</option>
