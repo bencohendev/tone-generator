@@ -19,11 +19,13 @@ button {
     transition: background-color .5s; 
 
     &.paused {
-        background-color: #b81a1a
+      background-color: #158a17;
+
     }
 
     &.playing {
-      background-color: #158a17;
+        background-color: #b81a1a
+
     }
 
     &.close {

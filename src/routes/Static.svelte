@@ -7,7 +7,7 @@
 
     $: console.group("static");
 
-    let nodes = [];
+    let oscillatorNodes = [];
     let newNode;
     let panVal = 0;
     let onOffVal = 0;
@@ -31,7 +31,7 @@
         newNode.started = false;
         newNode.id = id;
         id++;
-        nodes = [...nodes, newNode];
+        oscillatorNodes = [...oscillatorNodes, newNode];
     }
 
     function handlePitchSelector(e) {
@@ -44,9 +44,9 @@
     }
 
     function handleCloseStaticOscillator(e) {
-        let nodeCopy = nodes;
-        nodeCopy.splice(e.detail, 1);
-        nodes = [...nodeCopy];
+        let oscillatorNodeCopy = oscillatorNodes;
+        oscillatorNodeCopy.splice(e.detail, 1);
+        oscillatorNodes = [...oscillatorNodeCopy];
     }
 
     function playAllHandler() {
@@ -59,7 +59,7 @@
     function handleSelectedOvertones(selectedFundamental) {
         switch (selectedOvertones) {
             case "1 - 3 - 5":
-                nodes = [];
+                oscillatorNodes = [];
                 onOffVal = 1;
                 newOscillator(
                     (panVal = -1),
@@ -85,7 +85,7 @@
                 break;
             case "1 - 3 - 5 - 7":
                 onOffVal = 1;
-                nodes = [];
+                oscillatorNodes = [];
                 newOscillator(
                     (panVal = -1),
                     onOffVal,
@@ -131,10 +131,6 @@
                 margin: 1rem;
             }
 
-            .mute-all {
-                background-color: red;
-            }
-
             .overtone-preset-container {
                 display: flex;
                 align-items: center;
@@ -146,14 +142,14 @@
     }
 </style>
 
-<section class="static">
+<div class="static">
     <section class="oscillator-master-control">
         <button
             class="create-oscillator"
             on:click={() => newOscillator(panVal, onOffVal, freqVal)}>Create
             Oscillator</button>
-        <button class="play-all playing" on:click={playAllHandler}>Play All</button>
-        <button class="mute-all paused" on:click={muteAllHandler}>Mute All</button>
+        <button class="play-all paused" on:click={playAllHandler}>Play All</button>
+        <button class="mute-all playing" on:click={muteAllHandler}>Mute All</button>
         <div class="overtone-preset-container">
             <select
                 name="fundamental-select"
@@ -180,16 +176,16 @@
             </select>
         </div>
     </section>
-    {#each nodes as node, i (node.id)}
+    {#each oscillatorNodes as oscillatorNode, i (oscillatorNode.id)}
         <StaticOscillator
-            {node}
+            {oscillatorNode}
             {i}
-            panVal={node.panVal}
-            onOffVal={node.onOffVal}
-            freqSliderVal={Math.log2(node.freqVal)}
+            panVal={oscillatorNode.panVal}
+            onOffVal={oscillatorNode.onOffVal}
+            freq={oscillatorNode.freqVal}
             {playAllStatus}
             {muteAllStatus}
             on:message={handlePitchSelector}
             on:closeStaticOscillator={handleCloseStaticOscillator} />
     {/each}
-</section>
+</div>

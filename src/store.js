@@ -15,18 +15,23 @@ export let pitches = readable([
     61.7354,
 ]);
 export let pitchNames = readable([
-    "c",
-    "c#",
-    "d",
-    "d#",
-    "e",
-    "f",
-    "f#",
-    "g",
-    "g#",
-    "a",
-    "a#",
-    "b",
+    "C",
+    "Db/C#",
+    "D",
+    "Eb/D#",
+    "E",
+    "F",
+    "Gb/F#",
+    "G",
+    "Ab/G#",
+    "A",
+    "Bb/A#",
+    "B",
 ]);
 
 export let octaves = readable([1, 2, 4, 8, 16, 32, 64, 128, 256]);
+
+
+
+export let allPitches = writable([])
+

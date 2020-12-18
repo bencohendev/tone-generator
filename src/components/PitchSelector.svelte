@@ -1,5 +1,7 @@
 <script>
     import { createEventDispatcher } from "svelte";
+    import { fade } from "svelte/transition";
+
     import { pitches, pitchNames, octaves } from "../store.js";
 
     export let showPitchSelector;
@@ -28,9 +30,9 @@
 <style lang="scss">
     .pitch-selector-container {
         display: grid;
-        grid-template-rows: 10% 75%;
+        grid-template-rows: 5% 75%;
         box-shadow: 5px 4px 8px 8px #888888;
-        position: fixed;
+        //  position: fixed;
         background: white;
         max-width: 56rem;
         width: 96%;
@@ -39,9 +41,6 @@
         .close-container {
             margin: 1rem 1rem 0rem 0rem;
             .close {
-                width: 5rem;
-                height: 5rem;
-                border-radius: 2.5rem;
                 float: right;
             }
         }
@@ -63,7 +62,7 @@
 </style>
 
 {#if showPitchSelector}
-    <section class="pitch-selector-container">
+    <section class="pitch-selector-container" transition:fade>
         <div class="close-container">
             <button on:click={closePitchSelector} class="close">X</button>
         </div>
