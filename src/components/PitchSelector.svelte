@@ -1,5 +1,7 @@
 <script>
     import { createEventDispatcher } from "svelte";
+    import { fade } from "svelte/transition";
+
     import { pitches, pitchNames, octaves } from "../store.js";
 
     export let showPitchSelector;
@@ -28,19 +30,17 @@
 <style lang="scss">
     .pitch-selector-container {
         display: grid;
-        grid-template-rows: 10% 75%;
+        grid-template-rows: 5% 75%;
         box-shadow: 5px 4px 8px 8px #888888;
-        position: fixed;
-        width: 50%;
-        top: 20%;
+        //  position: fixed;
         background: white;
+        max-width: 56rem;
+        width: 96%;
+        top: 20vh;
 
         .close-container {
-            margin: 10px 10px 0px 0px;
+            margin: 1rem 1rem 0rem 0rem;
             .close {
-                width: 50px;
-                height: 50px;
-                border-radius: 25px;
                 float: right;
             }
         }
@@ -52,9 +52,9 @@
             .pitch-row {
                 display: grid;
                 grid-template-columns: 2% 8% 8% 8% 8% 8% 8% 8% 8% 8% 8% 8% 8%;
-                padding: 10px 0px;
+                padding: 1rem 0px;
                 .pitch-button {
-                    margin: 6px;
+                    margin: 0.5rem;
                 }
             }
         }
@@ -62,7 +62,7 @@
 </style>
 
 {#if showPitchSelector}
-    <section class="pitch-selector-container">
+    <section class="pitch-selector-container" transition:fade>
         <div class="close-container">
             <button on:click={closePitchSelector} class="close">X</button>
         </div>
@@ -71,13 +71,11 @@
                 <div class="pitch-row">
                     <div class="octave-name">{i + 1}</div>
                     {#each $pitches as pitch, j}
-
-                            <button
-                                class="pitch-button"
-                                disabled={(lowerClicked && upperVal && upperVal.frequency <= pitch * octave) || (upperClicked && lowerVal && lowerVal.frequency >= pitch * octave)}
-                                on:click={() => sendPitch(pitch, octave, $pitchNames[j], i+1)}>{$pitchNames[j]}
-                            </button>
-                        
+                        <button
+                            class="pitch-button"
+                            disabled={(lowerClicked && upperVal && upperVal.frequency <= pitch * octave) || (upperClicked && lowerVal && lowerVal.frequency >= pitch * octave)}
+                            on:click={() => sendPitch(pitch, octave, $pitchNames[j], i + 1)}>{$pitchNames[j]}
+                        </button>
                     {/each}
                 </div>
             {/each}

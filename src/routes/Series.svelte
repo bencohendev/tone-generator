@@ -252,13 +252,22 @@
 </script>
 
 <style lang="scss">
+    .card {
+        margin: 1rem;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
+            0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+            0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+        padding: 5rem;
+    }
     .series {
         align-items: center;
         justify-content: center;
     }
 </style>
 
-<section class="series">
+<section class="series card">
     <!-- svelte-ignore a11y-no-onchange -->
     <select
         name="select-instrument"
@@ -284,7 +293,11 @@
     {/key}
     <div>Set Number of Pitches in Series and Speed</div>
     <input type="number" label="number of pitches" bind:value={numOfPitches} />
-    <input type="number" label="play speed" bind:value={playSpeed} disabled={play}/>
+    <input
+        type="number"
+        label="play speed"
+        bind:value={playSpeed}
+        disabled={play} />
     <div>Check to only play pitch set once</div>
     <input type="checkbox" bind:checked={playOnce} disabled={play} />
     <select name="wav-type" class="wav-select" bind:value={wavType}>
@@ -306,7 +319,7 @@
     <button
         class="play"
         disabled={!(lowerVal && upperVal)}
-        on:click={seriesPlayer}>{play ? 'Pause' : 'Play'}
+        on:click={playHandler}>{play ? 'Pause' : 'Play'}
     </button>
     {#if !(lowerVal && upperVal)}
         <div>Please Select a Pitch Range</div>
