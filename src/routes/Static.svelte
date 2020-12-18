@@ -6,7 +6,6 @@
     import StaticOscillator from "../components/StaticOscillator.svelte";
 
     $: console.group("static");
-
     let oscillatorNodes = [];
     let newNode;
     let panVal = 0;
@@ -15,7 +14,8 @@
     let id = 0;
     let playAllStatus = false;
     let muteAllStatus = false;
-    let selectedFundamental = 207.6523;
+    let selectedOctave;
+    let selectedPitch;
     let selectedOvertones;
 
     onMount(() => {
@@ -56,7 +56,14 @@
         muteAllStatus = true;
     }
 
-    function handleSelectedOvertones(selectedFundamental) {
+    function handleSelectedOvertones(selectedOctave, selectedPitch) {
+        console.log(typeof selectedOctave, selectedOctave);
+        typeof selectedOctave === "number"
+            ? selectedOctave
+            : (selectedOctave = 4);
+        typeof selectedPitch === "number"
+            ? selectedPitch
+            : (selectedPitch = 51.9131);
         switch (selectedOvertones) {
             case "1 - 3 - 5":
                 oscillatorNodes = [];
@@ -64,19 +71,19 @@
                 newOscillator(
                     (panVal = -1),
                     onOffVal,
-                    (freqVal = selectedFundamental)
+                    (freqVal = selectedPitch * (selectedOctave + 1))
                 );
 
                 newOscillator(
                     (panVal = 1),
                     onOffVal,
-                    (freqVal = selectedFundamental * 3)
+                    (freqVal = selectedPitch * (selectedOctave + 1) * 3)
                 );
 
                 newOscillator(
                     (panVal = -1),
                     onOffVal,
-                    (freqVal = selectedFundamental * 5)
+                    (freqVal = selectedPitch * (selectedOctave + 1) * 5)
                 );
                 selectedOvertones = "Select Overtone Set";
                 onOffVal = 0;
@@ -89,24 +96,24 @@
                 newOscillator(
                     (panVal = -1),
                     onOffVal,
-                    (freqVal = selectedFundamental)
+                    (freqVal = selectedPitch * (selectedOctave + 1))
                 );
 
                 newOscillator(
                     (panVal = 1),
                     onOffVal,
-                    (freqVal = selectedFundamental * 3)
+                    (freqVal = selectedPitch * (selectedOctave + 1) * 3)
                 );
 
                 newOscillator(
                     (panVal = -1),
                     onOffVal,
-                    (freqVal = selectedFundamental * 5)
+                    (freqVal = selectedPitch * (selectedOctave + 1) * 5)
                 );
                 newOscillator(
                     (panVal = 1),
                     onOffVal,
-                    (freqVal = selectedFundamental * 8)
+                    (freqVal = selectedPitch * (selectedOctave + 1) * 8)
                 );
                 selectedOvertones = "Select Overtone Set";
                 onOffVal = 0;
@@ -151,17 +158,28 @@
         <button class="play-all paused" on:click={playAllHandler}>Play All</button>
         <button class="mute-all playing" on:click={muteAllHandler}>Mute All</button>
         <div class="overtone-preset-container">
+            <div>Select a Fundamental</div>
             <select
                 name="fundamental-select"
                 id="fundamental-select"
-                bind:value={selectedFundamental}>
-                <option>Select Fundamental</option>
+                bind:value={selectedOctave}>
+                <!-- <option>Select Fundamental</option>
                 {#each $octaves as octave, i}
                     {#each $pitches as pitch, j}
                         <option value={pitch * octave}>
                             {$pitchNames[j]}{i}
                         </option>
                     {/each}
+                {/each} -->
+                <option>Octave</option>
+                {#each $octaves as octave, i}
+                    <option value={octave}>{i}</option>
+                {/each}
+            </select>
+            <select bind:value={selectedPitch}>
+                <option>Pitch</option>
+                {#each $pitches as pitch, j}
+                    <option value={pitch}>{$pitchNames[j]}</option>
                 {/each}
             </select>
             <!-- svelte-ignore a11y-no-onchange -->
@@ -169,7 +187,7 @@
                 name="overtone-series-select"
                 id="overtone-series-select"
                 bind:value={selectedOvertones}
-                on:change={() => handleSelectedOvertones(selectedFundamental)}>
+                on:change={() => handleSelectedOvertones(selectedOctave, selectedPitch)}>
                 <option>Select Overtone Set</option>
                 <option>1 - 3 - 5</option>
                 <option>1 - 3 - 5 - 7</option>
