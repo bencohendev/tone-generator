@@ -32,7 +32,6 @@
         display: grid;
         grid-template-rows: 5% 75%;
         box-shadow: 5px 4px 8px 8px #888888;
-        //  position: fixed;
         background: white;
         max-width: 56rem;
         width: 96%;

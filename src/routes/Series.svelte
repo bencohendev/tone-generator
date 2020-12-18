@@ -242,10 +242,6 @@
             play = false;
             seriesPlayer();
         }
-
-        // if (intervalID) {
-        //     intervalID = (60 / playSpeed) * 1000;
-        // }
     }
 
     console.groupEnd();
@@ -253,13 +249,12 @@
 
 <style lang="scss">
     .card {
-        margin: 1rem;
         align-items: center;
         justify-content: center;
         box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
             0px 3px 4px 0px rgba(0, 0, 0, 0.14),
             0px 1px 8px 0px rgba(0, 0, 0, 0.12);
-        padding: 5rem;
+        background-color: grey;
     }
     .series {
         align-items: center;
@@ -319,7 +314,7 @@
     <button
         class="play"
         disabled={!(lowerVal && upperVal)}
-        on:click={playHandler}>{play ? 'Pause' : 'Play'}
+        on:click={seriesPlayer}>{play ? 'Pause' : 'Play'}
     </button>
     {#if !(lowerVal && upperVal)}
         <div>Please Select a Pitch Range</div>
