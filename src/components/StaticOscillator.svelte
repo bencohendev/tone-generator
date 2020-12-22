@@ -4,6 +4,8 @@
 
     import { audioCtx, allPitches } from "../store";
     import PitchSelector from "./PitchSelector.svelte";
+    import Pan from "./Pan.svelte"
+    import WaveType from "./WaveType.svelte"
 
     $: console.group("Static Oscillator");
 
@@ -27,6 +29,9 @@
     let octave;
     let pitchName;
     let closestPitch;
+    let wavContainerEl;
+    let panContainerEl;
+
     const dispatch = createEventDispatcher();
 
     //createoscillatorNodes. oscillatorGainNode used for volume control. onOffNode used for playing and pausing. PanoscillatorNode for panning
@@ -108,7 +113,6 @@
     }
 
     function handlePanSelector() {
-        showPanSelector ? (showPanSelector = false) : (showPanSelector = true);
     }
 
     $: {
@@ -125,7 +129,7 @@
         //pan control
         oscillatorNode.panVal = panVal;
         panNode.setPosition(panVal / 100, 0, 0);
-
+    console.log(panVal)
         //Wave Type Selector
         oscillatorNode.type = wavType;
 
@@ -231,23 +235,6 @@
                     }
                 }
 
-                .pan-slider {
-                    img {
-                        width: 20px;
-
-                        &.pan-left-icon {
-                            -webkit-transform: scaleX(-1) scaleY(1);
-                            transform: scaleX(-1) scaleY(1);
-                        }
-                    }
-                    &::after {
-                        content: "";
-                        border: solid 1px black;
-                        position: relative;
-                        left: -25%;
-                        top: -1px;
-                    }
-                }
             }
         }
 
@@ -280,9 +267,25 @@
             }
 
             .wav-select-button {
-                img {
-                    width: 20px;
-                }
+                background-size: contain;
+                margin-right: 1rem;
+                background-position: center;
+                background-repeat: no-repeat;
+                    width: 60%;
+    height: 100%;
+                &.sine {
+                    background-image: url('/icons/sine.png')
+                    }
+                    &.square {
+                       background-image: url('/icons/square.png')
+    }
+                    &.triangle {
+                      background-image: url('/icons/triangle.png')
+    }
+                    &.sawtooth {
+                                    background-image: url('/icons/sawtooth.png')
+                    }
+
             }
             .wav-select-box {
                 img {
@@ -335,12 +338,7 @@
                 padding: 1px 2px;
             }
         }
-        .frequency-click {
-            display: none;
-        }
-        .frequency-click.show {
-            display: block;
-        }
+
     }
 </style>
 
@@ -374,89 +372,26 @@
                 alt="volume"
                 on:click={() => (vol = 100)} />
         </div>
-        <div class="wav-select-container">
-            <button
-                class="wav-select-button"
-                on:click={() => (showWavSelector ? (showWavSelector = false) : (showWavSelector = true))}>
-                <img src="./icons/{wavType}.png" alt="wave type" />
-            </button>
-            {#if showWavSelector}
-                <div class="wav-select" transition:fade>
-                    <button
-                        class="wav-select-box"
-                        on:click={() => {
-                            showWavSelector = false;
-                            wavType = 'sine';
-                        }}>
-                        <img src="./icons/sine.png" alt="sin wave" />
-                    </button>
-                    <button
-                        class="wav-select-box"
-                        on:click={() => {
-                            showWavSelector = false;
-                            wavType = 'square';
-                        }}>
-                        <img src="./icons/square.png" alt="square wave" />
-                    </button>
 
-                    <button
-                        class="wav-select-box"
-                        on:click={() => {
-                            showWavSelector = false;
-                            wavType = 'triangle';
-                        }}>
-                        <img src="./icons/triangle.png" alt="triangle wave" />
-                    </button>
-                    <button
-                        class="wav-select-box"
-                        on:click={() => {
-                            showWavSelector = false;
-                            wavType = 'sawtooth';
-                        }}>
-                        <img src="./icons/sawtooth.png" alt="sawtooth wave" />
-                    </button>
-                </div>
-            {/if}
+        <div class=" wav-select-container" >
+        <button
+            class="wav-select-button {wavType}"  on:click={() => (showWavSelector ? (showWavSelector = false) : (showWavSelector = true))}>
+
+
+        </button>
+                {#if showWavSelector}
+            <WaveType bind:wavType bind:showWavSelector />
+        {/if}
         </div>
+  
 
-        <div class="slide-container pan" on:click={handlePanSelector}>
-            <button class="pan-button"><img
-                    src="../icons/pan-button.png"
-                    alt="pan" />
+        <div class="slide-container pan" >
+            <button class="pan-button" on:click={()=> showPanSelector ? (showPanSelector = false) : (showPanSelector = true)} >
+            Pan
             </button>
             {#if showPanSelector}
-                <div class="pan-controller" transition:fade>
-                    <div class="pan-buttons">
-                        <button
-                            class="pan-left-button"
-                            on:click={() => (panVal = -1)}>L</button>
-                        <button
-                            class="pan-center-button"
-                            on:click={() => (panVal = 0)}>C</button>
-                        <button
-                            class="pan-right-button"
-                            on:click={() => (panVal = 1)}>R</button>
-                    </div>
-                    <div class="pan-slider">
-                        <img
-                            class="pan-left-icon"
-                            src="../icons/pan.png"
-                            alt="pan left"
-                            on:click={() => (panVal = -1)} />
-                        <input
-                            type="range"
-                            min="-1"
-                            max="1"
-                            step={0.01}
-                            bind:value={panVal}
-                            class="slider pan" />
-                        <img
-                            class="pan-right-icon"
-                            src="../icons/pan.png"
-                            alt="pan right"
-                            on:click={() => (panVal = 1)} />
-                    </div>
-                </div>
+            <Pan bind:panVal bind:showPanSelector }/>
+
             {/if}
         </div>
     </div>
@@ -468,8 +403,8 @@
                 min={3}
                 max={14.4}
                 step={0.001}
-                bind:value={freqSliderVal}
-                on:change={changeFreqSlider}
+                bind:value={freqSliderVal}   
+                on:input={changeFreqSlider}
                 class="slider frequency" />
         </div>
         <div class="frequency-controls">

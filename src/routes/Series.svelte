@@ -79,9 +79,22 @@
         console.log(playSpeed);
         if (!play && !intervalID) {
             play = true;
-            bpm = (60 / playSpeed) * 1000;
+            bpm = (60*1000) / playSpeed;
             console.log(bpm);
             node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
+            /*
+google turn setinterval to setimeout
+
+        $:bpmCalculatedTimeout;
+            const timeFn =(timeout)=>{setTimeout(() => {
+                // do stuff you need to do
+
+                //check for new bpm??? idk
+                timeFn(bpmCalculatedTimeout)
+            }, timeout);
+        }
+*/
+
             if (!playOnce) {
                 let i = 0;
                 intervalID = setInterval(() => {
@@ -113,7 +126,7 @@
                             $audioCtx.currentTime,
                             0.001
                         );
-                    }, bpm - bpm / 4);
+                    }, bpm - bpm * 0.25);
                 }, bpm);
             } else if (playOnce) {
                 for (let i = 0; i < numOfPitches; i++) {

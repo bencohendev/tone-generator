@@ -1,0 +1,11 @@
+1. Basic Design
+    a.Figma!
+2. outside a box click event
+3. way to interact with bpm while playing
+
+
+thoughts:
+create oscillator -> add tone (generator)
+change pan image back to text
+check browsers for maximum number of oscillators
+don't automatically play overtone sets
