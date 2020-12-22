@@ -153,8 +153,7 @@
     <section class="oscillator-master-control">
         <button
             class="create-oscillator"
-            on:click={() => newOscillator(panVal, onOffVal, freqVal)}>Create
-            Oscillator</button>
+            on:click={() => newOscillator(panVal, onOffVal, freqVal)}>Add Tone Generator</button>
         <button class="play-all paused" on:click={playAllHandler}>Play All</button>
         <button class="mute-all playing" on:click={muteAllHandler}>Mute All</button>
         <div class="overtone-preset-container">
