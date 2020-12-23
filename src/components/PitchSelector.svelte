@@ -30,7 +30,7 @@
 <style lang="scss">
     .pitch-selector-container {
         display: grid;
-        grid-template-rows: 5% 75%;
+        grid-template-rows: 2% 75%;
         box-shadow: 5px 4px 8px 8px #888888;
         background: white;
         max-width: 56rem;
@@ -50,8 +50,11 @@
             }
             .pitch-row {
                 display: grid;
-                grid-template-columns: 2% 8% 8% 8% 8% 8% 8% 8% 8% 8% 8% 8% 8%;
+
+                grid-template-columns: 25% 25% 25% 25%;
                 padding: 1rem 0px;
+                grid-template-rows: 25% 25% 25% 25%;
+                align-items: center;
                 .pitch-button {
                     margin: 0.5rem;
                 }
@@ -67,8 +70,8 @@
         </div>
         <div class="pitch-row-container">
             {#each $octaves as octave, i}
+                <div class="octave-name">{i}</div>
                 <div class="pitch-row">
-                    <div class="octave-name">{i + 1}</div>
                     {#each $pitches as pitch, j}
                         <button
                             class="pitch-button"

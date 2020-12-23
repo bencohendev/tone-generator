@@ -4,8 +4,8 @@
 
     import { audioCtx, allPitches } from "../store";
     import PitchSelector from "./PitchSelector.svelte";
-    import Pan from "./Pan.svelte"
-    import WaveType from "./WaveType.svelte"
+    import Pan from "./Pan.svelte";
+    import WaveType from "./WaveType.svelte";
 
     $: console.group("Static Oscillator");
 
@@ -112,8 +112,7 @@
         oscillatorNode.freqSliderVal = freqSliderVal;
     }
 
-    function handlePanSelector() {
-    }
+    function handlePanSelector() {}
 
     $: {
         freq = Math.round(freq);
@@ -129,7 +128,7 @@
         //pan control
         oscillatorNode.panVal = panVal;
         panNode.setPosition(panVal / 100, 0, 0);
-    console.log(panVal)
+        console.log(panVal);
         //Wave Type Selector
         oscillatorNode.type = wavType;
 
@@ -234,7 +233,6 @@
                         left: 25%;
                     }
                 }
-
             }
         }
 
@@ -271,21 +269,20 @@
                 margin-right: 1rem;
                 background-position: center;
                 background-repeat: no-repeat;
-                    width: 60%;
-    height: 100%;
+                width: 40px;
+                height: 100%;
                 &.sine {
-                    background-image: url('/icons/sine.png')
-                    }
-                    &.square {
-                       background-image: url('/icons/square.png')
-    }
-                    &.triangle {
-                      background-image: url('/icons/triangle.png')
-    }
-                    &.sawtooth {
-                                    background-image: url('/icons/sawtooth.png')
-                    }
-
+                    background-image: url("/icons/sine.png");
+                }
+                &.square {
+                    background-image: url("/icons/square.png");
+                }
+                &.triangle {
+                    background-image: url("/icons/triangle.png");
+                }
+                &.sawtooth {
+                    background-image: url("/icons/sawtooth.png");
+                }
             }
             .wav-select-box {
                 img {
@@ -303,42 +300,56 @@
 
         .frequency-controls {
             display: grid;
-            grid-template-columns: 10% 10% 45% 10% 10%;
+            grid-template-columns: 15% 15% 40% 15% 15%;
+            justify-content: center;
+
+            .frequency-arith-button {
+                margin: 0px 5px;
+            }
         }
 
         .frequency-label {
             text-align: center;
-            /* Chrome, Safari, Edge, Opera */
-            input::-webkit-outer-spin-button,
-            input::-webkit-inner-spin-button {
-                -webkit-appearance: none;
-                margin: 0;
-            }
+            //     /* Chrome, Safari, Edge, Opera */
+            //     input::-webkit-outer-spin-button,
+            //     input::-webkit-inner-spin-button {
+            //         -webkit-appearance: none;
+            //         margin: 0;
+            //     }
 
-            /* Firefox */
-            input[type="number"] {
-                -moz-appearance: textfield;
-            }
-            &:hover::after {
-                position: absolute;
-                display: inline-block;
-                bottom: -2px;
-                left: 0;
-                right: 0;
-                margin-left: auto;
-                margin-right: auto;
-                content: "CLICK TO EDIT";
-                font-size: 10px;
-                line-height: 13px;
-                color: #8e420b;
-                border-radius: 3px;
-                letter-spacing: 0.7px;
-                word-spacing: 1px;
-                text-align: center;
-                padding: 1px 2px;
-            }
+            //     /* Firefox */
+            //     input[type="number"] {
+            //         -moz-appearance: textfield;
+            //     }
+            //     &:hover::after {
+            //         position: absolute;
+            //         display: inline-block;
+            //         bottom: -2px;
+            //         left: 0;
+            //         right: 0;
+            //         margin-left: auto;
+            //         margin-right: auto;
+            //         content: "CLICK TO EDIT";
+            //         font-size: 1rem;
+            //         line-height: 1.3rem;
+            //         color: #8e420b;
+            //         border-radius: 3px;
+            //         letter-spacing: 7rem;
+            //         word-spacing: 0.1rem;
+            //         text-align: center;
+            //         padding: 1px 2px;
+            //     }
         }
+    }
 
+    .pitch-selector-button-container {
+        display: grid;
+        justify-content: center;
+        margin-bottom: 1rem;
+
+        .pitch-selector {
+            margin: 1rem 0;
+        }
     }
 </style>
 
@@ -373,26 +384,25 @@
                 on:click={() => (vol = 100)} />
         </div>
 
-        <div class=" wav-select-container" >
-        <button
-            class="wav-select-button {wavType}"  on:click={() => (showWavSelector ? (showWavSelector = false) : (showWavSelector = true))}>
-
-
-        </button>
+        <div class=" wav-select-container">
+            <button
+                class="wav-select-button {wavType}"
+                on:click={() => (showWavSelector ? (showWavSelector = false) : (showWavSelector = true))}>
                 {#if showWavSelector}
-            <WaveType bind:wavType bind:showWavSelector />
-        {/if}
-        </div>
-  
-
-        <div class="slide-container pan" >
-            <button class="pan-button" on:click={()=> showPanSelector ? (showPanSelector = false) : (showPanSelector = true)} >
-            Pan
+                    <WaveType bind:wavType bind:showWavSelector />
+                {/if}
             </button>
-            {#if showPanSelector}
-            <Pan bind:panVal bind:showPanSelector />
+        </div>
 
-            {/if}
+        <div class="slide-container pan">
+            <button
+                class="pan-button"
+                on:click={() => (showPanSelector ? (showPanSelector = false) : (showPanSelector = true))}>
+                Pan
+                {#if showPanSelector}
+                    <Pan bind:panVal bind:showPanSelector />
+                {/if}
+            </button>
         </div>
     </div>
 
@@ -403,13 +413,19 @@
                 min={3}
                 max={14.4}
                 step={0.001}
-                bind:value={freqSliderVal}   
+                bind:value={freqSliderVal}
                 on:input={changeFreqSlider}
                 class="slider frequency" />
         </div>
         <div class="frequency-controls">
-            <button on:click={() => (freq /= 2)}>/2 </button>
-            <button on:click={() => (freq -= 1)}>-1 </button>
+            <button
+                class="frequency-arith-button"
+                on:click={() => (freq /= 2)}>&divide; 2
+            </button>
+            <button
+                class="frequency-arith-button"
+                on:click={() => (freq -= 1)}>&minus 1
+            </button>
 
             <div
                 class="frequency-label"
@@ -420,15 +436,24 @@
                 Hz
                 <div class="frequency-click" />
             </div>
-            <button on:click={() => (freq += 1)}>+1 </button>
-            <button on:click={() => (freq *= 2)}>*2 </button>
+            <button
+                class="frequency-arith-button"
+                on:click={() => (freq += 1)}>&plus 1
+            </button>
+            <button
+                class="frequency-arith-button"
+                on:click={() => (freq *= 2)}>&times 2
+            </button>
         </div>
         <div
             class="frequency-label pitch"
             on:click={() => (freq = closestPitch.frequency)}>
             {Math.round(freq) === Math.round(closestPitch.frequency) ? closestPitch.pitch : '~' + closestPitch.pitch}
         </div>
-        <button class="pitch-selector" on:click={pitchSelector}>Select a Pitch</button>
+        <div class="pitch-selector-button-container">
+            <button class="pitch-selector" on:click={pitchSelector}>Select a
+                Pitch</button>
+        </div>
         <PitchSelector
             {showPitchSelector}
             on:message={handlePitchSelector}

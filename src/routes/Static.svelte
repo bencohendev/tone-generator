@@ -17,6 +17,7 @@
     let selectedOctave;
     let selectedPitch;
     let selectedOvertones;
+    let showGenerateOvertones = false;
 
     onMount(() => {
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
@@ -133,17 +134,16 @@
 
         .oscillator-master-control {
             display: flex;
-            margin-bottom: 4rem;
+            margin-bottom: 2rem;
+
             button {
                 margin: 1rem;
             }
-
-            .overtone-preset-container {
-                display: flex;
-                align-items: center;
-                select {
-                    margin-left: 1rem;
-                }
+        }
+        .overtone-preset-container {
+            margin: 1rem;
+            select {
+                margin-right: 1rem;
             }
         }
     }
@@ -153,44 +153,54 @@
     <section class="oscillator-master-control">
         <button
             class="create-oscillator"
-            on:click={() => newOscillator(panVal, onOffVal, freqVal)}>Add Tone Generator</button>
+            on:click={() => newOscillator(panVal, onOffVal, freqVal)}>Add Tone
+            Generator</button>
         <button class="play-all paused" on:click={playAllHandler}>Play All</button>
         <button class="mute-all playing" on:click={muteAllHandler}>Mute All</button>
+        <button
+            class="generate-overtones"
+            on:click={() => {
+                showGenerateOvertones ? (showGenerateOvertones = false) : (showGenerateOvertones = true);
+            }}>
+            Generate Overtone Presets
+        </button>
+    </section>
+    {#if showGenerateOvertones}
         <div class="overtone-preset-container">
             <div>Select a Fundamental</div>
+            <div class="overtone-select-container">
+                <select
+                    name="pitch-select"
+                    id="pitch-select"
+                    bind:value={selectedPitch}>
+                    <option>Pitch</option>
+                    {#each $pitches as pitch, j}
+                        <option value={pitch}>{$pitchNames[j]}</option>
+                    {/each}
+                </select>
+                <select
+                    name="octave-select"
+                    id="octave-select"
+                    bind:value={selectedOctave}>
+                    <option>Octave</option>
+                    {#each $octaves as octave, i}
+                        <option value={octave}>{i}</option>
+                    {/each}
+                </select>
 
-
-            <select 
-            name="pitch-select"
-            id="pitch-select"
-            bind:value={selectedPitch}>
-                <option>Pitch</option>
-                {#each $pitches as pitch, j}
-                    <option value={pitch}>{$pitchNames[j]}</option>
-                {/each}
-            </select>
-            <select
-            name="octave-select"
-            id="octave-select"
-            bind:value={selectedOctave}>
-            <option>Octave</option>
-            {#each $octaves as octave, i}
-                <option value={octave}>{i}</option>
-            {/each}
-        </select>
-
-            <!-- svelte-ignore a11y-no-onchange -->
-            <select
-                name="overtone-series-select"
-                id="overtone-series-select"
-                bind:value={selectedOvertones}
-                on:change={() => handleSelectedOvertones(selectedOctave, selectedPitch)}>
-                <option>Select Overtone Set</option>
-                <option>1 - 3 - 5</option>
-                <option>1 - 3 - 5 - 7</option>
-            </select>
+                <!-- svelte-ignore a11y-no-onchange -->
+                <select
+                    name="overtone-series-select"
+                    id="overtone-series-select"
+                    bind:value={selectedOvertones}
+                    on:change={() => handleSelectedOvertones(selectedOctave, selectedPitch)}>
+                    <option>Select Overtone Set</option>
+                    <option>1 - 3 - 5</option>
+                    <option>1 - 3 - 5 - 7</option>
+                </select>
+            </div>
         </div>
-    </section>
+    {/if}
     {#each oscillatorNodes as oscillatorNode, i (oscillatorNode.id)}
         <StaticOscillator
             {oscillatorNode}
