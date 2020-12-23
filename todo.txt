@@ -5,7 +5,5 @@
 
 
 thoughts:
-create oscillator -> add tone (generator)
-change pan image back to text
 check browsers for maximum number of oscillators
 don't automatically play overtone sets

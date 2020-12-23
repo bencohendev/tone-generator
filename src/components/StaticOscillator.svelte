@@ -148,7 +148,7 @@
     console.groupEnd();
 </script>
 
-<style lang="scss">
+<style type="scss">
     .card {
         margin: 0 1rem 1rem 1rem;
         align-items: center;
@@ -390,7 +390,7 @@
             Pan
             </button>
             {#if showPanSelector}
-            <Pan bind:panVal bind:showPanSelector }/>
+            <Pan bind:panVal bind:showPanSelector />
 
             {/if}
         </div>

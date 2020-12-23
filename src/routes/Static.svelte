@@ -67,7 +67,7 @@
         switch (selectedOvertones) {
             case "1 - 3 - 5":
                 oscillatorNodes = [];
-                onOffVal = 1;
+                onOffVal = 0;
                 newOscillator(
                     (panVal = -1),
                     onOffVal,
@@ -91,7 +91,7 @@
                 freqVal = 440;
                 break;
             case "1 - 3 - 5 - 7":
-                onOffVal = 1;
+                onOffVal = 0;
                 oscillatorNodes = [];
                 newOscillator(
                     (panVal = -1),
@@ -158,21 +158,27 @@
         <button class="mute-all playing" on:click={muteAllHandler}>Mute All</button>
         <div class="overtone-preset-container">
             <div>Select a Fundamental</div>
-            <select
-                name="fundamental-select"
-                id="fundamental-select"
-                bind:value={selectedOctave}>
-                <option>Octave</option>
-                {#each $octaves as octave, i}
-                    <option value={octave}>{i}</option>
-                {/each}
-            </select>
-            <select bind:value={selectedPitch}>
+
+
+            <select 
+            name="pitch-select"
+            id="pitch-select"
+            bind:value={selectedPitch}>
                 <option>Pitch</option>
                 {#each $pitches as pitch, j}
                     <option value={pitch}>{$pitchNames[j]}</option>
                 {/each}
             </select>
+            <select
+            name="octave-select"
+            id="octave-select"
+            bind:value={selectedOctave}>
+            <option>Octave</option>
+            {#each $octaves as octave, i}
+                <option value={octave}>{i}</option>
+            {/each}
+        </select>
+
             <!-- svelte-ignore a11y-no-onchange -->
             <select
                 name="overtone-series-select"
