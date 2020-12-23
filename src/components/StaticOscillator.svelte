@@ -26,11 +26,8 @@
     let showWavSelector = false;
     let showPanSelector = false;
     let inputFrequency = false;
-    let octave;
     let pitchName;
     let closestPitch;
-    let wavContainerEl;
-    let panContainerEl;
 
     const dispatch = createEventDispatcher();
 
@@ -102,7 +99,6 @@
         if (event.detail.text === "pitch") {
             showPitchSelector = false;
             pitchName = event.detail.pitchName;
-            octave = event.detail.i;
             freqSliderVal = Math.log2(event.detail.frequency);
             changeFreqSlider();
         }
@@ -111,8 +107,6 @@
         freq = 2 ** freqSliderVal;
         oscillatorNode.freqSliderVal = freqSliderVal;
     }
-
-    function handlePanSelector() {}
 
     $: {
         freq = Math.round(freq);
@@ -128,7 +122,7 @@
         //pan control
         oscillatorNode.panVal = panVal;
         panNode.setPosition(panVal / 100, 0, 0);
-        console.log(panVal);
+
         //Wave Type Selector
         oscillatorNode.type = wavType;
 
@@ -310,35 +304,6 @@
 
         .frequency-label {
             text-align: center;
-            //     /* Chrome, Safari, Edge, Opera */
-            //     input::-webkit-outer-spin-button,
-            //     input::-webkit-inner-spin-button {
-            //         -webkit-appearance: none;
-            //         margin: 0;
-            //     }
-
-            //     /* Firefox */
-            //     input[type="number"] {
-            //         -moz-appearance: textfield;
-            //     }
-            //     &:hover::after {
-            //         position: absolute;
-            //         display: inline-block;
-            //         bottom: -2px;
-            //         left: 0;
-            //         right: 0;
-            //         margin-left: auto;
-            //         margin-right: auto;
-            //         content: "CLICK TO EDIT";
-            //         font-size: 1rem;
-            //         line-height: 1.3rem;
-            //         color: #8e420b;
-            //         border-radius: 3px;
-            //         letter-spacing: 7rem;
-            //         word-spacing: 0.1rem;
-            //         text-align: center;
-            //         padding: 1px 2px;
-            //     }
         }
     }
 
@@ -346,6 +311,8 @@
         display: grid;
         justify-content: center;
         margin-bottom: 1rem;
+        grid-template-columns: 25% auto;
+        grid-template-rows: 100% auto;
 
         .pitch-selector {
             margin: 1rem 0;
@@ -451,12 +418,19 @@
             {Math.round(freq) === Math.round(closestPitch.frequency) ? closestPitch.pitch : '~' + closestPitch.pitch}
         </div>
         <div class="pitch-selector-button-container">
-            <button class="pitch-selector" on:click={pitchSelector}>Select a
-                Pitch</button>
+            <button
+                class="pitch-selector"
+                on:click={() => (showPitchSelector ? (showPitchSelector = false) : (showPitchSelector = true))}>Select
+                a Pitch
+            </button>
+            <div>
+                {#if showPitchSelector}
+                    <PitchSelector
+                        bind:showPitchSelector
+                        on:message={handlePitchSelector}
+                        bind:pitchName />
+                {/if}
+            </div>
         </div>
-        <PitchSelector
-            {showPitchSelector}
-            on:message={handlePitchSelector}
-            bind:pitchName />
     </div>
 </section>
