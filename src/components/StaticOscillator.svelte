@@ -10,10 +10,7 @@
     $: console.group("Static Oscillator");
 
     export let oscillatorNode;
-    export let playAllStatus;
-    export let muteAllStatus;
     export let i;
-
     export let panVal;
     export let onOffVal;
     export let freqSliderVal;
@@ -62,34 +59,13 @@
     });
 
     function playHandler() {
-        if (!play) {
+        if (onOffVal === 1) {
             onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
             play = true;
-        } else if (play) {
+        } else if (onOffVal === 0) {
             onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
             play = false;
         }
-    }
-
-    function playAll() {
-        dispatch("message", { text: "playAll" });
-        if (!play && playAllStatus) {
-            onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-            oscillatorNode.onOffVal = 1;
-            play = true;
-        }
-    }
-    function muteAll() {
-        dispatch("message", { text: "muteAll" });
-        if (play && muteAllStatus) {
-            onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
-            onOffVal = 0;
-            play = false;
-        }
-    }
-
-    function pitchSelector() {
-        showPitchSelector = true;
     }
 
     function handlePitchSelector(event) {
@@ -126,10 +102,7 @@
         //Wave Type Selector
         oscillatorNode.type = wavType;
 
-        oscillatorNode.onOffVal = onOffVal;
-
-        playAllStatus = playAllStatus ? playAll() : false;
-        muteAllStatus = muteAllStatus ? muteAll() : false;
+        playHandler(onOffVal);
 
         closestPitch = $allPitches.reduce((a, b) => {
             return Math.abs(b.frequency - freq) < Math.abs(a.frequency - freq)
@@ -330,7 +303,7 @@
     <div class="vol-pan-wav-container">
         <button
             class="play-button {play ? 'playing' : 'paused'}"
-            on:click={playHandler}>{play ? 'Pause' : 'Play'}
+            on:click={() => (onOffVal === 1 ? (onOffVal = 0) : (onOffVal = 1))}>{play ? 'Pause' : 'Play'}
         </button>
         <div class="slide-container volume">
             <img

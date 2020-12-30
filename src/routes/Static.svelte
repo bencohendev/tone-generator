@@ -12,8 +12,6 @@
     let onOffVal = 0;
     let freqVal = 440;
     let id = 0;
-    let playAllStatus = false;
-    let muteAllStatus = false;
     let selectedOctave;
     let selectedPitch;
     let selectedOvertones;
@@ -35,15 +33,6 @@
         oscillatorNodes = [...oscillatorNodes, newNode];
     }
 
-    function handlePitchSelector(e) {
-        if (e.detail.text === "playAll") {
-            playAllStatus = false;
-        }
-        if (e.detail.text === "muteAll") {
-            muteAllStatus = false;
-        }
-    }
-
     function handleCloseStaticOscillator(e) {
         let oscillatorNodeCopy = oscillatorNodes;
         oscillatorNodeCopy.splice(e.detail, 1);
@@ -51,14 +40,33 @@
     }
 
     function playAllHandler() {
-        playAllStatus = true;
+        let oscillatorNodesCopy = oscillatorNodes;
+
+        if (
+            oscillatorNodesCopy.every(
+                (oscillatorNode) => oscillatorNode.onOffVal === 1
+            )
+        ) {
+            oscillatorNodesCopy.forEach(
+                (oscillatorNode) => (oscillatorNode.onOffVal = 0)
+            );
+        } else {
+            oscillatorNodesCopy.forEach(
+                (oscillatorNode) => (oscillatorNode.onOffVal = 1)
+            );
+        }
+
+        return (oscillatorNodes = [...oscillatorNodesCopy]);
     }
     function muteAllHandler() {
-        muteAllStatus = true;
+        let oscillatorNodesCopy = oscillatorNodes;
+        oscillatorNodesCopy.forEach(
+            (oscillatorNode) => (oscillatorNode.onOffVal = 0)
+        );
+        return (oscillatorNodes = [...oscillatorNodesCopy]);
     }
 
     function handleSelectedOvertones(selectedOctave, selectedPitch) {
-        console.log(typeof selectedOctave, selectedOctave);
         typeof selectedOctave === "number"
             ? selectedOctave
             : (selectedOctave = 4);
@@ -123,6 +131,7 @@
                 break;
         }
     }
+
     console.groupEnd();
 </script>
 
@@ -201,16 +210,14 @@
             </div>
         </div>
     {/if}
+
     {#each oscillatorNodes as oscillatorNode, i (oscillatorNode.id)}
         <StaticOscillator
             {oscillatorNode}
             {i}
-            panVal={oscillatorNode.panVal}
-            onOffVal={oscillatorNode.onOffVal}
-            freq={oscillatorNode.freqVal}
-            {playAllStatus}
-            {muteAllStatus}
-            on:message={handlePitchSelector}
+            bind:panVal={oscillatorNode.panVal}
+            bind:onOffVal={oscillatorNode.onOffVal}
+            bind:freq={oscillatorNode.freqVal}
             on:closeStaticOscillator={handleCloseStaticOscillator} />
     {/each}
 </div>
