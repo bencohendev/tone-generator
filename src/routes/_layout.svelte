@@ -1,7 +1,32 @@
 <script>
 	import Nav from "../components/Nav.svelte";
 
+	import { onMount } from "svelte";
+	import { pitches, pitchNames, allPitches } from "../store.js";
+	let allThePitches = [];
+
 	export let segment;
+
+	//populateAllPitches runs on mount of site itself. It creates array of pitch objects including name and frequency
+	onMount(() => populateAllPitches());
+
+	let populateAllPitches = () => {
+		console.log($allPitches);
+
+		let pitchMultiplier = 1;
+		for (let i = 0; i < 9; i++) {
+			for (let j = 1; j <= $pitches.length; j++) {
+				allThePitches.push({
+					pitch: $pitchNames[j] + i,
+					frequency: $pitches[j] * pitchMultiplier,
+				});
+			}
+			pitchMultiplier = pitchMultiplier * 2;
+		}
+		return allThePitches;
+	};
+
+	$allPitches = populateAllPitches();
 </script>
 
 <style lang="scss" global>

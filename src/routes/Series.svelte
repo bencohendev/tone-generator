@@ -1,5 +1,5 @@
 <script>
-    import { audioCtx, pitches, octaves, pitchNames } from "../store.js";
+    import { audioCtx, allPitches, octaves, pitchNames } from "../store.js";
     import { onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
 
@@ -20,12 +20,11 @@
     let numOfPitches = 4;
     let playOnce = false;
     let freqRange = [];
-    let allPitches = [];
+    //let allPitches = [];
     let intervalID = null;
     let selectedInstrument;
 
     onMount(() => {
-        populateAllPitches();
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
         const oscillatorGainNode = $audioCtx.createGain();
         const seriesGainNode = $audioCtx.createGain();
@@ -63,23 +62,11 @@
     });
     let pitchMultiplier = 1;
 
-    let populateAllPitches = () => {
-        for (let i = 0; i < 9; i++) {
-            for (let j = 1; j <= $pitches.length; j++) {
-                allPitches.push({
-                    pitch: $pitchNames[j] + i,
-                    frequency: $pitches[j] * pitchMultiplier,
-                });
-            }
-            pitchMultiplier = pitchMultiplier * 2;
-        }
-    };
-
     function seriesPlayer() {
         console.log(playSpeed);
         if (!play && !intervalID) {
             play = true;
-            bpm = (60*1000) / playSpeed;
+            bpm = (60 * 1000) / playSpeed;
             console.log(bpm);
             node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
             /*
@@ -242,9 +229,8 @@ google turn setinterval to setimeout
 
             //Wave Type Selector
             node.oscillatorNode.type = wavType.toLowerCase();
-
             if (lowerVal && upperVal) {
-                freqRange = allPitches.filter(
+                freqRange = $allPitches.filter(
                     (pitch) =>
                         pitch.frequency >= lowerVal.frequency &&
                         pitch.frequency <= upperVal.frequency
