@@ -20,7 +20,6 @@
     let numOfPitches = 4;
     let playOnce = false;
     let freqRange = [];
-    //let allPitches = [];
     let intervalID = null;
     let selectedInstrument;
 
@@ -319,10 +318,14 @@ google turn setinterval to setimeout
         <div>Please Select a Pitch Range</div>
     {/if}
 </section>
-<PitchSelector
-    {showPitchSelector}
-    {lowerVal}
-    {upperVal}
-    {lowerClicked}
-    {upperClicked}
-    on:message={handleMessage} />
+<div>
+    {#if showPitchSelector}
+        <PitchSelector
+            {showPitchSelector}
+            {lowerVal}
+            {upperVal}
+            {lowerClicked}
+            {upperClicked}
+            on:message={handleMessage} />
+    {/if}
+</div>
