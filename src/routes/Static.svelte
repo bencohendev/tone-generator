@@ -12,11 +12,10 @@
     let onOffVal = 0;
     let freqVal = 440;
     let id = 0;
-    let playAllStatus = false;
-    let muteAllStatus = false;
     let selectedOctave;
     let selectedPitch;
     let selectedOvertones;
+    let showGenerateOvertones = false;
 
     onMount(() => {
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
@@ -34,15 +33,6 @@
         oscillatorNodes = [...oscillatorNodes, newNode];
     }
 
-    function handlePitchSelector(e) {
-        if (e.detail.text === "playAll") {
-            playAllStatus = false;
-        }
-        if (e.detail.text === "muteAll") {
-            muteAllStatus = false;
-        }
-    }
-
     function handleCloseStaticOscillator(e) {
         let oscillatorNodeCopy = oscillatorNodes;
         oscillatorNodeCopy.splice(e.detail, 1);
@@ -50,14 +40,33 @@
     }
 
     function playAllHandler() {
-        playAllStatus = true;
+        let oscillatorNodesCopy = oscillatorNodes;
+
+        if (
+            oscillatorNodesCopy.every(
+                (oscillatorNode) => oscillatorNode.onOffVal === 1
+            )
+        ) {
+            oscillatorNodesCopy.forEach(
+                (oscillatorNode) => (oscillatorNode.onOffVal = 0)
+            );
+        } else {
+            oscillatorNodesCopy.forEach(
+                (oscillatorNode) => (oscillatorNode.onOffVal = 1)
+            );
+        }
+
+        return (oscillatorNodes = [...oscillatorNodesCopy]);
     }
     function muteAllHandler() {
-        muteAllStatus = true;
+        let oscillatorNodesCopy = oscillatorNodes;
+        oscillatorNodesCopy.forEach(
+            (oscillatorNode) => (oscillatorNode.onOffVal = 0)
+        );
+        return (oscillatorNodes = [...oscillatorNodesCopy]);
     }
 
     function handleSelectedOvertones(selectedOctave, selectedPitch) {
-        console.log(typeof selectedOctave, selectedOctave);
         typeof selectedOctave === "number"
             ? selectedOctave
             : (selectedOctave = 4);
@@ -67,7 +76,7 @@
         switch (selectedOvertones) {
             case "1 - 3 - 5":
                 oscillatorNodes = [];
-                onOffVal = 1;
+                onOffVal = 0;
                 newOscillator(
                     (panVal = -1),
                     onOffVal,
@@ -91,7 +100,7 @@
                 freqVal = 440;
                 break;
             case "1 - 3 - 5 - 7":
-                onOffVal = 1;
+                onOffVal = 0;
                 oscillatorNodes = [];
                 newOscillator(
                     (panVal = -1),
@@ -122,6 +131,7 @@
                 break;
         }
     }
+
     console.groupEnd();
 </script>
 
@@ -133,17 +143,16 @@
 
         .oscillator-master-control {
             display: flex;
-            margin-bottom: 4rem;
+            margin-bottom: 2rem;
+
             button {
                 margin: 1rem;
             }
-
-            .overtone-preset-container {
-                display: flex;
-                align-items: center;
-                select {
-                    margin-left: 1rem;
-                }
+        }
+        .overtone-preset-container {
+            margin: 1rem;
+            select {
+                margin-right: 1rem;
             }
         }
     }
@@ -153,49 +162,62 @@
     <section class="oscillator-master-control">
         <button
             class="create-oscillator"
-            on:click={() => newOscillator(panVal, onOffVal, freqVal)}>Create
-            Oscillator</button>
+            on:click={() => newOscillator(panVal, onOffVal, freqVal)}>Add Tone
+            Generator</button>
         <button class="play-all paused" on:click={playAllHandler}>Play All</button>
         <button class="mute-all playing" on:click={muteAllHandler}>Mute All</button>
+        <button
+            class="generate-overtones"
+            on:click={() => {
+                showGenerateOvertones ? (showGenerateOvertones = false) : (showGenerateOvertones = true);
+            }}>
+            Generate Overtone Presets
+        </button>
+    </section>
+    {#if showGenerateOvertones}
         <div class="overtone-preset-container">
             <div>Select a Fundamental</div>
-            <select
-                name="fundamental-select"
-                id="fundamental-select"
-                bind:value={selectedOctave}>
-                <option>Octave</option>
-                {#each $octaves as octave, i}
-                    <option value={octave}>{i}</option>
-                {/each}
-            </select>
-            <select bind:value={selectedPitch}>
-                <option>Pitch</option>
-                {#each $pitches as pitch, j}
-                    <option value={pitch}>{$pitchNames[j]}</option>
-                {/each}
-            </select>
-            <!-- svelte-ignore a11y-no-onchange -->
-            <select
-                name="overtone-series-select"
-                id="overtone-series-select"
-                bind:value={selectedOvertones}
-                on:change={() => handleSelectedOvertones(selectedOctave, selectedPitch)}>
-                <option>Select Overtone Set</option>
-                <option>1 - 3 - 5</option>
-                <option>1 - 3 - 5 - 7</option>
-            </select>
+            <div class="overtone-select-container">
+                <select
+                    name="pitch-select"
+                    id="pitch-select"
+                    bind:value={selectedPitch}>
+                    <option>Pitch</option>
+                    {#each $pitches as pitch, j}
+                        <option value={pitch}>{$pitchNames[j]}</option>
+                    {/each}
+                </select>
+                <select
+                    name="octave-select"
+                    id="octave-select"
+                    bind:value={selectedOctave}>
+                    <option>Octave</option>
+                    {#each $octaves as octave, i}
+                        <option value={octave}>{i}</option>
+                    {/each}
+                </select>
+
+                <!-- svelte-ignore a11y-no-onchange -->
+                <select
+                    name="overtone-series-select"
+                    id="overtone-series-select"
+                    bind:value={selectedOvertones}
+                    on:change={() => handleSelectedOvertones(selectedOctave, selectedPitch)}>
+                    <option>Select Overtone Set</option>
+                    <option>1 - 3 - 5</option>
+                    <option>1 - 3 - 5 - 7</option>
+                </select>
+            </div>
         </div>
-    </section>
+    {/if}
+
     {#each oscillatorNodes as oscillatorNode, i (oscillatorNode.id)}
         <StaticOscillator
             {oscillatorNode}
             {i}
-            panVal={oscillatorNode.panVal}
-            onOffVal={oscillatorNode.onOffVal}
-            freq={oscillatorNode.freqVal}
-            {playAllStatus}
-            {muteAllStatus}
-            on:message={handlePitchSelector}
+            bind:panVal={oscillatorNode.panVal}
+            bind:onOffVal={oscillatorNode.onOffVal}
+            bind:freq={oscillatorNode.freqVal}
             on:closeStaticOscillator={handleCloseStaticOscillator} />
     {/each}
 </div>

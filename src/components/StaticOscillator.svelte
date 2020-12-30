@@ -4,14 +4,13 @@
 
     import { audioCtx, allPitches } from "../store";
     import PitchSelector from "./PitchSelector.svelte";
+    import Pan from "./Pan.svelte";
+    import WaveType from "./WaveType.svelte";
 
     $: console.group("Static Oscillator");
 
     export let oscillatorNode;
-    export let playAllStatus;
-    export let muteAllStatus;
     export let i;
-
     export let panVal;
     export let onOffVal;
     export let freqSliderVal;
@@ -24,9 +23,9 @@
     let showWavSelector = false;
     let showPanSelector = false;
     let inputFrequency = false;
-    let octave;
     let pitchName;
     let closestPitch;
+
     const dispatch = createEventDispatcher();
 
     //createoscillatorNodes. oscillatorGainNode used for volume control. onOffNode used for playing and pausing. PanoscillatorNode for panning
@@ -60,34 +59,13 @@
     });
 
     function playHandler() {
-        if (!play) {
+        if (onOffVal === 1) {
             onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
             play = true;
-        } else if (play) {
+        } else if (onOffVal === 0) {
             onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
             play = false;
         }
-    }
-
-    function playAll() {
-        dispatch("message", { text: "playAll" });
-        if (!play && playAllStatus) {
-            onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-            oscillatorNode.onOffVal = 1;
-            play = true;
-        }
-    }
-    function muteAll() {
-        dispatch("message", { text: "muteAll" });
-        if (play && muteAllStatus) {
-            onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
-            onOffVal = 0;
-            play = false;
-        }
-    }
-
-    function pitchSelector() {
-        showPitchSelector = true;
     }
 
     function handlePitchSelector(event) {
@@ -97,7 +75,6 @@
         if (event.detail.text === "pitch") {
             showPitchSelector = false;
             pitchName = event.detail.pitchName;
-            octave = event.detail.i;
             freqSliderVal = Math.log2(event.detail.frequency);
             changeFreqSlider();
         }
@@ -105,10 +82,6 @@
     function changeFreqSlider() {
         freq = 2 ** freqSliderVal;
         oscillatorNode.freqSliderVal = freqSliderVal;
-    }
-
-    function handlePanSelector() {
-        showPanSelector ? (showPanSelector = false) : (showPanSelector = true);
     }
 
     $: {
@@ -129,10 +102,7 @@
         //Wave Type Selector
         oscillatorNode.type = wavType;
 
-        oscillatorNode.onOffVal = onOffVal;
-
-        playAllStatus = playAllStatus ? playAll() : false;
-        muteAllStatus = muteAllStatus ? muteAll() : false;
+        playHandler(onOffVal);
 
         closestPitch = $allPitches.reduce((a, b) => {
             return Math.abs(b.frequency - freq) < Math.abs(a.frequency - freq)
@@ -144,7 +114,7 @@
     console.groupEnd();
 </script>
 
-<style lang="scss">
+<style type="scss">
     .card {
         margin: 0 1rem 1rem 1rem;
         align-items: center;
@@ -230,24 +200,6 @@
                         left: 25%;
                     }
                 }
-
-                .pan-slider {
-                    img {
-                        width: 20px;
-
-                        &.pan-left-icon {
-                            -webkit-transform: scaleX(-1) scaleY(1);
-                            transform: scaleX(-1) scaleY(1);
-                        }
-                    }
-                    &::after {
-                        content: "";
-                        border: solid 1px black;
-                        position: relative;
-                        left: -25%;
-                        top: -1px;
-                    }
-                }
             }
         }
 
@@ -280,8 +232,23 @@
             }
 
             .wav-select-button {
-                img {
-                    width: 20px;
+                background-size: contain;
+                margin-right: 1rem;
+                background-position: center;
+                background-repeat: no-repeat;
+                width: 40px;
+                height: 100%;
+                &.sine {
+                    background-image: url("/icons/sine.png");
+                }
+                &.square {
+                    background-image: url("/icons/square.png");
+                }
+                &.triangle {
+                    background-image: url("/icons/triangle.png");
+                }
+                &.sawtooth {
+                    background-image: url("/icons/sawtooth.png");
                 }
             }
             .wav-select-box {
@@ -300,46 +267,28 @@
 
         .frequency-controls {
             display: grid;
-            grid-template-columns: 10% 10% 45% 10% 10%;
+            grid-template-columns: 15% 15% 40% 15% 15%;
+            justify-content: center;
+
+            .frequency-arith-button {
+                margin: 0px 5px;
+            }
         }
 
         .frequency-label {
             text-align: center;
-            /* Chrome, Safari, Edge, Opera */
-            input::-webkit-outer-spin-button,
-            input::-webkit-inner-spin-button {
-                -webkit-appearance: none;
-                margin: 0;
-            }
+        }
+    }
 
-            /* Firefox */
-            input[type="number"] {
-                -moz-appearance: textfield;
-            }
-            &:hover::after {
-                position: absolute;
-                display: inline-block;
-                bottom: -2px;
-                left: 0;
-                right: 0;
-                margin-left: auto;
-                margin-right: auto;
-                content: "CLICK TO EDIT";
-                font-size: 10px;
-                line-height: 13px;
-                color: #8e420b;
-                border-radius: 3px;
-                letter-spacing: 0.7px;
-                word-spacing: 1px;
-                text-align: center;
-                padding: 1px 2px;
-            }
-        }
-        .frequency-click {
-            display: none;
-        }
-        .frequency-click.show {
-            display: block;
+    .pitch-selector-button-container {
+        display: grid;
+        justify-content: center;
+        margin-bottom: 1rem;
+        grid-template-columns: 25% auto;
+        grid-template-rows: 100% auto;
+
+        .pitch-selector {
+            margin: 1rem 0;
         }
     }
 </style>
@@ -354,7 +303,7 @@
     <div class="vol-pan-wav-container">
         <button
             class="play-button {play ? 'playing' : 'paused'}"
-            on:click={playHandler}>{play ? 'Pause' : 'Play'}
+            on:click={() => (onOffVal === 1 ? (onOffVal = 0) : (onOffVal = 1))}>{play ? 'Pause' : 'Play'}
         </button>
         <div class="slide-container volume">
             <img
@@ -374,90 +323,26 @@
                 alt="volume"
                 on:click={() => (vol = 100)} />
         </div>
-        <div class="wav-select-container">
-            <button
-                class="wav-select-button"
-                on:click={() => (showWavSelector ? (showWavSelector = false) : (showWavSelector = true))}>
-                <img src="./icons/{wavType}.png" alt="wave type" />
-            </button>
-            {#if showWavSelector}
-                <div class="wav-select" transition:fade>
-                    <button
-                        class="wav-select-box"
-                        on:click={() => {
-                            showWavSelector = false;
-                            wavType = 'sine';
-                        }}>
-                        <img src="./icons/sine.png" alt="sin wave" />
-                    </button>
-                    <button
-                        class="wav-select-box"
-                        on:click={() => {
-                            showWavSelector = false;
-                            wavType = 'square';
-                        }}>
-                        <img src="./icons/square.png" alt="square wave" />
-                    </button>
 
-                    <button
-                        class="wav-select-box"
-                        on:click={() => {
-                            showWavSelector = false;
-                            wavType = 'triangle';
-                        }}>
-                        <img src="./icons/triangle.png" alt="triangle wave" />
-                    </button>
-                    <button
-                        class="wav-select-box"
-                        on:click={() => {
-                            showWavSelector = false;
-                            wavType = 'sawtooth';
-                        }}>
-                        <img src="./icons/sawtooth.png" alt="sawtooth wave" />
-                    </button>
-                </div>
-            {/if}
+        <div class=" wav-select-container">
+            <button
+                class="wav-select-button {wavType}"
+                on:click={() => (showWavSelector ? (showWavSelector = false) : (showWavSelector = true))}>
+                {#if showWavSelector}
+                    <WaveType bind:wavType bind:showWavSelector />
+                {/if}
+            </button>
         </div>
 
-        <div class="slide-container pan" on:click={handlePanSelector}>
-            <button class="pan-button"><img
-                    src="../icons/pan-button.png"
-                    alt="pan" />
+        <div class="slide-container pan">
+            <button
+                class="pan-button"
+                on:click={() => (showPanSelector ? (showPanSelector = false) : (showPanSelector = true))}>
+                Pan
+                {#if showPanSelector}
+                    <Pan bind:panVal bind:showPanSelector />
+                {/if}
             </button>
-            {#if showPanSelector}
-                <div class="pan-controller" transition:fade>
-                    <div class="pan-buttons">
-                        <button
-                            class="pan-left-button"
-                            on:click={() => (panVal = -1)}>L</button>
-                        <button
-                            class="pan-center-button"
-                            on:click={() => (panVal = 0)}>C</button>
-                        <button
-                            class="pan-right-button"
-                            on:click={() => (panVal = 1)}>R</button>
-                    </div>
-                    <div class="pan-slider">
-                        <img
-                            class="pan-left-icon"
-                            src="../icons/pan.png"
-                            alt="pan left"
-                            on:click={() => (panVal = -1)} />
-                        <input
-                            type="range"
-                            min="-1"
-                            max="1"
-                            step={0.01}
-                            bind:value={panVal}
-                            class="slider pan" />
-                        <img
-                            class="pan-right-icon"
-                            src="../icons/pan.png"
-                            alt="pan right"
-                            on:click={() => (panVal = 1)} />
-                    </div>
-                </div>
-            {/if}
         </div>
     </div>
 
@@ -469,12 +354,18 @@
                 max={14.4}
                 step={0.001}
                 bind:value={freqSliderVal}
-                on:change={changeFreqSlider}
+                on:input={changeFreqSlider}
                 class="slider frequency" />
         </div>
         <div class="frequency-controls">
-            <button on:click={() => (freq /= 2)}>/2 </button>
-            <button on:click={() => (freq -= 1)}>-1 </button>
+            <button
+                class="frequency-arith-button"
+                on:click={() => (freq /= 2)}>&divide; 2
+            </button>
+            <button
+                class="frequency-arith-button"
+                on:click={() => (freq -= 1)}>&minus 1
+            </button>
 
             <div
                 class="frequency-label"
@@ -485,18 +376,34 @@
                 Hz
                 <div class="frequency-click" />
             </div>
-            <button on:click={() => (freq += 1)}>+1 </button>
-            <button on:click={() => (freq *= 2)}>*2 </button>
+            <button
+                class="frequency-arith-button"
+                on:click={() => (freq += 1)}>&plus 1
+            </button>
+            <button
+                class="frequency-arith-button"
+                on:click={() => (freq *= 2)}>&times 2
+            </button>
         </div>
         <div
             class="frequency-label pitch"
             on:click={() => (freq = closestPitch.frequency)}>
             {Math.round(freq) === Math.round(closestPitch.frequency) ? closestPitch.pitch : '~' + closestPitch.pitch}
         </div>
-        <button class="pitch-selector" on:click={pitchSelector}>Select a Pitch</button>
-        <PitchSelector
-            {showPitchSelector}
-            on:message={handlePitchSelector}
-            bind:pitchName />
+        <div class="pitch-selector-button-container">
+            <button
+                class="pitch-selector"
+                on:click={() => (showPitchSelector ? (showPitchSelector = false) : (showPitchSelector = true))}>Select
+                a Pitch
+            </button>
+            <div>
+                {#if showPitchSelector}
+                    <PitchSelector
+                        bind:showPitchSelector
+                        on:message={handlePitchSelector}
+                        bind:pitchName />
+                {/if}
+            </div>
+        </div>
     </div>
 </section>

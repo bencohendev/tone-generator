@@ -1,5 +1,5 @@
 {
-  "name": "TODO",
+  "name": "pitch",
   "description": "TODO",
   "version": "0.0.1",
   "scripts": {
@@ -32,6 +32,6 @@
     "rollup-plugin-terser": "^7.0.0",
     "sapper": "^0.28.0",
     "svelte": "^3.17.3",
-    "svelte-preprocess": "^4.5.2"
+    "svelte-preprocess": "^4.6.1"
   }
 }
