@@ -11,8 +11,6 @@
 	onMount(() => populateAllPitches());
 
 	let populateAllPitches = () => {
-		console.log($allPitches);
-
 		let pitchMultiplier = 1;
 		for (let i = 0; i < 9; i++) {
 			for (let j = 1; j <= $pitches.length; j++) {

@@ -22,6 +22,7 @@
     let freqRange = [];
     let intervalID = null;
     let selectedInstrument;
+    let i = 0;
 
     onMount(() => {
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
@@ -60,89 +61,72 @@
         });
     });
 
-    function seriesPlayer() {
-        if (play && !intervalID) {
-            node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-            /*
-google turn setinterval to setimeout
-
-        $:bpmCalculatedTimeout;
-            const timeFn =(timeout)=>{setTimeout(() => {
-                // do stuff you need to do
-
-                //check for new bpm??? idk
-                timeFn(bpmCalculatedTimeout)
-            }, timeout);
+    let start = () => {
+        if (play) {
+            setTimeout(seriesPlayer, bpm);
+        } else if (!play && node.onOffNode) {
+            node.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
         }
-*/
+    };
 
-            if (!playOnce) {
-                let i = 0;
-                const thePlayer = () =>
+    function seriesPlayer() {
+        node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
+
+        if (!playOnce) {
+            if (i === parseInt(numOfPitches)) {
+                node.seriesGainNode.gain.setValueAtTime(
+                    0,
+                    $audioCtx.currentTime
+                );
+                i = 0;
+            } else {
+                const pitchToPlay =
+                    freqRange[Math.floor(Math.random() * freqRange.length)];
+                node.oscillatorNode.frequency.setValueAtTime(
+                    pitchToPlay.frequency,
+                    $audioCtx.currentTime
+                );
+                node.seriesGainNode.gain.setTargetAtTime(
+                    1,
+                    $audioCtx.currentTime,
+                    0.0001
+                );
+                i++;
+            }
+            setTimeout(() => {
+                node.seriesGainNode.gain.setTargetAtTime(
+                    0,
+                    $audioCtx.currentTime,
+                    0.001
+                );
+            }, bpm - bpm * 0.25);
+            start();
+        } else if (playOnce) {
+            for (let i = 0; i < numOfPitches; i++) {
+                setTimeout(() => {
+                    const pitchToPlay =
+                        freqRange[Math.floor(Math.random() * freqRange.length)];
+                    node.oscillatorNode.frequency.setValueAtTime(
+                        pitchToPlay.frequency,
+                        $audioCtx.currentTime
+                    );
+                    node.seriesGainNode.gain.setTargetAtTime(
+                        1,
+                        $audioCtx.currentTime,
+                        0.001
+                    );
                     setTimeout(() => {
-                        i++;
-                        if (i === parseInt(numOfPitches) + 1) {
-                            node.seriesGainNode.gain.setValueAtTime(
-                                0,
-                                $audioCtx.currentTime
-                            );
-                            i = 0;
-                        } else {
-                            const pitchToPlay =
-                                freqRange[
-                                    Math.floor(Math.random() * freqRange.length)
-                                ];
-                            node.oscillatorNode.frequency.setValueAtTime(
-                                pitchToPlay.frequency,
-                                $audioCtx.currentTime
-                            );
-                            node.seriesGainNode.gain.setTargetAtTime(
-                                1,
-                                $audioCtx.currentTime,
-                                0.0001
-                            );
-                        }
-                        setTimeout(() => {
-                            node.seriesGainNode.gain.setTargetAtTime(
-                                0,
-                                $audioCtx.currentTime,
-                                0.001
-                            );
-                        }, bpm - bpm * 0.25);
-                    }, bpm);
-            } else if (playOnce) {
-                for (let i = 0; i < numOfPitches; i++) {
-                    setTimeout(() => {
-                        const pitchToPlay =
-                            freqRange[
-                                Math.floor(Math.random() * freqRange.length)
-                            ];
-                        node.oscillatorNode.frequency.setValueAtTime(
-                            pitchToPlay.frequency,
-                            $audioCtx.currentTime
-                        );
                         node.seriesGainNode.gain.setTargetAtTime(
-                            1,
+                            0,
                             $audioCtx.currentTime,
                             0.001
                         );
-                        setTimeout(() => {
-                            node.seriesGainNode.gain.setTargetAtTime(
-                                0,
-                                $audioCtx.currentTime,
-                                0.001
-                            );
-                        }, bpm - bpm / 4);
-                    }, bpm * i);
-                }
-                setTimeout(() => {
-                    play = false;
-                }, bpm * numOfPitches);
+                    }, bpm - bpm * 0.25);
+                }, bpm * i);
             }
-        } else if (play) {
-            clearInterval(intervalID);
-            intervalID = null;
-            play = false;
+            setTimeout(() => {
+                play = false;
+            }, bpm * numOfPitches);
         }
     }
 
@@ -232,9 +216,10 @@ google turn setinterval to setimeout
                 );
             }
         }
-        bpm = (60 * 1000) / playSpeed;
-        seriesPlayer(play);
     }
+    $: start(play);
+
+    $: bpm = (60 * 1000) / playSpeed;
 
     console.groupEnd();
 </script>
@@ -280,11 +265,7 @@ google turn setinterval to setimeout
     {/key}
     <div>Set Number of Pitches in Series and Speed</div>
     <input type="number" label="number of pitches" bind:value={numOfPitches} />
-    <input
-        type="number"
-        label="play speed"
-        bind:value={playSpeed}
-        disabled={play} />
+    <input type="number" label="play speed" bind:value={playSpeed} />
     <div>Check to only play pitch set once</div>
     <input type="checkbox" bind:checked={playOnce} disabled={play} />
     <select name="wav-type" class="wav-select" bind:value={wavType}>
