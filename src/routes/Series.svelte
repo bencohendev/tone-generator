@@ -8,7 +8,7 @@
     let onOffVal = 0;
     let node = {};
     let vol = 50;
-    let play = onOffVal === 1 ? true : false;
+    let play = false;
     let wavType = "sine";
     let showPitchSelector = false;
     let lowerClicked = false;
@@ -59,14 +59,9 @@
             panNode,
         });
     });
-    let pitchMultiplier = 1;
 
     function seriesPlayer() {
-        console.log(playSpeed);
-        if (!play && !intervalID) {
-            play = true;
-            bpm = (60 * 1000) / playSpeed;
-            console.log(bpm);
+        if (play && !intervalID) {
             node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
             /*
 google turn setinterval to setimeout
@@ -83,37 +78,38 @@ google turn setinterval to setimeout
 
             if (!playOnce) {
                 let i = 0;
-                intervalID = setInterval(() => {
-                    i++;
-                    if (i === parseInt(numOfPitches) + 1) {
-                        node.seriesGainNode.gain.setValueAtTime(
-                            0,
-                            $audioCtx.currentTime
-                        );
-                        i = 0;
-                    } else {
-                        const pitchToPlay =
-                            freqRange[
-                                Math.floor(Math.random() * freqRange.length)
-                            ];
-                        node.oscillatorNode.frequency.setValueAtTime(
-                            pitchToPlay.frequency,
-                            $audioCtx.currentTime
-                        );
-                        node.seriesGainNode.gain.setTargetAtTime(
-                            1,
-                            $audioCtx.currentTime,
-                            0.0001
-                        );
-                    }
+                const thePlayer = () =>
                     setTimeout(() => {
-                        node.seriesGainNode.gain.setTargetAtTime(
-                            0,
-                            $audioCtx.currentTime,
-                            0.001
-                        );
-                    }, bpm - bpm * 0.25);
-                }, bpm);
+                        i++;
+                        if (i === parseInt(numOfPitches) + 1) {
+                            node.seriesGainNode.gain.setValueAtTime(
+                                0,
+                                $audioCtx.currentTime
+                            );
+                            i = 0;
+                        } else {
+                            const pitchToPlay =
+                                freqRange[
+                                    Math.floor(Math.random() * freqRange.length)
+                                ];
+                            node.oscillatorNode.frequency.setValueAtTime(
+                                pitchToPlay.frequency,
+                                $audioCtx.currentTime
+                            );
+                            node.seriesGainNode.gain.setTargetAtTime(
+                                1,
+                                $audioCtx.currentTime,
+                                0.0001
+                            );
+                        }
+                        setTimeout(() => {
+                            node.seriesGainNode.gain.setTargetAtTime(
+                                0,
+                                $audioCtx.currentTime,
+                                0.001
+                            );
+                        }, bpm - bpm * 0.25);
+                    }, bpm);
             } else if (playOnce) {
                 for (let i = 0; i < numOfPitches; i++) {
                     setTimeout(() => {
@@ -236,10 +232,8 @@ google turn setinterval to setimeout
                 );
             }
         }
-        if (playOnce) {
-            play = false;
-            seriesPlayer();
-        }
+        bpm = (60 * 1000) / playSpeed;
+        seriesPlayer(play);
     }
 
     console.groupEnd();
@@ -312,7 +306,7 @@ google turn setinterval to setimeout
     <button
         class="play"
         disabled={!(lowerVal && upperVal)}
-        on:click={seriesPlayer}>{play ? 'Pause' : 'Play'}
+        on:click={() => (!play ? (play = true) : (play = false))}>{play ? 'Pause' : 'Play'}
     </button>
     {#if !(lowerVal && upperVal)}
         <div>Please Select a Pitch Range</div>
