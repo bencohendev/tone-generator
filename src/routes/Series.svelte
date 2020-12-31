@@ -1,5 +1,5 @@
 <script>
-    import { audioCtx, pitches, octaves, pitchNames } from "../store.js";
+    import { audioCtx, allPitches, octaves, pitchNames } from "../store.js";
     import { onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
 
@@ -8,7 +8,7 @@
     let onOffVal = 0;
     let node = {};
     let vol = 50;
-    let play = onOffVal === 1 ? true : false;
+    let play = false;
     let wavType = "sine";
     let showPitchSelector = false;
     let lowerClicked = false;
@@ -20,12 +20,11 @@
     let numOfPitches = 4;
     let playOnce = false;
     let freqRange = [];
-    let allPitches = [];
     let intervalID = null;
     let selectedInstrument;
+    let i = 0;
 
     onMount(() => {
-        populateAllPitches();
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
         const oscillatorGainNode = $audioCtx.createGain();
         const seriesGainNode = $audioCtx.createGain();
@@ -61,65 +60,61 @@
             panNode,
         });
     });
-    let pitchMultiplier = 1;
 
-    let populateAllPitches = () => {
-        for (let i = 0; i < 9; i++) {
-            for (let j = 1; j <= $pitches.length; j++) {
-                allPitches.push({
-                    pitch: $pitchNames[j] + i,
-                    frequency: $pitches[j] * pitchMultiplier,
-                });
-            }
-            pitchMultiplier = pitchMultiplier * 2;
+    let start = () => {
+        if (play) {
+            setTimeout(seriesPlayer, bpm);
+        } else if (!play && node.onOffNode) {
+            node.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
         }
     };
 
     function seriesPlayer() {
-        console.log(playSpeed);
-        if (!play && !intervalID) {
-            play = true;
-            bpm = (60*1000) / playSpeed;
-            console.log(bpm);
-            node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-            /*
-google turn setinterval to setimeout
+        node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
 
-        $:bpmCalculatedTimeout;
-            const timeFn =(timeout)=>{setTimeout(() => {
-                // do stuff you need to do
-
-                //check for new bpm??? idk
-                timeFn(bpmCalculatedTimeout)
-            }, timeout);
-        }
-*/
-
-            if (!playOnce) {
-                let i = 0;
-                intervalID = setInterval(() => {
-                    i++;
-                    if (i === parseInt(numOfPitches) + 1) {
-                        node.seriesGainNode.gain.setValueAtTime(
-                            0,
-                            $audioCtx.currentTime
-                        );
-                        i = 0;
-                    } else {
-                        const pitchToPlay =
-                            freqRange[
-                                Math.floor(Math.random() * freqRange.length)
-                            ];
-                        node.oscillatorNode.frequency.setValueAtTime(
-                            pitchToPlay.frequency,
-                            $audioCtx.currentTime
-                        );
-                        node.seriesGainNode.gain.setTargetAtTime(
-                            1,
-                            $audioCtx.currentTime,
-                            0.0001
-                        );
-                    }
+        if (!playOnce) {
+            if (i === parseInt(numOfPitches)) {
+                node.seriesGainNode.gain.setValueAtTime(
+                    0,
+                    $audioCtx.currentTime
+                );
+                i = 0;
+            } else {
+                const pitchToPlay =
+                    freqRange[Math.floor(Math.random() * freqRange.length)];
+                node.oscillatorNode.frequency.setValueAtTime(
+                    pitchToPlay.frequency,
+                    $audioCtx.currentTime
+                );
+                node.seriesGainNode.gain.setTargetAtTime(
+                    1,
+                    $audioCtx.currentTime,
+                    0.0001
+                );
+                i++;
+            }
+            setTimeout(() => {
+                node.seriesGainNode.gain.setTargetAtTime(
+                    0,
+                    $audioCtx.currentTime,
+                    0.001
+                );
+            }, bpm - bpm * 0.25);
+            start();
+        } else if (playOnce) {
+            for (let i = 0; i < numOfPitches; i++) {
+                setTimeout(() => {
+                    const pitchToPlay =
+                        freqRange[Math.floor(Math.random() * freqRange.length)];
+                    node.oscillatorNode.frequency.setValueAtTime(
+                        pitchToPlay.frequency,
+                        $audioCtx.currentTime
+                    );
+                    node.seriesGainNode.gain.setTargetAtTime(
+                        1,
+                        $audioCtx.currentTime,
+                        0.001
+                    );
                     setTimeout(() => {
                         node.seriesGainNode.gain.setTargetAtTime(
                             0,
@@ -127,40 +122,11 @@ google turn setinterval to setimeout
                             0.001
                         );
                     }, bpm - bpm * 0.25);
-                }, bpm);
-            } else if (playOnce) {
-                for (let i = 0; i < numOfPitches; i++) {
-                    setTimeout(() => {
-                        const pitchToPlay =
-                            freqRange[
-                                Math.floor(Math.random() * freqRange.length)
-                            ];
-                        node.oscillatorNode.frequency.setValueAtTime(
-                            pitchToPlay.frequency,
-                            $audioCtx.currentTime
-                        );
-                        node.seriesGainNode.gain.setTargetAtTime(
-                            1,
-                            $audioCtx.currentTime,
-                            0.001
-                        );
-                        setTimeout(() => {
-                            node.seriesGainNode.gain.setTargetAtTime(
-                                0,
-                                $audioCtx.currentTime,
-                                0.001
-                            );
-                        }, bpm - bpm / 4);
-                    }, bpm * i);
-                }
-                setTimeout(() => {
-                    play = false;
-                }, bpm * numOfPitches);
+                }, bpm * i);
             }
-        } else if (play) {
-            clearInterval(intervalID);
-            intervalID = null;
-            play = false;
+            setTimeout(() => {
+                play = false;
+            }, bpm * numOfPitches);
         }
     }
 
@@ -242,20 +208,18 @@ google turn setinterval to setimeout
 
             //Wave Type Selector
             node.oscillatorNode.type = wavType.toLowerCase();
-
             if (lowerVal && upperVal) {
-                freqRange = allPitches.filter(
+                freqRange = $allPitches.filter(
                     (pitch) =>
                         pitch.frequency >= lowerVal.frequency &&
                         pitch.frequency <= upperVal.frequency
                 );
             }
         }
-        if (playOnce) {
-            play = false;
-            seriesPlayer();
-        }
     }
+    $: start(play);
+
+    $: bpm = (60 * 1000) / playSpeed;
 
     console.groupEnd();
 </script>
@@ -301,11 +265,7 @@ google turn setinterval to setimeout
     {/key}
     <div>Set Number of Pitches in Series and Speed</div>
     <input type="number" label="number of pitches" bind:value={numOfPitches} />
-    <input
-        type="number"
-        label="play speed"
-        bind:value={playSpeed}
-        disabled={play} />
+    <input type="number" label="play speed" bind:value={playSpeed} />
     <div>Check to only play pitch set once</div>
     <input type="checkbox" bind:checked={playOnce} disabled={play} />
     <select name="wav-type" class="wav-select" bind:value={wavType}>
@@ -327,16 +287,20 @@ google turn setinterval to setimeout
     <button
         class="play"
         disabled={!(lowerVal && upperVal)}
-        on:click={seriesPlayer}>{play ? 'Pause' : 'Play'}
+        on:click={() => (!play ? (play = true) : (play = false))}>{play ? 'Pause' : 'Play'}
     </button>
     {#if !(lowerVal && upperVal)}
         <div>Please Select a Pitch Range</div>
     {/if}
 </section>
-<PitchSelector
-    {showPitchSelector}
-    {lowerVal}
-    {upperVal}
-    {lowerClicked}
-    {upperClicked}
-    on:message={handleMessage} />
+<div>
+    {#if showPitchSelector}
+        <PitchSelector
+            {showPitchSelector}
+            {lowerVal}
+            {upperVal}
+            {lowerClicked}
+            {upperClicked}
+            on:message={handleMessage} />
+    {/if}
+</div>

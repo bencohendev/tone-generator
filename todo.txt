@@ -1,9 +1,14 @@
 1. Basic Design
     a.Figma!
-2. outside a box click event
+
 3. way to interact with bpm while playing
 
 
 thoughts:
 check browsers for maximum number of oscillators
 don't automatically play overtone sets
+
+12/30
+I should make the initial selection of pitch range be one button that then prompts for lower boundary and upper boundary and then allows for individual selection like it is now
+
+

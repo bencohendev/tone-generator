@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
 
     import { audioCtx, pitches, octaves, pitchNames } from "../store.js";
-
+    import uuid from "shortid";
     import StaticOscillator from "../components/StaticOscillator.svelte";
 
     $: console.group("static");
@@ -11,7 +11,6 @@
     let panVal = 0;
     let onOffVal = 0;
     let freqVal = 440;
-    let id = 0;
     let selectedOctave;
     let selectedPitch;
     let selectedOvertones;
@@ -23,47 +22,34 @@
     });
 
     function newOscillator(panVal, onOffVal, freqVal) {
+        let id = uuid.generate();
         newNode = $audioCtx.createOscillator();
         newNode.freqVal = freqVal;
         newNode.panVal = panVal;
         newNode.onOffVal = onOffVal;
         newNode.started = false;
         newNode.id = id;
-        id++;
         oscillatorNodes = [...oscillatorNodes, newNode];
     }
 
     function handleCloseStaticOscillator(e) {
-        let oscillatorNodeCopy = oscillatorNodes;
-        oscillatorNodeCopy.splice(e.detail, 1);
-        oscillatorNodes = [...oscillatorNodeCopy];
+        oscillatorNodes.splice(e.detail, 1);
+        oscillatorNodes = oscillatorNodes;
     }
 
     function playAllHandler() {
-        let oscillatorNodesCopy = oscillatorNodes;
+        let isAllPlaying = oscillatorNodes.every(
+            (oscNode) => oscNode.onOffVal === 1
+        );
 
-        if (
-            oscillatorNodesCopy.every(
-                (oscillatorNode) => oscillatorNode.onOffVal === 1
-            )
-        ) {
-            oscillatorNodesCopy.forEach(
-                (oscillatorNode) => (oscillatorNode.onOffVal = 0)
-            );
-        } else {
-            oscillatorNodesCopy.forEach(
-                (oscillatorNode) => (oscillatorNode.onOffVal = 1)
-            );
-        }
-
-        return (oscillatorNodes = [...oscillatorNodesCopy]);
+        oscillatorNodes.forEach(
+            (oscNode) => (oscNode.onOffVal = isAllPlaying ? 0 : 1)
+        );
+        oscillatorNodes = oscillatorNodes;
     }
     function muteAllHandler() {
-        let oscillatorNodesCopy = oscillatorNodes;
-        oscillatorNodesCopy.forEach(
-            (oscillatorNode) => (oscillatorNode.onOffVal = 0)
-        );
-        return (oscillatorNodes = [...oscillatorNodesCopy]);
+        oscillatorNodes.forEach((oscNode) => (oscNode.onOffVal = 0));
+        oscillatorNodes = oscillatorNodes;
     }
 
     function handleSelectedOvertones(selectedOctave, selectedPitch) {
