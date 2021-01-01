@@ -14,5 +14,8 @@ I should make the initial selection of pitch range be one button that then promp
 
 12/31
 pan closes on click inside pan
+pan and wavtype can open on multiple oscillator instances 
+something weird happening with select overtone preset (generated pitches are not matching selected fundamental)
+wonky stuff with the ~pitch function
 add keyboard support
 add sruti drones

@@ -1,14 +1,17 @@
 <script>
-    import { audioCtx, allPitches, octaves, pitchNames } from "../store.js";
+    import { audioCtx, allPitches } from "../store.js";
     import { onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
+    import { createNewOscillator } from "../components/NewOscillator.svelte";
 
     console.group("series");
-    let oscNode;
-    let onOffVal = 0;
-    let node = {};
+
+    let oscillator = {};
     let vol = 50;
     let play = false;
+    let freq = 440;
+    let pan = 0;
+    let series = 0;
     let wavType = "sine";
     let showPitchSelector = false;
     let lowerClicked = false;
@@ -20,61 +23,27 @@
     let numOfPitches = 4;
     let playOnce = false;
     let freqRange = [];
-    let intervalID = null;
     let selectedInstrument;
     let i = 0;
 
     onMount(() => {
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
-        const oscillatorGainNode = $audioCtx.createGain();
-        const seriesGainNode = $audioCtx.createGain();
-        const onOffNode = $audioCtx.createGain();
-        const panNode = $audioCtx.createPanner();
-
-        oscNode = $audioCtx.createOscillator();
-        oscNode.freqVal = 440;
-        oscNode.panVal = 0;
-        oscNode.onOffVal = 0;
-        oscNode.started = false;
-
-        //initialize node values
-        oscillatorGainNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
-        seriesGainNode.gain.setValueAtTime(0, $audioCtx.currentTime);
-        onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
-        panNode.panningModel = "equalpower";
-        panNode.setPosition(0, 0, 0);
-
-        //connect node chain
-        oscNode.connect(oscillatorGainNode);
-        oscillatorGainNode.connect(seriesGainNode);
-        seriesGainNode.connect(onOffNode);
-        onOffNode.connect(panNode);
-        panNode.connect($audioCtx.destination);
-
-        oscNode.start();
-        return (node = {
-            oscNode,
-            oscillatorGainNode,
-            seriesGainNode,
-            onOffNode,
-            panNode,
-        });
+        oscillator = createNewOscillator($audioCtx, freq, pan, series);
     });
-
     let start = () => {
         if (play) {
             setTimeout(seriesPlayer, bpm);
-        } else if (!play && node.onOffNode) {
-            node.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+        } else if (!play && oscillator.onOffNode) {
+            oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
         }
     };
 
     function seriesPlayer() {
-        node.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
+        oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
 
         if (!playOnce) {
             if (i === parseInt(numOfPitches)) {
-                node.seriesGainNode.gain.setValueAtTime(
+                oscillator.seriesGainNode.gain.setValueAtTime(
                     0,
                     $audioCtx.currentTime
                 );
@@ -82,11 +51,11 @@
             } else {
                 const pitchToPlay =
                     freqRange[Math.floor(Math.random() * freqRange.length)];
-                node.oscNode.frequency.setValueAtTime(
+                oscillator.oscNode.frequency.setValueAtTime(
                     pitchToPlay.frequency,
                     $audioCtx.currentTime
                 );
-                node.seriesGainNode.gain.setTargetAtTime(
+                oscillator.seriesGainNode.gain.setTargetAtTime(
                     1,
                     $audioCtx.currentTime,
                     0.0001
@@ -94,7 +63,7 @@
                 i++;
             }
             setTimeout(() => {
-                node.seriesGainNode.gain.setTargetAtTime(
+                oscillator.seriesGainNode.gain.setTargetAtTime(
                     0,
                     $audioCtx.currentTime,
                     0.001
@@ -106,17 +75,17 @@
                 setTimeout(() => {
                     const pitchToPlay =
                         freqRange[Math.floor(Math.random() * freqRange.length)];
-                    node.oscNode.frequency.setValueAtTime(
+                    oscillator.oscNode.frequency.setValueAtTime(
                         pitchToPlay.frequency,
                         $audioCtx.currentTime
                     );
-                    node.seriesGainNode.gain.setTargetAtTime(
+                    oscillator.seriesGainNode.gain.setTargetAtTime(
                         1,
                         $audioCtx.currentTime,
                         0.001
                     );
                     setTimeout(() => {
-                        node.seriesGainNode.gain.setTargetAtTime(
+                        oscillator.seriesGainNode.gain.setTargetAtTime(
                             0,
                             $audioCtx.currentTime,
                             0.001
@@ -150,7 +119,6 @@
         }
     }
     function pitchSelector(event) {
-        console.log(lowerVal);
         if (event.srcElement.id === "lower-val") {
             showPitchSelector = true;
             lowerClicked = true;
@@ -198,16 +166,16 @@
 
     $: {
         //if statement checks to ensure all node values are returned
-        if (node.panNode) {
+        if (oscillator.panNode) {
             //volume control
-            node.oscillatorGainNode.gain.setTargetAtTime(
+            oscillator.oscillatorGainNode.gain.setTargetAtTime(
                 vol / 100,
                 $audioCtx.currentTime,
                 0.001
             );
 
             //Wave Type Selector
-            node.oscNode.type = wavType.toLowerCase();
+            oscillator.oscNode.type = wavType.toLowerCase();
             if (lowerVal && upperVal) {
                 freqRange = $allPitches.filter(
                     (pitch) =>
@@ -293,6 +261,7 @@
         <div>Please Select a Pitch Range</div>
     {/if}
 </section>
+
 <div>
     {#if showPitchSelector}
         <PitchSelector

@@ -2,7 +2,7 @@
     import { fade } from "svelte/transition";
 
     $: console.group("Pan");
-    export let panVal;
+    export let pan;
     export let showPanSelector;
 
     console.groupEnd();
@@ -79,33 +79,27 @@
 
 <div class="pan-controller" transition:fade>
     <div class="pan-buttons">
-        <button
-            class="pan-left-button"
-            on:click={() => (panVal = -1)}>L</button>
-        <button
-            class="pan-center-button"
-            on:click={() => (panVal = 0)}>C</button>
-        <button
-            class="pan-right-button"
-            on:click={() => (panVal = 1)}>R</button>
+        <button class="pan-left-button" on:click={() => (pan = -1)}>L</button>
+        <button class="pan-center-button" on:click={() => (pan = 0)}>C</button>
+        <button class="pan-right-button" on:click={() => (pan = 1)}>R</button>
     </div>
     <div class="pan-slider">
         <img
             class="pan-left-icon"
             src="../icons/pan.png"
             alt="pan left"
-            on:click={() => (panVal = -1)} />
+            on:click={() => (pan = -1)} />
         <input
             type="range"
             min="-1"
             max="1"
             step={0.01}
-            bind:value={panVal}
+            bind:value={pan}
             class="slider pan" />
         <img
             class="pan-right-icon"
             src="../icons/pan.png"
             alt="pan right"
-            on:click={() => (panVal = 1)} />
+            on:click={() => (pan = 1)} />
     </div>
 </div>

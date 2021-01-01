@@ -9,13 +9,14 @@
 
     $: console.group("Static Oscillator");
 
-    export let oscNode;
+    export let oscillator;
     export let i;
-    export let panVal;
+    export let pan;
     export let onOffVal;
-    export let freqSliderVal;
 
-    let play = onOffVal === 1 ? true : false;
+    let freqSliderVal;
+
+    let play = false;
     let vol = 50;
     export let freq = Math.round((440 + Number.EPSILON) * 1000) / 1000;
     let wavType = "sine";
@@ -27,43 +28,17 @@
     let closestPitch;
 
     const dispatch = createEventDispatcher();
-
-    //createoscillatorNodes. oscillatorGainNode used for volume control. onOffNode used for playing and pausing. PanoscillatorNode for panning
-    const oscillatorGainNode = $audioCtx.createGain();
-    const onOffNode = $audioCtx.createGain();
-    const panNode = $audioCtx.createPanner();
-
-    //initializeoscillatorNode values
-    oscillatorGainNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
-    onOffNode.gain.setValueAtTime(onOffVal, $audioCtx.currentTime);
-    panNode.panningModel = "equalpower";
-    panNode.setPosition(panVal, 0, 0);
-
-    //connectoscillatorNode chain
-    oscNode.connect(oscillatorGainNode);
-    oscillatorGainNode.connect(onOffNode);
-    onOffNode.connect(panNode);
-    panNode.connect($audioCtx.destination);
-
-    oscNode.frequency.setValueAtTime(freq, $audioCtx.currentTime);
-    onMount(() => {
-        if (!oscNode.started) {
-            oscNode.start();
-            oscNode.started = true;
-        }
-    });
-
     onDestroy(() => {
-        onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+        oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
         play = false;
     });
 
     function playHandler() {
         if (onOffVal === 1) {
-            onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
+            oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
             play = true;
         } else if (onOffVal === 0) {
-            onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+            oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
             play = false;
         }
     }
@@ -81,13 +56,16 @@
     }
     function changeFreqSlider() {
         freq = 2 ** freqSliderVal;
-        oscNode.freqSliderVal = freqSliderVal;
+        oscillator.oscNode.freqSliderVal = freqSliderVal;
     }
 
     $: {
         //frequency control
         freq = Math.round(freq);
-        oscNode.frequency.setValueAtTime(freq, $audioCtx.currentTime);
+        oscillator.oscNode.frequency.setValueAtTime(
+            freq,
+            $audioCtx.currentTime
+        );
 
         closestPitch = $allPitches.reduce((a, b) => {
             return Math.abs(b.frequency - freq) < Math.abs(a.frequency - freq)
@@ -98,14 +76,17 @@
 
     $: {
         //pan control
-        panNode.setPosition(panVal / 100, 0, 0);
+        oscillator.panNode.setPosition(pan / 100, 0, 0);
     }
     //Wave Type Selector
-    $: oscNode.type = wavType;
+    $: oscillator.oscNode.type = wavType;
     $: playHandler(onOffVal);
 
     //volume control
-    $: oscillatorGainNode.gain.setValueAtTime(vol / 100, $audioCtx.currentTime);
+    $: oscillator.oscillatorGainNode.gain.setValueAtTime(
+        vol / 100,
+        $audioCtx.currentTime
+    );
     console.groupEnd();
 </script>
 
@@ -298,7 +279,9 @@
     <div class="vol-pan-wav-container">
         <button
             class="play-button {play ? 'playing' : 'paused'}"
-            on:click={() => (onOffVal === 1 ? (onOffVal = 0) : (onOffVal = 1))}>{play ? 'Pause' : 'Play'}
+            on:click={() => {
+                onOffVal === 1 ? (onOffVal = 0) : (onOffVal = 1);
+            }}>{play ? 'Pause' : 'Play'}
         </button>
         <div class="slide-container volume">
             <img
@@ -335,7 +318,7 @@
                 on:click={() => (showPanSelector ? (showPanSelector = false) : (showPanSelector = true))}>
                 Pan
                 {#if showPanSelector}
-                    <Pan bind:panVal bind:showPanSelector />
+                    <Pan bind:pan bind:showPanSelector />
                 {/if}
             </button>
         </div>
