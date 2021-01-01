@@ -14,3 +14,5 @@ I should make the initial selection of pitch range be one button that then promp
 
 12/31
 pan closes on click inside pan
+add keyboard support
+add sruti drones
