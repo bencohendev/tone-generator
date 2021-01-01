@@ -4,7 +4,7 @@
     import PitchSelector from "../components/PitchSelector.svelte";
 
     console.group("series");
-    let oscillatorNode;
+    let oscNode;
     let onOffVal = 0;
     let node = {};
     let vol = 50;
@@ -31,11 +31,11 @@
         const onOffNode = $audioCtx.createGain();
         const panNode = $audioCtx.createPanner();
 
-        oscillatorNode = $audioCtx.createOscillator();
-        oscillatorNode.freqVal = 440;
-        oscillatorNode.panVal = 0;
-        oscillatorNode.onOffVal = 0;
-        oscillatorNode.started = false;
+        oscNode = $audioCtx.createOscillator();
+        oscNode.freqVal = 440;
+        oscNode.panVal = 0;
+        oscNode.onOffVal = 0;
+        oscNode.started = false;
 
         //initialize node values
         oscillatorGainNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
@@ -45,15 +45,15 @@
         panNode.setPosition(0, 0, 0);
 
         //connect node chain
-        oscillatorNode.connect(oscillatorGainNode);
+        oscNode.connect(oscillatorGainNode);
         oscillatorGainNode.connect(seriesGainNode);
         seriesGainNode.connect(onOffNode);
         onOffNode.connect(panNode);
         panNode.connect($audioCtx.destination);
 
-        oscillatorNode.start();
+        oscNode.start();
         return (node = {
-            oscillatorNode,
+            oscNode,
             oscillatorGainNode,
             seriesGainNode,
             onOffNode,
@@ -82,7 +82,7 @@
             } else {
                 const pitchToPlay =
                     freqRange[Math.floor(Math.random() * freqRange.length)];
-                node.oscillatorNode.frequency.setValueAtTime(
+                node.oscNode.frequency.setValueAtTime(
                     pitchToPlay.frequency,
                     $audioCtx.currentTime
                 );
@@ -106,7 +106,7 @@
                 setTimeout(() => {
                     const pitchToPlay =
                         freqRange[Math.floor(Math.random() * freqRange.length)];
-                    node.oscillatorNode.frequency.setValueAtTime(
+                    node.oscNode.frequency.setValueAtTime(
                         pitchToPlay.frequency,
                         $audioCtx.currentTime
                     );
@@ -207,7 +207,7 @@
             );
 
             //Wave Type Selector
-            node.oscillatorNode.type = wavType.toLowerCase();
+            node.oscNode.type = wavType.toLowerCase();
             if (lowerVal && upperVal) {
                 freqRange = $allPitches.filter(
                     (pitch) =>

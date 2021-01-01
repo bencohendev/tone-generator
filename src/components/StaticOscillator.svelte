@@ -9,7 +9,7 @@
 
     $: console.group("Static Oscillator");
 
-    export let oscillatorNode;
+    export let oscNode;
     export let i;
     export let panVal;
     export let onOffVal;
@@ -40,16 +40,16 @@
     panNode.setPosition(panVal, 0, 0);
 
     //connectoscillatorNode chain
-    oscillatorNode.connect(oscillatorGainNode);
+    oscNode.connect(oscillatorGainNode);
     oscillatorGainNode.connect(onOffNode);
     onOffNode.connect(panNode);
     panNode.connect($audioCtx.destination);
 
-    oscillatorNode.frequency.setValueAtTime(freq, $audioCtx.currentTime);
+    oscNode.frequency.setValueAtTime(freq, $audioCtx.currentTime);
     onMount(() => {
-        if (!oscillatorNode.started) {
-            oscillatorNode.start();
-            oscillatorNode.started = true;
+        if (!oscNode.started) {
+            oscNode.start();
+            oscNode.started = true;
         }
     });
 
@@ -81,28 +81,13 @@
     }
     function changeFreqSlider() {
         freq = 2 ** freqSliderVal;
-        oscillatorNode.freqSliderVal = freqSliderVal;
+        oscNode.freqSliderVal = freqSliderVal;
     }
 
     $: {
+        //frequency control
         freq = Math.round(freq);
-
-        //oscillatorNode.frequency.setValueAtTime(freqSliderVal, $audioCtx.currentTime);
-        oscillatorNode.frequency.setValueAtTime(freq, $audioCtx.currentTime);
-
-        //volume control
-        oscillatorGainNode.gain.setValueAtTime(
-            vol / 100,
-            $audioCtx.currentTime
-        );
-        //pan control
-        oscillatorNode.panVal = panVal;
-        panNode.setPosition(panVal / 100, 0, 0);
-
-        //Wave Type Selector
-        oscillatorNode.type = wavType;
-
-        playHandler(onOffVal);
+        oscNode.frequency.setValueAtTime(freq, $audioCtx.currentTime);
 
         closestPitch = $allPitches.reduce((a, b) => {
             return Math.abs(b.frequency - freq) < Math.abs(a.frequency - freq)
@@ -111,6 +96,16 @@
         });
     }
 
+    $: {
+        //pan control
+        panNode.setPosition(panVal / 100, 0, 0);
+    }
+    //Wave Type Selector
+    $: oscNode.type = wavType;
+    $: playHandler(onOffVal);
+
+    //volume control
+    $: oscillatorGainNode.gain.setValueAtTime(vol / 100, $audioCtx.currentTime);
     console.groupEnd();
 </script>
 

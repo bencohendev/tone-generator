@@ -197,13 +197,13 @@
         </div>
     {/if}
 
-    {#each oscillatorNodes as oscillatorNode, i (oscillatorNode.id)}
+    {#each oscillatorNodes as oscNode, i (oscNode.id)}
         <StaticOscillator
-            {oscillatorNode}
+            {oscNode}
             {i}
-            bind:panVal={oscillatorNode.panVal}
-            bind:onOffVal={oscillatorNode.onOffVal}
-            bind:freq={oscillatorNode.freqVal}
+            bind:panVal={oscNode.panVal}
+            bind:onOffVal={oscNode.onOffVal}
+            bind:freq={oscNode.freqVal}
             on:closeStaticOscillator={handleCloseStaticOscillator} />
     {/each}
 </div>
