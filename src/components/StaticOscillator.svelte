@@ -13,12 +13,9 @@
     export let i;
     export let pan;
     export let onOffVal;
-
-    let freqSliderVal;
-
-    let play = false;
-    let vol = 50;
     export let freq = Math.round((440 + Number.EPSILON) * 1000) / 1000;
+
+    let vol = 50;
     let wavType = "sine";
     let showPitchSelector = false;
     let showWavSelector = false;
@@ -26,20 +23,18 @@
     let inputFrequency = false;
     let pitchName;
     let closestPitch;
+    let freqSliderVal;
 
     const dispatch = createEventDispatcher();
     onDestroy(() => {
         oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
-        play = false;
     });
 
     function playHandler() {
         if (onOffVal === 1) {
             oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-            play = true;
         } else if (onOffVal === 0) {
             oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
-            play = false;
         }
     }
 
@@ -61,7 +56,6 @@
 
     $: {
         //frequency control
-        freq = Math.round(freq);
         oscillator.oscNode.frequency.setValueAtTime(
             freq,
             $audioCtx.currentTime
@@ -278,10 +272,10 @@
 
     <div class="vol-pan-wav-container">
         <button
-            class="play-button {play ? 'playing' : 'paused'}"
+            class="play-button {onOffVal === 1 ? 'playing' : 'paused'}"
             on:click={() => {
                 onOffVal === 1 ? (onOffVal = 0) : (onOffVal = 1);
-            }}>{play ? 'Pause' : 'Play'}
+            }}>{onOffVal === 1 ? 'Pause' : 'Play'}
         </button>
         <div class="slide-container volume">
             <img
@@ -338,7 +332,7 @@
         <div class="frequency-controls">
             <button
                 class="frequency-arith-button"
-                on:click={() => (freq /= 2)}>&divide; 2
+                on:click={() => (freq *= 0.5)}>&divide; 2
             </button>
             <button
                 class="frequency-arith-button"
@@ -350,7 +344,7 @@
                 on:click={() => (inputFrequency ? (inputFrequency = false) : (inputFrequency = true))}>
                 {#if inputFrequency}
                     <input type="number" autofocus bind:value={freq} step={1} />
-                {:else}{freq}{/if}
+                {:else}{parseFloat(freq.toFixed(2))}{/if}
                 Hz
                 <div class="frequency-click" />
             </div>

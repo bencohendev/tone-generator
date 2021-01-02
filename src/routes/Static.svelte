@@ -4,7 +4,7 @@
     import { audioCtx, pitches, octaves, pitchNames } from "../store.js";
     import uuid from "shortid";
     import StaticOscillator from "../components/StaticOscillator.svelte";
-    import { createNewOscillator } from "../components/NewOscillator.svelte";
+    import { createNewOscillator } from "../services/NewOscillator.svelte";
 
     $: console.group("static");
     let oscillator = {};
@@ -53,6 +53,7 @@
     }
 
     function handleSelectedOvertones(selectedOctave, selectedPitch) {
+        console.log(selectedOctave);
         typeof selectedOctave === "number"
             ? selectedOctave
             : (selectedOctave = 4);
@@ -64,17 +65,17 @@
                 oscillatorArray = [];
                 addNewOscillator(
                     (pan = -1),
-                    (freq = selectedPitch * (selectedOctave + 1))
+                    (freq = selectedPitch * selectedOctave)
                 );
 
                 addNewOscillator(
                     (pan = 1),
-                    (freq = selectedPitch * (selectedOctave + 1) * 3)
+                    (freq = selectedPitch * selectedOctave * 3)
                 );
 
                 addNewOscillator(
                     (pan = -1),
-                    (freq = selectedPitch * (selectedOctave + 1) * 5)
+                    (freq = selectedPitch * selectedOctave * 5)
                 );
                 selectedOvertones = "Select Overtone Set";
 
@@ -85,21 +86,21 @@
                 oscillatorArray = [];
                 addNewOscillator(
                     (pan = -1),
-                    (freq = selectedPitch * (selectedOctave + 1))
+                    (freq = selectedPitch * selectedOctave)
                 );
 
                 addNewOscillator(
                     (pan = 1),
-                    (freq = selectedPitch * (selectedOctave + 1) * 3)
+                    (freq = selectedPitch * selectedOctave * 3)
                 );
 
                 addNewOscillator(
                     (pan = -1),
-                    (freq = selectedPitch * (selectedOctave + 1) * 5)
+                    (freq = selectedPitch * selectedOctave * 5)
                 );
                 addNewOscillator(
                     (pan = 1),
-                    (freq = selectedPitch * (selectedOctave + 1) * 8)
+                    (freq = selectedPitch * selectedOctave * 8)
                 );
                 selectedOvertones = "Select Overtone Set";
 
