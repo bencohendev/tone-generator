@@ -3,6 +3,7 @@
     import { onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
     import { createNewOscillator } from "../services/NewOscillator.svelte";
+    import WaveType from "../components/WaveType.svelte";
 
     console.group("series");
 
@@ -12,7 +13,9 @@
     let freq = 440;
     let pan = 0;
     let series = 0;
+    let showWavSelector = false;
     let wavType = "sine";
+
     let showPitchSelector = false;
     let lowerClicked = false;
     let upperClicked = false;
@@ -30,7 +33,7 @@
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
         oscillator = createNewOscillator($audioCtx, freq, pan, series);
     });
-    let start = () => {
+    let playHandler = () => {
         if (play) {
             setTimeout(seriesPlayer, bpm);
         } else if (!play && oscillator.onOffNode) {
@@ -69,7 +72,7 @@
                     0.001
                 );
             }, bpm - bpm * 0.25);
-            start();
+            playHandler();
         } else if (playOnce) {
             for (let i = 0; i < numOfPitches; i++) {
                 setTimeout(() => {
@@ -185,7 +188,7 @@
             }
         }
     }
-    $: start(play);
+    $: playHandler(play);
 
     $: bpm = (60 * 1000) / playSpeed;
 
@@ -194,72 +197,186 @@
 
 <style lang="scss">
     .card {
-        align-items: center;
-        justify-content: center;
+        display: grid;
         box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
             0px 3px 4px 0px rgba(0, 0, 0, 0.14),
             0px 1px 8px 0px rgba(0, 0, 0, 0.12);
         background-color: grey;
     }
-    .series {
-        align-items: center;
-        justify-content: center;
+
+    .text-info {
+        text-align: center;
+        margin-bottom: 0.25rem;
     }
+
+    .pitch-select-container,
+    .instrument-select-container,
+    .bpm-container,
+    .play-once-container {
+        text-align: center;
+        margin: 1rem 0;
+    }
+
+    .play-container {
+        text-align: center;
+        margin: 1rem 0;
+
+        button {
+            padding: 1rem 2.5rem;
+        }
+    }
+
+    .volume {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        input {
+            width: 60%;
+        }
+        img {
+            width: 20px;
+        }
+    }
+
+    // .wav-select-container {
+    //     position: relative;
+    //     .wav-select {
+    //         position: absolute;
+    //         top: 3rem;
+    //         left: -100%;
+    //         background-color: rgb(221, 221, 221);
+    //         display: flex;
+    //         box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
+    //             0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+    //             0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+    //         &::after {
+    //             content: "";
+    //             position: absolute;
+    //             width: 12px;
+    //             height: 12px;
+    //             left: 50%;
+    //             top: -10px;
+    //             transform: translate(-50%, 50%) rotate(45deg);
+    //             background-color: rgb(221, 221, 221);
+    //             //box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+    //         }
+
+    //         .wav-select-box {
+    //             margin: 0.5rem;
+    //         }
+    //     }
+
+    //     .wav-select-button {
+    //         background-size: contain;
+    //         margin-right: 1rem;
+    //         background-position: center;
+    //         background-repeat: no-repeat;
+    //         width: 40px;
+    //         height: 100%;
+    //         &.sine {
+    //             background-image: url("/icons/sine.png");
+    //         }
+    //         &.square {
+    //             background-image: url("/icons/square.png");
+    //         }
+    //         &.triangle {
+    //             background-image: url("/icons/triangle.png");
+    //         }
+    //         &.sawtooth {
+    //             background-image: url("/icons/sawtooth.png");
+    //         }
+    //     }
+    //     .wav-select-box {
+    //         img {
+    //             width: 20px;
+    //         }
+    //     }
+    // }
 </style>
 
 <section class="series card">
-    <!-- svelte-ignore a11y-no-onchange -->
-    <select
-        name="select-instrument"
-        id="select-instrument"
-        bind:value={selectedInstrument}
-        on:change={() => handleSelectedInstrument(selectedInstrument, lowerVal, upperVal)}>
-        <option>Select and Instrument</option>
-        <option>Electric Guitar</option>
-        <option>Tenor Saxophone</option>
-    </select>
-    <div>Or Manually Choose a Pitch Range</div>
-    {#key lowerVal}
+    <div class="pitch-select-container">
+        <div class="text-info">Choose a Pitch Range</div>
+
+        {#key lowerVal}
+            <button
+                id="lower-val"
+                class="pitch-selector"
+                on:click={pitchSelector}>{lowerVal ? lowerVal.pitchName + lowerVal.i : 'Select a Pitch'}</button>
+        {/key}
+        {#key upperVal}
+            <button
+                id="upper-val"
+                class="pitch-selector"
+                on:click={pitchSelector}>{upperVal ? upperVal.pitchName + upperVal.i : 'Select a Pitch'}</button>
+        {/key}
+    </div>
+    <div class="instrument-select-container">
+        <div class="text-info">Or Set Range By Instrument</div>
+
+        <!-- svelte-ignore a11y-no-onchange -->
+        <select
+            name="select-instrument"
+            id="select-instrument"
+            bind:value={selectedInstrument}
+            on:change={() => handleSelectedInstrument(selectedInstrument, lowerVal, upperVal)}>
+            <option>Select an Instrument</option>
+            <option>Electric Guitar</option>
+            <option>Tenor Saxophone</option>
+        </select>
+    </div>
+    <div class="bpm-container">
+        <div class="text-info">Set Number of Pitches to Play and Speed</div>
+
+        <input
+            type="number"
+            label="number of pitches"
+            bind:value={numOfPitches} />
+        <input type="number" label="play speed" bind:value={playSpeed} />
+    </div>
+    <div class="play-once-container">
+        <div class="text-info">Check to only play pitch set once</div>
+
+        <input type="checkbox" bind:checked={playOnce} disabled={play} />
+    </div>
+
+    <!-- <div class=" wav-select-container">
         <button
-            id="lower-val"
-            class="pitch-selector"
-            on:click={pitchSelector}>{lowerVal ? lowerVal.pitchName + lowerVal.i : 'Select a Pitch'}</button>
-    {/key}
-    {#key upperVal}
-        <button
-            id="upper-val"
-            class="pitch-selector"
-            on:click={pitchSelector}>{upperVal ? upperVal.pitchName + upperVal.i : 'Select a Pitch'}</button>
-    {/key}
-    <div>Set Number of Pitches in Series and Speed</div>
-    <input type="number" label="number of pitches" bind:value={numOfPitches} />
-    <input type="number" label="play speed" bind:value={playSpeed} />
-    <div>Check to only play pitch set once</div>
-    <input type="checkbox" bind:checked={playOnce} disabled={play} />
-    <select name="wav-type" class="wav-select" bind:value={wavType}>
-        <option>Sine</option>
-        <option>Triangle</option>
-        <option>Sawtooth</option>
-        <option>Square</option>
-    </select>
+            class="wav-select-button {wavType}"
+            on:click={() => (showWavSelector ? (showWavSelector = false) : (showWavSelector = true))}>
+            {#if showWavSelector}
+                <WaveType bind:wavType bind:showWavSelector />
+            {/if}
+        </button>
+    </div> -->
     <div class="slide-container volume">
+        <img
+            class="volume-low"
+            src={vol === 0 ? '../icons/volume-off.png' : '../icons/volume-low.png'}
+            alt="volume"
+            on:click={() => (vol = 0)} />
         <input
             type="range"
             min="0"
             max="100"
             bind:value={vol}
             class="slider volume" />
-        <div>Volume</div>
+        <img
+            class="volume-full"
+            src="../icons/volume-full.png"
+            alt="volume"
+            on:click={() => (vol = 100)} />
     </div>
-
-    <button
-        class="play"
-        disabled={!(lowerVal && upperVal)}
-        on:click={() => (!play ? (play = true) : (play = false))}>{play ? 'Pause' : 'Play'}
-    </button>
-    {#if !(lowerVal && upperVal)}
-        <div>Please Select a Pitch Range</div>
-    {/if}
+    <div class="play-container">
+        <button
+            class="play"
+            disabled={!(lowerVal && upperVal)}
+            on:click={() => (!play ? (play = true) : (play = false))}>{play ? 'Pause' : 'Play'}
+        </button>
+        {#if !(lowerVal && upperVal)}
+            <div class="text-info">Select a Pitch Range to Play</div>
+        {/if}
+    </div>
 </section>
 
 <div>
