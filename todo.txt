@@ -1,16 +1,14 @@
-1. Basic Design
-    a.Figma!
-
-thoughts:
-check browsers for maximum number of oscillators
-
-
-12/30
-I should make the initial selection of pitch range be one button that then prompts for lower boundary and upper boundary and then allows for individual selection like it is now
-
-
-12/31
+Make the initial selection of pitch range be one button that then prompts for lower boundary and upper boundary and then allows for individual selection like it is now
 pan closes on click inside pan
 pan and wavtype can open on multiple oscillator instances 
 add keyboard support
 add sruti drones
+add a bit of space between speaker icons and slider on volume
+change all the colors
+style slider bars
+add click button for round to pitch feature
+figure out correct interaction for typing in a frequency
+change wording 'Generate Overtone Preset'
+fix pitch selector positioning
+fix color of wav images
+change something about warning text 'Select a Pitch Range to Play'
