@@ -1,12 +1,9 @@
 1. Basic Design
     a.Figma!
 
-3. way to interact with bpm while playing
-
-
 thoughts:
 check browsers for maximum number of oscillators
-don't automatically play overtone sets
+
 
 12/30
 I should make the initial selection of pitch range be one button that then prompts for lower boundary and upper boundary and then allows for individual selection like it is now
@@ -15,7 +12,5 @@ I should make the initial selection of pitch range be one button that then promp
 12/31
 pan closes on click inside pan
 pan and wavtype can open on multiple oscillator instances 
-something weird happening with select overtone preset (generated pitches are not matching selected fundamental)
-wonky stuff with the ~pitch function
 add keyboard support
 add sruti drones

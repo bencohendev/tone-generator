@@ -2,7 +2,7 @@
     import { audioCtx, allPitches } from "../store.js";
     import { onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
-    import { createNewOscillator } from "../components/NewOscillator.svelte";
+    import { createNewOscillator } from "../services/NewOscillator.svelte";
 
     console.group("series");
 

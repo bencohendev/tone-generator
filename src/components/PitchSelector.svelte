@@ -87,7 +87,7 @@
     </div>
     <div class="pitch-row-container">
         {#each $octaves as octave, i}
-            <div class="octave-name">{i}</div>
+            <div class="octave-name">{i + 1}</div>
             <div class="pitch-row">
                 {#each $pitches as pitch, j}
                     <button
