@@ -30,11 +30,8 @@
 <style lang="scss">
     .pitch-selector-container {
         display: grid;
-        position: absolute;
-        width: 75%;
-        top: 21rem;
-        left: 2rem;
-        padding: 1rem;
+        position: relative;
+
         background-color: rgb(221, 221, 221);
         box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
             0px 3px 4px 0px rgba(0, 0, 0, 0.14),
@@ -49,9 +46,15 @@
             transform: translate(-50%, 50%) rotate(45deg);
             background-color: rgb(221, 221, 221);
         }
+        .pitch-selector-inner {
+            position: absolute;
+            width: 100%;
+            background-color: rgb(221, 221, 221);
+            padding: 1rem;
+        }
 
         .close-container {
-            margin: 1rem 1rem 0rem 0rem;
+            margin: 1rem 1rem 2rem 0rem;
             .close {
                 float: right;
             }
@@ -82,21 +85,23 @@
     }} />
 
 <section class="pitch-selector-container" transition:fade>
-    <div class="close-container">
-        <button on:click={closePitchSelector} class="close">X</button>
-    </div>
-    <div class="pitch-row-container">
-        {#each $octaves as octave, i}
-            <div class="octave-name">{i + 1}</div>
-            <div class="pitch-row">
-                {#each $pitches as pitch, j}
-                    <button
-                        class="pitch-button"
-                        disabled={(lowerClicked && upperVal && upperVal.frequency <= pitch * octave) || (upperClicked && lowerVal && lowerVal.frequency >= pitch * octave)}
-                        on:click={() => sendPitch(pitch, octave, $pitchNames[j], i + 1)}>{$pitchNames[j]}
-                    </button>
-                {/each}
-            </div>
-        {/each}
+    <div class="pitch-selector-inner">
+        <div class="close-container">
+            <button on:click={closePitchSelector} class="close">X</button>
+        </div>
+        <div class="pitch-row-container">
+            {#each $octaves as octave, i}
+                <div class="octave-name">{i + 1}</div>
+                <div class="pitch-row">
+                    {#each $pitches as pitch, j}
+                        <button
+                            class="pitch-button"
+                            disabled={(lowerClicked && upperVal && upperVal.frequency <= pitch * octave) || (upperClicked && lowerVal && lowerVal.frequency >= pitch * octave)}
+                            on:click={() => sendPitch(pitch, octave, $pitchNames[j], i + 1)}>{$pitchNames[j]}
+                        </button>
+                    {/each}
+                </div>
+            {/each}
+        </div>
     </div>
 </section>
