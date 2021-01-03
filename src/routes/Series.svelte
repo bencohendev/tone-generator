@@ -232,66 +232,12 @@
         align-items: center;
         input {
             width: 60%;
+            margin: 0rem 0.5rem;
         }
         img {
             width: 20px;
         }
     }
-
-    // .wav-select-container {
-    //     position: relative;
-    //     .wav-select {
-    //         position: absolute;
-    //         top: 3rem;
-    //         left: -100%;
-    //         background-color: rgb(221, 221, 221);
-    //         display: flex;
-    //         box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
-    //             0px 3px 4px 0px rgba(0, 0, 0, 0.14),
-    //             0px 1px 8px 0px rgba(0, 0, 0, 0.12);
-    //         &::after {
-    //             content: "";
-    //             position: absolute;
-    //             width: 12px;
-    //             height: 12px;
-    //             left: 50%;
-    //             top: -10px;
-    //             transform: translate(-50%, 50%) rotate(45deg);
-    //             background-color: rgb(221, 221, 221);
-    //             //box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
-    //         }
-
-    //         .wav-select-box {
-    //             margin: 0.5rem;
-    //         }
-    //     }
-
-    //     .wav-select-button {
-    //         background-size: contain;
-    //         margin-right: 1rem;
-    //         background-position: center;
-    //         background-repeat: no-repeat;
-    //         width: 40px;
-    //         height: 100%;
-    //         &.sine {
-    //             background-image: url("/icons/sine.png");
-    //         }
-    //         &.square {
-    //             background-image: url("/icons/square.png");
-    //         }
-    //         &.triangle {
-    //             background-image: url("/icons/triangle.png");
-    //         }
-    //         &.sawtooth {
-    //             background-image: url("/icons/sawtooth.png");
-    //         }
-    //     }
-    //     .wav-select-box {
-    //         img {
-    //             width: 20px;
-    //         }
-    //     }
-    // }
 </style>
 
 <section class="series card">

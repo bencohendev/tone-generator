@@ -115,6 +115,7 @@
             align-items: center;
             input {
                 width: 60%;
+                margin: 0rem 0.5rem;
             }
             img {
                 width: 20px;
@@ -254,7 +255,6 @@
         display: grid;
         justify-content: center;
         margin-bottom: 1rem;
-        grid-template-columns: 25% auto;
         grid-template-rows: 100% auto;
 
         .pitch-selector {
@@ -368,14 +368,12 @@
                 on:click={() => (showPitchSelector ? (showPitchSelector = false) : (showPitchSelector = true))}>Select
                 a Pitch
             </button>
-            <div>
-                {#if showPitchSelector}
-                    <PitchSelector
-                        bind:showPitchSelector
-                        on:message={handlePitchSelector}
-                        bind:pitchName />
-                {/if}
-            </div>
         </div>
+        {#if showPitchSelector}
+            <PitchSelector
+                bind:showPitchSelector
+                on:message={handlePitchSelector}
+                bind:pitchName />
+        {/if}
     </div>
 </section>
