@@ -4,9 +4,9 @@
 
     import { pitches, pitchNames, octaves } from "../store.js";
 
-    export let showPitchSelector;
-    export let lowerVal;
-    export let upperVal;
+    export let showPitchRangeSelector;
+    export let lowerVal = null;
+    export let upperVal = null;
     export let wasClicked;
 
     const dispatch = createEventDispatcher();
@@ -80,7 +80,7 @@
 
 <svelte:window
     on:click={(e) => {
-        if (!e.target.classList.value.includes('pitch')) showPitchSelector = false;
+        if (!e.target.classList.value.includes('pitch')) showPitchRangeSelector = false;
     }} />
 
 <section class="pitch-selector-container" transition:fade>
@@ -90,7 +90,7 @@
         </div>
         <div class="pitch-row-container">
             {#each $octaves as octave, i}
-                <div class="octave-name">{i + 1}</div>
+                <div class="octave-name">{i}</div>
                 <div class="pitch-row">
                     {#each $pitches as pitch, j}
                         <button

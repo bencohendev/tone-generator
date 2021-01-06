@@ -2,8 +2,8 @@
     import { audioCtx, allPitches } from "../store.js";
     import { onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
+
     import { createNewOscillator } from "../services/NewOscillator.svelte";
-    import WaveType from "../components/WaveType.svelte";
 
     console.group("series");
 
@@ -13,12 +13,9 @@
     let freq = 440;
     let pan = 0;
     let series = 0;
-    let showWavSelector = false;
     let wavType = "sine";
-
     let showPitchSelector = false;
-    let lowerClicked = false;
-    let upperClicked = false;
+    let wasClicked;
     let lowerVal;
     let upperVal;
     let bpm;
@@ -103,35 +100,32 @@
     }
 
     //pitch selector function
-    function handleMessage(event) {
-        if (event.detail.text === "close") {
+    function handleMessage(e) {
+        if (e.detail.text === "close") {
             showPitchSelector = false;
-            upperClicked = false;
-            lowerClicked = false;
         }
-        if (event.detail.text === "pitch") {
-            showPitchSelector = false;
-            if (lowerClicked) {
-                lowerClicked = false;
-                return (lowerVal = event.detail);
-            }
-            if (upperClicked) {
-                upperClicked = false;
-                return (upperVal = event.detail);
+        if (e.detail.text === "pitch") {
+            if (wasClicked === "range") {
+                if (lowerVal) {
+                    upperVal = e.detail;
+                    showPitchSelector = false;
+                    wasClicked = null;
+                } else {
+                    lowerVal = e.detail;
+                }
+            } else {
+                showPitchSelector = false;
+                wasClicked === "lower"
+                    ? (lowerVal = e.detail)
+                    : (upperVal = e.detail);
+                wasClicked = null;
             }
         }
     }
-    function pitchSelector(event) {
-        if (event.srcElement.id === "lower-val") {
-            showPitchSelector = true;
-            lowerClicked = true;
-            upperClicked = false;
-        }
-        if (event.srcElement.id === "upper-val") {
-            showPitchSelector = true;
-            upperClicked = true;
-            lowerClicked = false;
-        }
+
+    function pitchSelector(e) {
+        showPitchSelector = true;
+        wasClicked = e.srcElement.id;
     }
 
     let handleSelectedInstrument = (selectedInstrument) => {
@@ -243,18 +237,21 @@
 <section class="series card">
     <div class="pitch-select-container">
         <div class="text-info">Choose a Pitch Range</div>
+        {#if !(lowerVal && upperVal)}
+            <button id="range" on:click={pitchSelector}>Select a Pitch Range</button>
+        {/if}
 
         {#key lowerVal}
             <button
-                id="lower-val"
+                id="lower"
                 class="pitch-selector"
-                on:click={pitchSelector}>{lowerVal ? lowerVal.pitchName + lowerVal.i : 'Select a Pitch'}</button>
+                on:click={pitchSelector}>{lowerVal ? lowerVal.pitchName + lowerVal.i : 'Select a Lower Pitch'}</button>
         {/key}
         {#key upperVal}
             <button
-                id="upper-val"
+                id="upper"
                 class="pitch-selector"
-                on:click={pitchSelector}>{upperVal ? upperVal.pitchName + upperVal.i : 'Select a Pitch'}</button>
+                on:click={pitchSelector}>{upperVal ? upperVal.pitchName + upperVal.i : 'Select an Upper Pitch'}</button>
         {/key}
     </div>
     <div class="instrument-select-container">
@@ -286,15 +283,6 @@
         <input type="checkbox" bind:checked={playOnce} disabled={play} />
     </div>
 
-    <!-- <div class=" wav-select-container">
-        <button
-            class="wav-select-button {wavType}"
-            on:click={() => (showWavSelector ? (showWavSelector = false) : (showWavSelector = true))}>
-            {#if showWavSelector}
-                <WaveType bind:wavType bind:showWavSelector />
-            {/if}
-        </button>
-    </div> -->
     <div class="slide-container volume">
         <img
             class="volume-low"
@@ -331,8 +319,7 @@
             {showPitchSelector}
             {lowerVal}
             {upperVal}
-            {lowerClicked}
-            {upperClicked}
+            bind:wasClicked
             on:message={handleMessage} />
     {/if}
 </div>
