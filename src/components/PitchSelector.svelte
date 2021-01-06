@@ -5,10 +5,9 @@
     import { pitches, pitchNames, octaves } from "../store.js";
 
     export let showPitchSelector;
-    export let lowerVal = null;
-    export let upperVal = null;
-    export let lowerClicked = null;
-    export let upperClicked = null;
+    export let lowerVal = NaN;
+    export let upperVal = NaN;
+    export let wasClicked;
 
     const dispatch = createEventDispatcher();
 
@@ -96,8 +95,8 @@
                     {#each $pitches as pitch, j}
                         <button
                             class="pitch-button"
-                            disabled={(lowerClicked && upperVal && upperVal.frequency <= pitch * octave) || (upperClicked && lowerVal && lowerVal.frequency >= pitch * octave)}
-                            on:click={() => sendPitch(pitch, octave, $pitchNames[j], i + 1)}>{$pitchNames[j]}
+                            disabled={(wasClicked != 'lower' && upperVal.frequency <= pitch * octave) || (wasClicked != 'lower' && lowerVal.frequency >= pitch * octave)}
+                            on:click={() => sendPitch(pitch, octave, $pitchNames[j], i)}>{$pitchNames[j]}
                         </button>
                     {/each}
                 </div>

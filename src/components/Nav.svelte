@@ -60,5 +60,10 @@
 				aria-current={segment === 'Series' ? 'page' : undefined}
 				href="Series">Series</a>
 		</li>
+		<li>
+			<a
+				aria-current={segment === 'Drones' ? 'page' : undefined}
+				href="Drones">Drones</a>
+		</li>
 	</ul>
 </nav>
