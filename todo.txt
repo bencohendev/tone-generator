@@ -1,6 +1,7 @@
 refactor pitch selection on series. add back button on range selector when lower val is set
 pan closes on click inside pan
 pan and wavtype can open on multiple oscillator instances 
+pitch selector doesn't close on click outside
 add keyboard support
 add sruti drones
 change all the colors
