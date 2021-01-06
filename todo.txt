@@ -25,8 +25,3 @@ add organ drones?
 add drone type select controls
 
 
-
-1/6
-show new timeout refactor
-ask about better way to handle pitch selector
-ask about better way to handle audio context (should I wrap the whole app in another component? )

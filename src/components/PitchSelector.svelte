@@ -95,7 +95,7 @@
                     {#each $pitches as pitch, j}
                         <button
                             class="pitch-button"
-                            disabled={(wasClicked != 'lower' && upperVal.frequency <= pitch * octave) || (wasClicked != 'lower' && lowerVal.frequency >= pitch * octave)}
+                            disabled={(wasClicked != 'upper' && upperVal.frequency <= pitch * octave) || (wasClicked != 'lower' && lowerVal.frequency >= pitch * octave)}
                             on:click={() => sendPitch(pitch, octave, $pitchNames[j], i)}>{$pitchNames[j]}
                         </button>
                     {/each}
