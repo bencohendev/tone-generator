@@ -1,18 +1,32 @@
-refactor pitch selection on series. add back button on range selector when lower val is set
-pan closes on click inside pan
-pan and wavtype can open on multiple oscillator instances 
-pitch selector doesn't close on click outside
-add keyboard support
-add sruti drones
-change all the colors
-style slider bars
-add click button for round to pitch feature
-figure out correct interaction for typing in a frequency
-change wording 'Generate Overtone Preset'
-fix pitch selector positioning on series
-fix color of wav images
-change something about warning text 'Select a Pitch Range to Play'
+app
+    change all the colors
+    pan closes on click inside pan
+    pan and wavtype can open on multiple oscillator instances 
+    style slider bars
+    add keyboard support
+
+
+static
+    figure out correct interaction for typing in a frequency
+    add click button for round to pitch feature
+    change wording 'Generate Overtone Preset'
+    fix color of wav images
+
+
+series
+    refactor pitch selection on series. add back button on range selector when lower val is set
+    fix pitch selector positioning on series
+    change something about warning text 'Select a Pitch Range to Play'
+
+drones
+add pitch select controls
+add all sruti drones
+add organ drones?
+add drone type select controls
 
 
 
-
+1/6
+show new timeout refactor
+ask about better way to handle pitch selector
+ask about better way to handle audio context (should I wrap the whole app in another component? )

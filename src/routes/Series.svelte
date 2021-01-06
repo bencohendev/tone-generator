@@ -114,10 +114,10 @@
                     lowerVal = e.detail;
                 }
             } else {
-                showPitchSelector = false;
                 wasClicked === "lower"
                     ? (lowerVal = e.detail)
                     : (upperVal = e.detail);
+                showPitchSelector = false;
                 wasClicked = null;
             }
         }
@@ -127,7 +127,6 @@
         showPitchSelector = true;
         wasClicked = e.srcElement.id;
     }
-
     let handleSelectedInstrument = (selectedInstrument) => {
         switch (selectedInstrument) {
             case "Electric Guitar":
@@ -238,7 +237,10 @@
     <div class="pitch-select-container">
         <div class="text-info">Choose a Pitch Range</div>
         {#if !(lowerVal && upperVal)}
-            <button id="range" on:click={pitchSelector}>Select a Pitch Range</button>
+            <button
+                id="range"
+                class="pitch-selector"
+                on:click={pitchSelector}>Select a Pitch Range</button>
         {/if}
 
         {#key lowerVal}
@@ -313,10 +315,10 @@
     </div>
 </section>
 
-<div>
+<div class="pitch">
     {#if showPitchSelector}
         <PitchSelector
-            {showPitchSelector}
+            bind:showPitchSelector
             {lowerVal}
             {upperVal}
             bind:wasClicked
