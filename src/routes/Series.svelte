@@ -188,6 +188,113 @@
     console.groupEnd();
 </script>
 
+<section class="series card">
+    <div class="pitch-select-container">
+        <div class="text-info">Choose a Pitch Range</div>
+        {#if !(lowerVal && upperVal)}
+            <button id="range" class="pitch-selector" on:click={pitchSelector}
+                >Select a Pitch Range</button
+            >
+        {/if}
+
+        {#key lowerVal}
+            <button id="lower" class="pitch-selector" on:click={pitchSelector}
+                >{lowerVal
+                    ? lowerVal.pitchName + lowerVal.i
+                    : "Select a Lower Pitch"}</button
+            >
+        {/key}
+        {#key upperVal}
+            <button id="upper" class="pitch-selector" on:click={pitchSelector}
+                >{upperVal
+                    ? upperVal.pitchName + upperVal.i
+                    : "Select an Upper Pitch"}</button
+            >
+        {/key}
+    </div>
+    <div class="instrument-select-container">
+        <div class="text-info">Or Set Range By Instrument</div>
+
+        <!-- svelte-ignore a11y-no-onchange -->
+        <select
+            name="select-instrument"
+            id="select-instrument"
+            bind:value={selectedInstrument}
+            on:change={() =>
+                handleSelectedInstrument(
+                    selectedInstrument,
+                    lowerVal,
+                    upperVal
+                )}>
+            <option>Select an Instrument</option>
+            <option>Electric Guitar</option>
+            <option>Tenor Saxophone</option>
+        </select>
+    </div>
+    <div class="bpm-container">
+        <div class="text-info">Set Number of Pitches to Play and Speed</div>
+
+        <input
+            type="number"
+            label="number of pitches"
+            bind:value={numOfPitches}
+        />
+        <input type="number" label="play speed" bind:value={playSpeed} />
+    </div>
+    <div class="play-once-container">
+        <div class="text-info">Check to only play pitch set once</div>
+
+        <input type="checkbox" bind:checked={playOnce} disabled={play} />
+    </div>
+
+    <div class="slide-container volume">
+        <img
+            class="volume-low"
+            src={vol === 0
+                ? "../icons/volume-off.png"
+                : "../icons/volume-low.png"}
+            alt="volume"
+            on:click={() => (vol = 0)}
+        />
+        <input
+            type="range"
+            min="0"
+            max="100"
+            bind:value={vol}
+            class="slider volume"
+        />
+        <img
+            class="volume-full"
+            src="../icons/volume-full.png"
+            alt="volume"
+            on:click={() => (vol = 100)}
+        />
+    </div>
+    <div class="play-container">
+        <button
+            class="play"
+            disabled={!(lowerVal && upperVal)}
+            on:click={() => (!play ? (play = true) : (play = false))}
+            >{play ? "Pause" : "Play"}
+        </button>
+        {#if !(lowerVal && upperVal)}
+            <div class="text-info">Select a Pitch Range to Play</div>
+        {/if}
+    </div>
+</section>
+
+<div class="pitch">
+    {#if showPitchSelector}
+        <PitchSelector
+            bind:showPitchSelector
+            {lowerVal}
+            {upperVal}
+            bind:wasClicked
+            on:message={handleMessage}
+        />
+    {/if}
+</div>
+
 <style lang="scss">
     .card {
         display: grid;
@@ -231,97 +338,8 @@
             width: 20px;
         }
     }
+    .pitch {
+        position: relative;
+        top: -24rem;
+    }
 </style>
-
-<section class="series card">
-    <div class="pitch-select-container">
-        <div class="text-info">Choose a Pitch Range</div>
-        {#if !(lowerVal && upperVal)}
-            <button
-                id="range"
-                class="pitch-selector"
-                on:click={pitchSelector}>Select a Pitch Range</button>
-        {/if}
-
-        {#key lowerVal}
-            <button
-                id="lower"
-                class="pitch-selector"
-                on:click={pitchSelector}>{lowerVal ? lowerVal.pitchName + lowerVal.i : 'Select a Lower Pitch'}</button>
-        {/key}
-        {#key upperVal}
-            <button
-                id="upper"
-                class="pitch-selector"
-                on:click={pitchSelector}>{upperVal ? upperVal.pitchName + upperVal.i : 'Select an Upper Pitch'}</button>
-        {/key}
-    </div>
-    <div class="instrument-select-container">
-        <div class="text-info">Or Set Range By Instrument</div>
-
-        <!-- svelte-ignore a11y-no-onchange -->
-        <select
-            name="select-instrument"
-            id="select-instrument"
-            bind:value={selectedInstrument}
-            on:change={() => handleSelectedInstrument(selectedInstrument, lowerVal, upperVal)}>
-            <option>Select an Instrument</option>
-            <option>Electric Guitar</option>
-            <option>Tenor Saxophone</option>
-        </select>
-    </div>
-    <div class="bpm-container">
-        <div class="text-info">Set Number of Pitches to Play and Speed</div>
-
-        <input
-            type="number"
-            label="number of pitches"
-            bind:value={numOfPitches} />
-        <input type="number" label="play speed" bind:value={playSpeed} />
-    </div>
-    <div class="play-once-container">
-        <div class="text-info">Check to only play pitch set once</div>
-
-        <input type="checkbox" bind:checked={playOnce} disabled={play} />
-    </div>
-
-    <div class="slide-container volume">
-        <img
-            class="volume-low"
-            src={vol === 0 ? '../icons/volume-off.png' : '../icons/volume-low.png'}
-            alt="volume"
-            on:click={() => (vol = 0)} />
-        <input
-            type="range"
-            min="0"
-            max="100"
-            bind:value={vol}
-            class="slider volume" />
-        <img
-            class="volume-full"
-            src="../icons/volume-full.png"
-            alt="volume"
-            on:click={() => (vol = 100)} />
-    </div>
-    <div class="play-container">
-        <button
-            class="play"
-            disabled={!(lowerVal && upperVal)}
-            on:click={() => (!play ? (play = true) : (play = false))}>{play ? 'Pause' : 'Play'}
-        </button>
-        {#if !(lowerVal && upperVal)}
-            <div class="text-info">Select a Pitch Range to Play</div>
-        {/if}
-    </div>
-</section>
-
-<div class="pitch">
-    {#if showPitchSelector}
-        <PitchSelector
-            bind:showPitchSelector
-            {lowerVal}
-            {upperVal}
-            bind:wasClicked
-            on:message={handleMessage} />
-    {/if}
-</div>
