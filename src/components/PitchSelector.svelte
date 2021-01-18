@@ -1,7 +1,6 @@
 <script>
     import { createEventDispatcher } from "svelte";
     import { fade } from "svelte/transition";
-
     import { pitches, pitchNames, octaves } from "../store.js";
 
     export let showPitchSelector;
@@ -30,7 +29,6 @@
     .pitch-selector-container {
         display: grid;
         position: relative;
-
         background-color: rgb(221, 221, 221);
         box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
             0px 3px 4px 0px rgba(0, 0, 0, 0.14),

@@ -29,13 +29,18 @@
 	$allPitches = populateAllPitches();
 </script>
 
+<Nav {segment} />
+
+<main>
+	<slot />
+</main>
+
 <style lang="scss" global>
 	@import "../styles/global.scss";
 
 	main {
 		position: relative;
 		max-width: 56em;
-		background-color: white;
 		margin: 2rem auto 0 auto;
 		box-sizing: border-box;
 
@@ -44,9 +49,3 @@
 		}
 	}
 </style>
-
-<Nav {segment} />
-
-<main>
-	<slot />
-</main>
