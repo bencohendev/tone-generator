@@ -13,7 +13,7 @@
     export let i;
     export let pan;
     export let onOffVal;
-    export let freq = Math.round((440 + Number.EPSILON) * 1000) / 1000;
+    export let freq = 440;
 
     let vol = 50;
     let wavType = "sine";
@@ -50,7 +50,6 @@
     }
     function changeFreqSlider() {
         freq = 2 ** freqSliderVal;
-        //    oscillator.oscNode.freqSliderVal = freqSliderVal;
     }
 
     $: {
@@ -59,7 +58,7 @@
             freq,
             $audioCtx.currentTime
         );
-
+        // freqSliderVal = Math.log2(freq);
         closestPitch = $allPitches.reduce((a, b) => {
             return Math.abs(b.frequency - freq) < Math.abs(a.frequency - freq)
                 ? b
@@ -73,6 +72,7 @@
     //Wave Type Selector
     $: oscillator.oscNode.type = wavType;
     $: playHandler(onOffVal);
+    //   $: changeFreqSlider(freqSliderVal);
 
     //volume control
     $: oscillator.oscillatorGainNode.gain.setValueAtTime(
@@ -162,9 +162,12 @@
         <div class="frequency-controls">
             <button
                 class="frequency-arith-button"
-                on:click={() => (freq *= 0.5)}>&divide; 2
+                on:click={() => (freqSliderVal = Math.log2((freq *= 0.5)))}
+                >&divide; 2
             </button>
-            <button class="frequency-arith-button" on:click={() => (freq -= 1)}
+            <button
+                class="frequency-arith-button"
+                on:click={() => (freqSliderVal = Math.log2((freq -= 1)))}
                 >&minus 1
             </button>
 
@@ -181,10 +184,14 @@
                 Hz
                 <div class="frequency-click" />
             </div>
-            <button class="frequency-arith-button" on:click={() => (freq += 1)}
+            <button
+                class="frequency-arith-button"
+                on:click={() => (freqSliderVal = Math.log2((freq += 1)))}
                 >&plus 1
             </button>
-            <button class="frequency-arith-button" on:click={() => (freq *= 2)}
+            <button
+                class="frequency-arith-button"
+                on:click={() => (freqSliderVal = Math.log2((freq *= 2)))}
                 >&times 2
             </button>
         </div>
