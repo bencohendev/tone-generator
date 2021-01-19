@@ -1,5 +1,5 @@
 <script>
-    import { audioCtx, allPitches } from "../store.js";
+    import { audioCtx, allPitches, showPitchSelector } from "../store.js";
     import { onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
 
@@ -14,8 +14,7 @@
     let pan = 0;
     let series = 0;
     let wavType = "sine";
-    let showPitchSelector = false;
-    let wasClicked;
+    let wasClicked = null;
     let lowerVal;
     let upperVal;
     let bpm;
@@ -102,29 +101,30 @@
     //pitch selector function
     function handleMessage(e) {
         if (e.detail.text === "close") {
-            showPitchSelector = false;
+            $showPitchSelector = false;
         }
         if (e.detail.text === "pitch") {
             if (wasClicked === "range") {
                 if (lowerVal) {
                     upperVal = e.detail;
-                    showPitchSelector = false;
+                    $showPitchSelector = false;
                     wasClicked = null;
                 } else {
                     lowerVal = e.detail;
+                    wasClicked = "upper";
                 }
             } else {
                 wasClicked === "lower"
                     ? (lowerVal = e.detail)
                     : (upperVal = e.detail);
-                showPitchSelector = false;
+                $showPitchSelector = false;
                 wasClicked = null;
             }
         }
     }
 
     function pitchSelector(e) {
-        showPitchSelector = true;
+        $showPitchSelector = true;
         wasClicked = e.srcElement.id;
     }
     let handleSelectedInstrument = (selectedInstrument) => {
@@ -188,63 +188,93 @@
     console.groupEnd();
 </script>
 
+<section class="page-info">
+    <h3>Random Note Generator</h3>
+    <div>
+        This random note generator will play random pitches from within whatever
+        range you set! Select a lower and upper pitch boundary or automatically
+        set the range to an instrument. You can choose how many pitches to play
+        in a set, the speed at which the pitches will play, and whether the tool
+        will play a set of pitches once, or continually.
+    </div>
+</section>
 <section class="series card">
     <div class="pitch-select-container">
-        <div class="text-info">Choose a Pitch Range</div>
+        <div class="text-info">
+            Choose a Pitch Range By Instrument Or Set Range Manually
+        </div>
+
+        <div class="instrument-select-container">
+            <!-- svelte-ignore a11y-no-onchange -->
+            <select
+                name="select-instrument"
+                id="select-instrument"
+                bind:value={selectedInstrument}
+                on:change={() =>
+                    handleSelectedInstrument(
+                        selectedInstrument,
+                        lowerVal,
+                        upperVal
+                    )}>
+                <option>Select an Instrument</option>
+                <option>Electric Guitar</option>
+                <option>Tenor Saxophone</option>
+            </select>
+        </div>
         {#if !(lowerVal && upperVal)}
             <button id="range" class="pitch-selector" on:click={pitchSelector}
                 >Select a Pitch Range</button
             >
         {/if}
-
-        {#key lowerVal}
-            <button id="lower" class="pitch-selector" on:click={pitchSelector}
-                >{lowerVal
-                    ? lowerVal.pitchName + lowerVal.i
-                    : "Select a Lower Pitch"}</button
-            >
-        {/key}
-        {#key upperVal}
-            <button id="upper" class="pitch-selector" on:click={pitchSelector}
-                >{upperVal
-                    ? upperVal.pitchName + upperVal.i
-                    : "Select an Upper Pitch"}</button
-            >
-        {/key}
+        {#if lowerVal && upperVal}
+            <div>
+                {#key lowerVal}
+                    <button
+                        id="lower"
+                        class="pitch-selector"
+                        on:click={pitchSelector}
+                        >{lowerVal
+                            ? lowerVal.pitchName + lowerVal.i
+                            : "Select a Lower Pitch"}</button
+                    >
+                {/key}
+                {#key upperVal}
+                    <button
+                        id="upper"
+                        class="pitch-selector"
+                        on:click={pitchSelector}
+                        >{upperVal
+                            ? upperVal.pitchName + upperVal.i
+                            : "Select an Upper Pitch"}</button
+                    >
+                {/key}
+            </div>
+        {/if}
     </div>
-    <div class="instrument-select-container">
-        <div class="text-info">Or Set Range By Instrument</div>
 
-        <!-- svelte-ignore a11y-no-onchange -->
-        <select
-            name="select-instrument"
-            id="select-instrument"
-            bind:value={selectedInstrument}
-            on:change={() =>
-                handleSelectedInstrument(
-                    selectedInstrument,
-                    lowerVal,
-                    upperVal
-                )}>
-            <option>Select an Instrument</option>
-            <option>Electric Guitar</option>
-            <option>Tenor Saxophone</option>
-        </select>
-    </div>
     <div class="bpm-container">
-        <div class="text-info">Set Number of Pitches to Play and Speed</div>
+        <label>
+            number of pitches:
+            <input
+                type="number"
+                name="number of pitches"
+                bind:value={numOfPitches}
+            />
+        </label>
+        <label>
+            play speed [bpm]:
+            <input type="number" label="play speed" bind:value={playSpeed} />
+        </label>
+        <label>
+            play once
 
-        <input
-            type="number"
-            label="number of pitches"
-            bind:value={numOfPitches}
-        />
-        <input type="number" label="play speed" bind:value={playSpeed} />
-    </div>
-    <div class="play-once-container">
-        <div class="text-info">Check to only play pitch set once</div>
-
-        <input type="checkbox" bind:checked={playOnce} disabled={play} />
+            <input
+                type="checkbox"
+                id="play-once-checkbox"
+                bind:checked={playOnce}
+                disabled={play}
+            />
+        </label>
     </div>
 
     <div class="slide-container volume">
@@ -283,19 +313,21 @@
     </div>
 </section>
 
-<div class="pitch">
-    {#if showPitchSelector}
-        <PitchSelector
-            bind:showPitchSelector
-            {lowerVal}
-            {upperVal}
-            bind:wasClicked
-            on:message={handleMessage}
-        />
-    {/if}
-</div>
+{#if $showPitchSelector}
+    <PitchSelector
+        bind:$showPitchSelector
+        {lowerVal}
+        {upperVal}
+        bind:wasClicked
+        on:message={handleMessage}
+    />
+{/if}
 
 <style lang="scss">
+    .page-info {
+        padding: 1rem;
+        margin-bottom: 2rem;
+    }
     .card {
         display: grid;
         box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
@@ -311,8 +343,7 @@
 
     .pitch-select-container,
     .instrument-select-container,
-    .bpm-container,
-    .play-once-container {
+    .bpm-container {
         text-align: center;
         margin: 1rem 0;
     }
@@ -323,6 +354,19 @@
 
         button {
             padding: 1rem 2.5rem;
+        }
+    }
+
+    .bpm-container {
+        label {
+            margin: 0 1rem;
+            input {
+                width: 3rem;
+            }
+        }
+
+        #play-once-checkbox {
+            width: 1rem;
         }
     }
 
@@ -337,9 +381,5 @@
         img {
             width: 20px;
         }
-    }
-    .pitch {
-        position: relative;
-        top: -24rem;
     }
 </style>
