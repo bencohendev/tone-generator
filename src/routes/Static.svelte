@@ -113,43 +113,26 @@
     console.groupEnd();
 </script>
 
-<style lang="scss">
-    .static {
-        align-items: center;
-        justify-content: center;
-        background-color: beige;
-
-        .oscillator-master-control {
-            display: flex;
-            margin-bottom: 2rem;
-
-            button {
-                margin: 1rem;
-            }
-        }
-        .overtone-preset-container {
-            margin: 1rem;
-            select {
-                margin-right: 1rem;
-            }
-        }
-    }
-</style>
-
 <div class="static">
     <section class="oscillator-master-control">
         <button
             class="create-oscillator"
-            on:click={() => addNewOscillator(pan, freq)}>Add Tone Generator</button>
-        <button class="play-all paused" on:click={playAllHandler}>Play All</button>
-        <button class="mute-all playing" on:click={muteAllHandler}>Mute All</button>
+            on:click={() => addNewOscillator(pan, freq)}
+            >Add Tone Generator</button
+        >
+        <button class="play-all paused" on:click={playAllHandler}
+            >Play All</button
+        >
+        <button class="mute-all playing" on:click={muteAllHandler}
+            >Mute All</button
+        >
         <button
             class="generate-overtones"
             on:click={() => {
-                showGenerateOvertones ? (showGenerateOvertones = false) : (showGenerateOvertones = true);
-            }}>
-            Generate Overtone Presets
-        </button>
+                showGenerateOvertones
+                    ? (showGenerateOvertones = false)
+                    : (showGenerateOvertones = true);
+            }}> Generate Overtone Presets </button>
     </section>
     {#if showGenerateOvertones}
         <div class="overtone-preset-container">
@@ -179,7 +162,8 @@
                     name="overtone-series-select"
                     id="overtone-series-select"
                     bind:value={selectedOvertones}
-                    on:change={() => handleSelectedOvertones(selectedOctave, selectedPitch)}>
+                    on:change={() =>
+                        handleSelectedOvertones(selectedOctave, selectedPitch)}>
                     <option>Select Overtone Set</option>
                     <option>1 - 3 - 5</option>
                     <option>1 - 3 - 5 - 7</option>
@@ -194,6 +178,30 @@
             pan={oscillator.panNode.positionX.value}
             onOffVal={oscillator.onOffNode.gain.value}
             freq={oscillator.oscNode.frequency.value}
-            on:closeStaticOscillator={handleCloseStaticOscillator} />
+            on:closeStaticOscillator={handleCloseStaticOscillator}
+        />
     {/each}
 </div>
+
+<style lang="scss">
+    .static {
+        align-items: center;
+        justify-content: center;
+        background-color: rgb(47, 52, 55);
+
+        .oscillator-master-control {
+            display: flex;
+            margin-bottom: 2rem;
+
+            button {
+                margin: 1rem;
+            }
+        }
+        .overtone-preset-container {
+            margin: 1rem;
+            select {
+                margin-right: 1rem;
+            }
+        }
+    }
+</style>

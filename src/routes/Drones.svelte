@@ -1,29 +1,17 @@
 <script>
-    let keys = [
-        "a",
-        "bb",
-        "b",
-        "c",
-        "db",
-        "d",
-        "eb",
-        "e",
-        "f",
-        "gb",
-        "g",
-        "ab",
-    ];
+    import { pitchNames } from "../store.js";
 
     let selectedKey = "ab";
+    let keys = $pitchNames.map((pitch) => pitch.toLowerCase().substr(0, 2));
 </script>
 
 <section>
-    <div>
-        {#each keys as key}
+    <div class="key-btn-container">
+        {#each keys as key, i}
             <button
                 class="key-btn"
                 class:active={key === selectedKey}
-                on:click={() => (selectedKey = key)}>{key}</button
+                on:click={() => (selectedKey = key)}>{$pitchNames[i]}</button
             >
         {/each}
     </div>
@@ -39,6 +27,10 @@
 </section>
 
 <style lang="scss">
+    .key-btn-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
     .key-btn {
         padding: 1rem;
         margin: 1rem;
@@ -53,6 +45,14 @@
         margin-top: 2rem;
         .drone-player {
             width: 50rem;
+        }
+    }
+
+    @media only screen and (max-width: 768px) {
+        .drone-container {
+            .drone-player {
+                width: 30rem;
+            }
         }
     }
 </style>
