@@ -37,7 +37,7 @@
 
 <Nav {segment} />
 
-<main class:pitch-selector-open={$showPitchSelector}>
+<main class:add-bg-opacity={$showPitchSelector}>
 	<slot />
 </main>
 
@@ -46,16 +46,16 @@
 
 	main {
 		//	position: relative;
-		max-width: 56em;
+		max-width: 65em;
 		margin: 2rem auto 0 auto;
 		box-sizing: border-box;
 
-		&.pitch-selector-open {
+		&.add-bg-opacity {
 			&::before {
 				content: "";
 				width: 100vw;
 				height: 100vh;
-				opacity: 0.5;
+				opacity: 0.75;
 				background-color: grey;
 				position: absolute;
 				left: 0px;

@@ -8,6 +8,42 @@
     console.groupEnd();
 </script>
 
+<svelte:window
+    on:click={(e) => {
+        if (!e.target.classList.value.includes("pan")) showPanSelector = false;
+    }}
+/>
+
+<div class="pan-controller" transition:fade>
+    <div class="pan-buttons">
+        <button class="pan-left-button" on:click={() => (pan = -1)}>L</button>
+        <button class="pan-center-button" on:click={() => (pan = 0)}>C</button>
+        <button class="pan-right-button" on:click={() => (pan = 1)}>R</button>
+    </div>
+    <div class="pan-slider">
+        <img
+            class="pan-left-icon"
+            src="../icons/pan.png"
+            alt="pan left"
+            on:click={() => (pan = -1)}
+        />
+        <input
+            type="range"
+            min="-1"
+            max="1"
+            step={0.01}
+            bind:value={pan}
+            class="slider pan"
+        />
+        <img
+            class="pan-right-icon"
+            src="../icons/pan.png"
+            alt="pan right"
+            on:click={() => (pan = 1)}
+        />
+    </div>
+</div>
+
 <style lang="scss">
     .pan-controller {
         display: grid;
@@ -53,6 +89,8 @@
         }
 
         .pan-slider {
+            display: grid;
+            grid-template-columns: 15% 70% 15%;
             img {
                 width: 20px;
 
@@ -61,45 +99,17 @@
                     transform: scaleX(-1) scaleY(1);
                 }
             }
-            &::after {
-                content: "";
-                border: solid 1px black;
-                position: relative;
-                left: -25%;
-                top: -1px;
+            input {
+                &::after {
+                    content: "";
+                    border-right: solid 1px black;
+                    position: absolute;
+                    left: 49.5%;
+                    top: 70px;
+                    width: 1px;
+                    height: 25px;
+                }
             }
         }
     }
 </style>
-
-<svelte:window
-    on:click={(e) => {
-        if (!e.target.classList.value.includes('pan')) showPanSelector = false;
-    }} />
-
-<div class="pan-controller" transition:fade>
-    <div class="pan-buttons">
-        <button class="pan-left-button" on:click={() => (pan = -1)}>L</button>
-        <button class="pan-center-button" on:click={() => (pan = 0)}>C</button>
-        <button class="pan-right-button" on:click={() => (pan = 1)}>R</button>
-    </div>
-    <div class="pan-slider">
-        <img
-            class="pan-left-icon"
-            src="../icons/pan.png"
-            alt="pan left"
-            on:click={() => (pan = -1)} />
-        <input
-            type="range"
-            min="-1"
-            max="1"
-            step={0.01}
-            bind:value={pan}
-            class="slider pan" />
-        <img
-            class="pan-right-icon"
-            src="../icons/pan.png"
-            alt="pan right"
-            on:click={() => (pan = 1)} />
-    </div>
-</div>

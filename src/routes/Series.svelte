@@ -25,10 +25,12 @@
     let selectedInstrument;
     let i = 0;
 
+    //Create Audio Context and Oscillator
     onMount(() => {
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
         oscillator = createNewOscillator($audioCtx, freq, pan, series);
     });
+
     let playHandler = () => {
         if (play) {
             setTimeout(seriesPlayer, bpm);
@@ -38,9 +40,11 @@
     };
 
     function seriesPlayer() {
+        //sets on/off oscillator volume to full
         oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
 
         if (!playOnce) {
+            //leaves a blank while keeping time between random pitch sets
             if (i === parseInt(numOfPitches)) {
                 oscillator.seriesGainNode.gain.setValueAtTime(
                     0,
@@ -48,8 +52,10 @@
                 );
                 i = 0;
             } else {
+                //chooses and plays a random pitch from within the set range
                 const pitchToPlay =
                     freqRange[Math.floor(Math.random() * freqRange.length)];
+
                 oscillator.oscNode.frequency.setValueAtTime(
                     pitchToPlay.frequency,
                     $audioCtx.currentTime
@@ -61,6 +67,7 @@
                 );
                 i++;
             }
+            //shaves the last 25% of each note off so there is a gap between notes
             setTimeout(() => {
                 oscillator.seriesGainNode.gain.setTargetAtTime(
                     0,
@@ -70,6 +77,7 @@
             }, bpm - bpm * 0.25);
             playHandler();
         } else if (playOnce) {
+            //similar to above, but turns off after one time
             for (let i = 0; i < numOfPitches; i++) {
                 setTimeout(() => {
                     const pitchToPlay =
@@ -161,7 +169,7 @@
     };
 
     $: {
-        //if statement checks to ensure all node values are returned
+        //checks to ensure some node values are returned
         if (oscillator.panNode) {
             //volume control
             oscillator.oscillatorGainNode.gain.setTargetAtTime(
@@ -302,26 +310,26 @@
     </div>
     <div class="play-container">
         <button
-            class="play"
+            class="play-button {play ? 'playing' : 'paused'}"
             disabled={!(lowerVal && upperVal)}
-            on:click={() => (!play ? (play = true) : (play = false))}
-            >{play ? "Pause" : "Play"}
+            on:click={() => (!play ? (play = true) : (play = false))}>
+            {#if !(lowerVal && upperVal)}
+                Select a Pitch Range to Play
+            {:else}
+                {play ? "Pause" : "Play"}
+            {/if}
         </button>
-        {#if !(lowerVal && upperVal)}
-            <div class="text-info">Select a Pitch Range to Play</div>
-        {/if}
     </div>
+    {#if $showPitchSelector}
+        <PitchSelector
+            bind:$showPitchSelector
+            {lowerVal}
+            {upperVal}
+            bind:wasClicked
+            on:message={handleMessage}
+        />
+    {/if}
 </section>
-
-{#if $showPitchSelector}
-    <PitchSelector
-        bind:$showPitchSelector
-        {lowerVal}
-        {upperVal}
-        bind:wasClicked
-        on:message={handleMessage}
-    />
-{/if}
 
 <style lang="scss">
     .page-info {

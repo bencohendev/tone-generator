@@ -50,7 +50,7 @@
     }
     function changeFreqSlider() {
         freq = 2 ** freqSliderVal;
-        oscillator.oscNode.freqSliderVal = freqSliderVal;
+        //    oscillator.oscNode.freqSliderVal = freqSliderVal;
     }
 
     $: {
@@ -67,10 +67,9 @@
         });
     }
 
-    $: {
-        //pan control
-        oscillator.panNode.setPosition(pan / 100, 0, 0);
-    }
+    //pan control
+    $: oscillator.panNode.setPosition(pan / 100, 0, 0);
+
     //Wave Type Selector
     $: oscillator.oscNode.type = wavType;
     $: playHandler(onOffVal);
@@ -141,12 +140,10 @@
                 on:click={() =>
                     showPanSelector
                         ? (showPanSelector = false)
-                        : (showPanSelector = true)}>
-                Pan
-                {#if showPanSelector}
-                    <Pan bind:pan bind:showPanSelector />
-                {/if}
-            </button>
+                        : (showPanSelector = true)}> Pan </button>
+            {#if showPanSelector}
+                <Pan bind:pan bind:showPanSelector />
+            {/if}
         </div>
     </div>
 
@@ -208,19 +205,18 @@
                         : ($showPitchSelector = true)}>Select a Pitch
             </button>
         </div>
-        {#if $showPitchSelector}
-            <PitchSelector
-                bind:$showPitchSelector
-                on:message={handlePitchSelector}
-                bind:pitchName
-            />
-        {/if}
     </div>
 </section>
+{#if $showPitchSelector}
+    <PitchSelector
+        bind:$showPitchSelector
+        on:message={handlePitchSelector}
+        bind:pitchName
+    />
+{/if}
 
 <style type="scss">
     .card {
-        margin: 0 1rem 1rem 1rem;
         align-items: center;
         justify-content: center;
         box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
