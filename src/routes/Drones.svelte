@@ -28,12 +28,11 @@
 
 <style lang="scss">
     .key-btn-container {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: 16.6% 16.6% 16.6% 16.6% 16.6% 16.6%;
     }
     .key-btn {
-        padding: 1rem;
-        margin: 1rem;
+        margin: 0.4rem;
 
         &.active {
             border: solid 1px red;
@@ -51,7 +50,7 @@
     @media only screen and (max-width: 768px) {
         .drone-container {
             .drone-player {
-                width: 30rem;
+                width: 20rem;
             }
         }
     }
