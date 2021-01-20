@@ -6,9 +6,49 @@
 html, body {
  margin: 0;
  padding: 0;
- background-color: rgb(47, 52, 55);
  color: white;
+ background-color: #4c4c4c;
+
+
+ .card {
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
+        0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+        0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+ background-color: #2f3437;
+ padding: 1rem;
+
 }
+}
+
+main {
+    //	position: relative;
+    max-width: 65em;
+    margin: 2rem auto 0 auto;
+    box-sizing: border-box;
+
+    &.add-bg-opacity {
+        &::before {
+            content: "";
+            width: 100vw;
+            height: 100vh;
+            opacity: 0.75;
+            background-color: grey;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            z-index: 1;
+        }
+    }
+
+    button {
+        padding: 0.5rem;
+    }
+}
+
+
+
 
 button {
     color: white;
@@ -34,8 +74,9 @@ button {
         background-color: #f5c431;
     }
     &.pitch-button {
-        background-color: #28781f;
+        background-color: #FFFFF0;
         margin: 0.1rem;
+        color: black;
 
         &:hover {
             box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
@@ -43,8 +84,8 @@ button {
         
     }
     &.halftone {
-            
-        background-color: #1b4f15;
+        color: white;
+        background-color: black;
     }
 }
 
