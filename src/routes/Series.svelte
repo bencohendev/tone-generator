@@ -35,6 +35,7 @@
         if (play) {
             setTimeout(seriesPlayer, bpm);
         } else if (!play && oscillator.onOffNode) {
+            i = 0;
             oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
         }
     };
@@ -43,67 +44,43 @@
         //sets on/off oscillator volume to full
         oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
 
-        if (!playOnce) {
-            //leaves a blank while keeping time between random pitch sets
-            if (i === parseInt(numOfPitches)) {
-                oscillator.seriesGainNode.gain.setValueAtTime(
-                    0,
-                    $audioCtx.currentTime
-                );
-                i = 0;
-            } else {
-                //chooses and plays a random pitch from within the set range
-                const pitchToPlay =
-                    freqRange[Math.floor(Math.random() * freqRange.length)];
+        if (i < parseInt(numOfPitches)) {
+            //chooses and plays a random pitch from within the set range
+            const pitchToPlay =
+                freqRange[Math.floor(Math.random() * freqRange.length)];
 
-                oscillator.oscNode.frequency.setValueAtTime(
-                    pitchToPlay.frequency,
-                    $audioCtx.currentTime
-                );
-                oscillator.seriesGainNode.gain.setTargetAtTime(
-                    1,
-                    $audioCtx.currentTime,
-                    0.0001
-                );
-                i++;
-            }
-            //shaves the last 25% of each note off so there is a gap between notes
-            setTimeout(() => {
-                oscillator.seriesGainNode.gain.setTargetAtTime(
-                    0,
-                    $audioCtx.currentTime,
-                    0.001
-                );
-            }, bpm - bpm * 0.25);
-            playHandler();
-        } else if (playOnce) {
-            //similar to above, but turns off after one time
-            for (let i = 0; i < numOfPitches; i++) {
-                setTimeout(() => {
-                    const pitchToPlay =
-                        freqRange[Math.floor(Math.random() * freqRange.length)];
-                    oscillator.oscNode.frequency.setValueAtTime(
-                        pitchToPlay.frequency,
-                        $audioCtx.currentTime
-                    );
-                    oscillator.seriesGainNode.gain.setTargetAtTime(
-                        1,
-                        $audioCtx.currentTime,
-                        0.001
-                    );
-                    setTimeout(() => {
-                        oscillator.seriesGainNode.gain.setTargetAtTime(
-                            0,
-                            $audioCtx.currentTime,
-                            0.001
-                        );
-                    }, bpm - bpm * 0.25);
-                }, bpm * i);
-            }
-            setTimeout(() => {
+            oscillator.oscNode.frequency.setValueAtTime(
+                pitchToPlay.frequency,
+                $audioCtx.currentTime
+            );
+            oscillator.seriesGainNode.gain.setTargetAtTime(
+                1,
+                $audioCtx.currentTime,
+                0.0001
+            );
+            i++;
+        } else {
+            //if player has played requested number of pitches either leave a blank and restart, or turn off depending on playOnce
+            oscillator.seriesGainNode.gain.setValueAtTime(
+                0,
+                $audioCtx.currentTime
+            );
+            if (playOnce) {
                 play = false;
-            }, bpm * numOfPitches);
+            }
+
+            i = 0;
         }
+        //shaves the last 25% of each note off so there is a gap between notes
+        setTimeout(() => {
+            oscillator.seriesGainNode.gain.setTargetAtTime(
+                0,
+                $audioCtx.currentTime,
+                0.001
+            );
+        }, bpm - bpm * 0.25);
+        //loop playhandler
+        playHandler();
     }
 
     //pitch selector function
@@ -112,6 +89,7 @@
             $showPitchSelector = false;
         }
         if (e.detail.text === "pitch") {
+            //pitch range selector on first time
             if (wasClicked === "range") {
                 if (lowerVal) {
                     upperVal = e.detail;
@@ -122,6 +100,7 @@
                     wasClicked = "upper";
                 }
             } else {
+                //general pitch selector setter
                 wasClicked === "lower"
                     ? (lowerVal = e.detail)
                     : (upperVal = e.detail);
@@ -260,7 +239,7 @@
             />
         </label>
         <label>
-            play speed [bpm]:
+            bpm:
             <input type="number" label="play speed" bind:value={playSpeed} />
         </label>
         <label>
