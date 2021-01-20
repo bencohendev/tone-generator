@@ -239,7 +239,7 @@
             />
         </label>
         <label>
-            play speed [bpm]:
+            bpm:
             <input type="number" label="play speed" bind:value={playSpeed} />
         </label>
         <label>
