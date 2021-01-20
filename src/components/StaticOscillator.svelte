@@ -347,16 +347,16 @@
                 width: 40px;
                 height: 100%;
                 &.sine {
-                    background-image: url("/icons/sine.png");
+                    background-image: url("/icons/sine-light.png");
                 }
                 &.square {
-                    background-image: url("/icons/square.png");
+                    background-image: url("/icons/square-light.png");
                 }
                 &.triangle {
-                    background-image: url("/icons/triangle.png");
+                    background-image: url("/icons/triangle-light.png");
                 }
                 &.sawtooth {
-                    background-image: url("/icons/sawtooth.png");
+                    background-image: url("/icons/sawtooth-light.png");
                 }
             }
             .wav-select-box {

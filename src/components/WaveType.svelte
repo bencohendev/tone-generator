@@ -5,6 +5,48 @@
     export let showWavSelector;
 </script>
 
+<svelte:window
+    on:click={(e) => {
+        if (!e.target.classList.value.includes("wav")) showWavSelector = false;
+    }}
+/>
+
+<div class="wav-select" transition:fade>
+    <button
+        class="wav-select-box"
+        on:click={() => {
+            showWavSelector = false;
+            wavType = "sine";
+        }}>
+        <img src="./icons/sine-light.png" alt="sin wave" />
+    </button>
+    <button
+        class="wav-select-box"
+        on:click={() => {
+            showWavSelector = false;
+            wavType = "square";
+        }}>
+        <img src="./icons/square-light.png" alt="square wave" />
+    </button>
+
+    <button
+        class="wav-select-box"
+        on:click={() => {
+            showWavSelector = false;
+            wavType = "triangle";
+        }}>
+        <img src="./icons/triangle-light.png" alt="triangle wave" />
+    </button>
+    <button
+        class="wav-select-box"
+        on:click={() => {
+            showWavSelector = false;
+            wavType = "sawtooth";
+        }}>
+        <img src="./icons/sawtooth-light.png" alt="sawtooth wave" />
+    </button>
+</div>
+
 <style lang="scss">
     .wav-select {
         position: absolute;
@@ -38,44 +80,3 @@
         }
     }
 </style>
-
-<svelte:window
-    on:click={(e) => {
-        if (!e.target.classList.value.includes('wav')) showWavSelector = false;
-    }} />
-
-<div class="wav-select" transition:fade>
-    <button
-        class="wav-select-box"
-        on:click={() => {
-            showWavSelector = false;
-            wavType = 'sine';
-        }}>
-        <img src="./icons/sine.png" alt="sin wave" />
-    </button>
-    <button
-        class="wav-select-box"
-        on:click={() => {
-            showWavSelector = false;
-            wavType = 'square';
-        }}>
-        <img src="./icons/square.png" alt="square wave" />
-    </button>
-
-    <button
-        class="wav-select-box"
-        on:click={() => {
-            showWavSelector = false;
-            wavType = 'triangle';
-        }}>
-        <img src="./icons/triangle.png" alt="triangle wave" />
-    </button>
-    <button
-        class="wav-select-box"
-        on:click={() => {
-            showWavSelector = false;
-            wavType = 'sawtooth';
-        }}>
-        <img src="./icons/sawtooth.png" alt="sawtooth wave" />
-    </button>
-</div>

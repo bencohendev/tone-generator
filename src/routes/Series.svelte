@@ -196,16 +196,6 @@
     console.groupEnd();
 </script>
 
-<section class="page-info">
-    <h3>Random Note Generator</h3>
-    <div>
-        This random note generator will play random pitches from within whatever
-        range you set! Select a lower and upper pitch boundary or automatically
-        set the range to an instrument. You can choose how many pitches to play
-        in a set, the speed at which the pitches will play, and whether the tool
-        will play a set of pitches once, or continually.
-    </div>
-</section>
 <section class="series card">
     <div class="pitch-select-container">
         <div class="text-info">
@@ -329,6 +319,16 @@
             on:message={handleMessage}
         />
     {/if}
+</section>
+<section class="page-info">
+    <h3>About This Random Note Generator</h3>
+    <div>
+        This random note generator will play random pitches from within whatever
+        range you set! Select a lower and upper pitch boundary or automatically
+        set the range to an instrument. You can choose how many pitches to play
+        in a set, the speed at which the pitches will play, and whether the tool
+        will play a set of pitches once, or continually.
+    </div>
 </section>
 
 <style lang="scss">
