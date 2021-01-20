@@ -187,7 +187,7 @@
     .static {
         align-items: center;
         justify-content: center;
-        background-color: rgb(47, 52, 55);
+        background-color: #4c4c4c;
 
         .oscillator-master-control {
             display: flex;

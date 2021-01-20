@@ -258,8 +258,8 @@
         <img
             class="volume-low"
             src={vol === 0
-                ? "../icons/volume-off.png"
-                : "../icons/volume-low.png"}
+                ? "../icons/volume-off-light.png"
+                : "../icons/volume-low-light.png"}
             alt="volume"
             on:click={() => (vol = 0)}
         />
@@ -272,7 +272,7 @@
         />
         <img
             class="volume-full"
-            src="../icons/volume-full.png"
+            src="../icons/volume-full-light.png"
             alt="volume"
             on:click={() => (vol = 100)}
         />
@@ -314,13 +314,6 @@
     .page-info {
         padding: 1rem;
         margin-bottom: 2rem;
-    }
-    .card {
-        display: grid;
-        box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
-            0px 3px 4px 0px rgba(0, 0, 0, 0.14),
-            0px 1px 8px 0px rgba(0, 0, 0, 0.12);
-        background-color: grey;
     }
 
     .text-info {

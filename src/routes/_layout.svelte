@@ -43,29 +43,4 @@
 
 <style lang="scss" global>
 	@import "../styles/global.scss";
-
-	main {
-		//	position: relative;
-		max-width: 65em;
-		margin: 2rem auto 0 auto;
-		box-sizing: border-box;
-
-		&.add-bg-opacity {
-			&::before {
-				content: "";
-				width: 100vw;
-				height: 100vh;
-				opacity: 0.75;
-				background-color: grey;
-				position: absolute;
-				left: 0px;
-				top: 0px;
-				z-index: 1;
-			}
-		}
-
-		button {
-			padding: 0.5rem;
-		}
-	}
 </style>
