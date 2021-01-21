@@ -6,6 +6,7 @@
         pitchNames,
         octaves,
         showPitchSelector,
+        allPitches,
     } from "../store.js";
 
     export let lowerVal = NaN;
@@ -20,12 +21,11 @@
         dispatch("message", { text: "close" });
     }
 
-    function sendPitch(pitch, octave, pitchName, i) {
-        let frequency = pitch * octave;
+    function sendPitch(frequency, name, i) {
         dispatch("message", {
             text: "pitch",
             frequency,
-            pitchName,
+            name,
             i,
         });
     }
@@ -50,7 +50,7 @@
         </div>
         <div class="pitch-row-container">
             <div class="pitch-row">
-                {#each lowestPitches as pitch, j}
+                <!-- {#each lowestPitches as pitch, j}
                     <button
                         class="pitch-button {$pitchNames[j].length > 1
                             ? 'halftone'
@@ -87,7 +87,37 @@
                         </button>
                     {/each}
                 </div>
-            {/each}
+            {/each} -->
+                {#each $octaves as octave, i}
+                    <div class="pitch-row">
+                        {#each $allPitches as pitch, j}
+                            {#if octave === pitch.octave}
+                                <button
+                                    class="pitch-button {pitch.name > 1
+                                        ? 'halftone'
+                                        : ''}"
+                                    disabled={(wasClicked != "upper" &&
+                                        upperVal.frequency <=
+                                            pitch.frequency) ||
+                                        (wasClicked != "lower" &&
+                                            lowerVal.frequency >=
+                                                pitch.frequency)}
+                                    on:click={() =>
+                                        sendPitch(
+                                            pitch.frequency,
+                                            pitch.name,
+                                            i
+                                        )}
+                                    >{pitch.name}
+                                    <div class="pitch-frequency">
+                                        ~{Math.floor(pitch.frequency)}
+                                    </div>
+                                </button>
+                            {/if}
+                        {/each}
+                    </div>
+                {/each}
+            </div>
         </div>
     </div>
 </section>
@@ -131,7 +161,7 @@
 
             .pitch-row {
                 display: grid;
-                grid-template-columns: 8.3% 8.3% 8.3% 8.3% 8.3% 8.3% 8.3% 8.3% 8.3% 8.3% 8.3% 8.3%;
+                //  grid-template-columns: 8.3% 8.3% 8.3% 8.3% 8.3% 8.3% 8.3% 8.3% 8.3% 8.3% 8.3% 8.3%;
                 align-items: center;
                 margin-bottom: 0.5rem;
             }
