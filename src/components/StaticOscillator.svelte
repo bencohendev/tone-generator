@@ -233,9 +233,13 @@
 
     .vol-pan-wav-container {
         display: grid;
-        grid-template-columns: 15% 55% 10% 10%;
+        grid-template-columns: 20% 50% 10% 10%;
         justify-content: center;
         margin: 1rem 0;
+
+        .play-button {
+            width: 5rem;
+        }
 
         .volume {
             display: flex;

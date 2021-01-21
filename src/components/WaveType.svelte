@@ -2,53 +2,66 @@
     import { fade } from "svelte/transition";
 
     export let wavType;
-    export let showWavSelector;
+    export let showWaveSelector;
 </script>
 
 <svelte:window
     on:click={(e) => {
-        if (!e.target.classList.value.includes("wav")) showWavSelector = false;
+        if (!e.target.classList.value.includes("wave"))
+            showWaveSelector = false;
     }}
 />
 
-<div class="wav-select" transition:fade>
+<div class="wave-select" transition:fade>
     <button
-        class="wav-select-box"
+        class="wave-select-box"
         on:click={() => {
-            showWavSelector = false;
+            showWaveSelector = false;
             wavType = "sine";
         }}>
-        <img src="./icons/sine-light.png" alt="sin wave" />
+        <img src="./icons/sine-light.png" alt="sin wave" class="wave-image" />
     </button>
     <button
-        class="wav-select-box"
+        class="wave-select-box"
         on:click={() => {
-            showWavSelector = false;
+            showWaveSelector = false;
             wavType = "square";
         }}>
-        <img src="./icons/square-light.png" alt="square wave" />
+        <img
+            src="./icons/square-light.png"
+            alt="square wave"
+            class="wave-image"
+        />
     </button>
 
     <button
-        class="wav-select-box"
+        class="wave-select-box"
         on:click={() => {
-            showWavSelector = false;
+            showWaveSelector = false;
             wavType = "triangle";
         }}>
-        <img src="./icons/triangle-light.png" alt="triangle wave" />
+        <img
+            src="./icons/triangle-light.png"
+            alt="triangle wave"
+            class="wave-image"
+        />
     </button>
     <button
-        class="wav-select-box"
+        class="wave-select-box"
         on:click={() => {
-            showWavSelector = false;
+            showWaveSelector = false;
             wavType = "sawtooth";
         }}>
-        <img src="./icons/sawtooth-light.png" alt="sawtooth wave" />
+        <img
+            src="./icons/sawtooth-light.png"
+            alt="sawtooth wave"
+            class="wave-image"
+        />
     </button>
 </div>
 
 <style lang="scss">
-    .wav-select {
+    .wave-select {
         position: absolute;
         top: 3rem;
         left: -5.3rem;
@@ -69,12 +82,12 @@
             //box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
         }
 
-        .wav-select-box {
+        .wave-select-box {
             margin: 0.5rem;
         }
     }
 
-    .wav-select-box {
+    .wave-select-box {
         img {
             width: 20px;
         }
