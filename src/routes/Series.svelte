@@ -204,11 +204,11 @@
             >
         {/if}
         {#if lowerVal && upperVal}
-            <div>
+            <div class="freq-select-container">
                 {#key lowerVal}
                     <button
                         id="lower"
-                        class="pitch-selector"
+                        class="pitch-selector lower"
                         on:click={pitchSelector}
                         >{lowerVal
                             ? lowerVal.pitchName + lowerVal.i
@@ -218,13 +218,15 @@
                 {#key upperVal}
                     <button
                         id="upper"
-                        class="pitch-selector"
+                        class="pitch-selector upper"
                         on:click={pitchSelector}
                         >{upperVal
                             ? upperVal.pitchName + upperVal.i
                             : "Select an Upper Pitch"}</button
                     >
                 {/key}
+                <div>Lower</div>
+                <div>Upper</div>
             </div>
         {/if}
     </div>
@@ -360,6 +362,17 @@
         }
         img {
             width: 20px;
+        }
+    }
+
+    .freq-select-container {
+        display: grid;
+        grid-template-columns: auto auto;
+        justify-content: center;
+
+        .pitch-selector {
+            width: 5rem;
+            margin: 0rem 0.5rem;
         }
     }
 </style>
