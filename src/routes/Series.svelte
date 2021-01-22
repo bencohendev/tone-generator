@@ -120,13 +120,13 @@
                 lowerVal = {
                     text: "pitch",
                     frequency: 82.406,
-                    pitchName: "e",
+                    name: "E2",
                     i: 2,
                 };
                 upperVal = {
                     text: "pitch",
                     frequency: 1174.656,
-                    pitchName: "d",
+                    name: "D6",
                     i: 6,
                 };
                 break;
@@ -134,13 +134,13 @@
                 lowerVal = {
                     text: "pitch",
                     frequency: 103,
-                    pitchName: "g#",
+                    name: "G#/Ab3",
                     i: 3,
                 };
                 upperVal = {
                     text: "pitch",
                     frequency: 622,
-                    pitchName: "eb",
+                    name: "D#/Eb7",
                     i: 7,
                 };
                 break;
@@ -209,20 +209,14 @@
                     <button
                         id="lower"
                         class="pitch-selector lower"
-                        on:click={pitchSelector}
-                        >{lowerVal
-                            ? lowerVal.pitchName + lowerVal.i
-                            : "Select a Lower Pitch"}</button
+                        on:click={pitchSelector}>{lowerVal.name}</button
                     >
                 {/key}
                 {#key upperVal}
                     <button
                         id="upper"
                         class="pitch-selector upper"
-                        on:click={pitchSelector}
-                        >{upperVal
-                            ? upperVal.pitchName + upperVal.i
-                            : "Select an Upper Pitch"}</button
+                        on:click={pitchSelector}>{upperVal.name}</button
                     >
                 {/key}
                 <div>Lower</div>
