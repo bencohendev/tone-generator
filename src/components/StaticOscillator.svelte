@@ -1,5 +1,5 @@
 <script>
-    import { createEventDispatcher, onDestroy, onMount } from "svelte";
+    import { createEventDispatcher, onDestroy } from "svelte";
     import { fade } from "svelte/transition";
 
     import { audioCtx, allPitches, showPitchSelector } from "../store";
@@ -11,9 +11,9 @@
 
     export let oscillator;
     export let i;
-    export let pan;
+    export let pan = pan ? pan : 1;
     export let onOffVal;
-    export let freq = 440;
+    export let freq = freq ? freq : 440;
 
     let vol = 50;
     let wavType = "sine";
@@ -22,7 +22,7 @@
     let inputFrequency = false;
     let pitchName;
     let closestPitch;
-    let freqSliderVal;
+    let freqSliderVal = Math.log2(freq);
 
     const dispatch = createEventDispatcher();
     onDestroy(() => {
@@ -60,6 +60,7 @@
         );
         // freqSliderVal = Math.log2(freq);
         closestPitch = $allPitches.reduce((a, b) => {
+            //            console.log(b);
             return Math.abs(b.frequency - freq) < Math.abs(a.frequency - freq)
                 ? b
                 : a;
@@ -67,15 +68,14 @@
     }
 
     //pan control
-    $: oscillator.panNode.setPosition(pan / 100, 0, 0);
-
+    $: oscillator.panNode.setPosition(pan, 0, -1);
     //Wave Type Selector
     $: oscillator.oscNode.type = wavType;
     $: playHandler(onOffVal);
     //   $: changeFreqSlider(freqSliderVal);
 
     //volume control
-    $: oscillator.oscillatorGainNode.gain.setValueAtTime(
+    $: oscillator.oscGainNode.gain.setValueAtTime(
         vol / 100,
         $audioCtx.currentTime
     );
@@ -200,8 +200,8 @@
             on:click={() => (freq = closestPitch.frequency)}
         >
             {Math.round(freq) === Math.round(closestPitch.frequency)
-                ? closestPitch.pitch
-                : "~" + closestPitch.pitch}
+                ? closestPitch.name
+                : "~" + closestPitch.name}
         </div>
         <div class="pitch-selector-button-container">
             <button

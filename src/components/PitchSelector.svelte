@@ -1,18 +1,11 @@
 <script>
     import { createEventDispatcher } from "svelte";
     import { fade } from "svelte/transition";
-    import {
-        pitches,
-        pitchNames,
-        octaves,
-        showPitchSelector,
-    } from "../store.js";
+    import { octaves, showPitchSelector, allPitches } from "../store.js";
 
     export let lowerVal = NaN;
     export let upperVal = NaN;
     export let wasClicked = null;
-
-    let lowestPitches = [27.5, 29.1352, 30.86770632850775];
 
     const dispatch = createEventDispatcher();
 
@@ -20,12 +13,11 @@
         dispatch("message", { text: "close" });
     }
 
-    function sendPitch(pitch, octave, pitchName, i) {
-        let frequency = pitch * octave;
+    function sendPitch(frequency, name, i) {
         dispatch("message", {
             text: "pitch",
             frequency,
-            pitchName,
+            name,
             i,
         });
     }
@@ -49,42 +41,26 @@
             <button on:click={closePitchSelector} class="close">X</button>
         </div>
         <div class="pitch-row-container">
-            <div class="pitch-row">
-                {#each lowestPitches as pitch, j}
-                    <button
-                        class="pitch-button {$pitchNames[j].length > 1
-                            ? 'halftone'
-                            : ''}"
-                        disabled={(wasClicked != "upper" &&
-                            upperVal.frequency <= pitch) ||
-                            (wasClicked != "lower" &&
-                                lowerVal.frequency >= pitch)}
-                        on:click={() => sendPitch(pitch, 1, $pitchNames[j], 0)}
-                        >{$pitchNames[j] + 0}
-                        <div class="pitch-frequency">
-                            ~{Math.floor(pitch)}
-                        </div>
-                    </button>
-                {/each}
-            </div>
             {#each $octaves as octave, i}
                 <div class="pitch-row">
-                    {#each $pitches as pitch, j}
-                        <button
-                            class="pitch-button {$pitchNames[j].length > 1
-                                ? 'halftone'
-                                : ''}"
-                            disabled={(wasClicked != "upper" &&
-                                upperVal.frequency <= pitch * octave) ||
-                                (wasClicked != "lower" &&
-                                    lowerVal.frequency >= pitch * octave)}
-                            on:click={() =>
-                                sendPitch(pitch, octave, $pitchNames[j], i)}
-                            >{$pitchNames[j] + (i + 1)}
-                            <div class="pitch-frequency">
-                                ~{Math.floor(pitch * octave)}
-                            </div>
-                        </button>
+                    {#each $allPitches as pitch, j}
+                        {#if octave.label === pitch.octave}
+                            <button
+                                class="pitch-button {pitch.name.length > 2
+                                    ? 'halftone'
+                                    : ''}"
+                                disabled={(wasClicked != "upper" &&
+                                    upperVal.frequency <= pitch.frequency) ||
+                                    (wasClicked != "lower" &&
+                                        lowerVal.frequency >= pitch.frequency)}
+                                on:click={() =>
+                                    sendPitch(pitch.frequency, pitch.name, i)}
+                                >{pitch.name}
+                                <div class="pitch-frequency">
+                                    ~{Math.floor(pitch.frequency)}
+                                </div>
+                            </button>
+                        {/if}
                     {/each}
                 </div>
             {/each}
