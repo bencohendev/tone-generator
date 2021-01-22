@@ -3,7 +3,6 @@
 
 	import { onMount } from "svelte";
 	import {
-		octaves,
 		pitches,
 		pitchNames,
 		allPitches,
@@ -41,7 +40,6 @@
 	});
 
 	let populateAllPitches = () => {
-		//	console.log("x");
 		for (let i = 1; i < 10; i++) {
 			for (let j = 0; j < $pitches.length; j++) {
 				allThePitches.push({
@@ -54,7 +52,6 @@
 			multiplier = multiplier * 2;
 		}
 		lowestPitches.map((pitch) => allThePitches.unshift(pitch));
-		console.log(allThePitches);
 		return allThePitches;
 	};
 </script>

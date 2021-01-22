@@ -7,7 +7,6 @@
     import { createNewOscillator } from "../services/NewOscillator.svelte";
 
     $: console.group("static");
-    let oscillator = {};
     let oscillatorArray = [];
     let newNode;
     let pan = 0;
@@ -20,14 +19,16 @@
 
     onMount(() => {
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
-        addNewOscillator(pan, freq);
+        addNewOscillator(freq, pan);
     });
 
-    function addNewOscillator(pan, freq) {
+    function addNewOscillator(freq, pan) {
         let id = uuid.generate();
+        console.log(pan);
         newNode = createNewOscillator($audioCtx, freq, pan, series);
         newNode.id = id;
         oscillatorArray = [...oscillatorArray, newNode];
+        console.log(oscillatorArray);
     }
 
     function handleCloseStaticOscillator(e) {
@@ -43,6 +44,7 @@
             (oscillator) =>
                 (oscillator.onOffNode.gain.value = isAllPlaying ? 0 : 1)
         );
+        console.log(oscillatorArray);
         oscillatorArray = oscillatorArray;
     }
     function muteAllHandler() {
@@ -53,59 +55,38 @@
     }
 
     function handleSelectedOvertones(selectedOctave, selectedPitch) {
-        console.log(selectedOctave);
-        typeof selectedOctave === "number"
-            ? selectedOctave
-            : (selectedOctave = 4);
-        typeof selectedPitch === "number"
-            ? selectedPitch
-            : (selectedPitch = 51.9131);
         switch (selectedOvertones) {
             case "1 - 3 - 5":
                 oscillatorArray = [];
+                addNewOscillator(selectedPitch * selectedOctave.multiplier, -1);
                 addNewOscillator(
-                    (pan = -1),
-                    (freq = selectedPitch * selectedOctave)
+                    selectedPitch * selectedOctave.multiplier * 3,
+                    1
+                );
+                addNewOscillator(
+                    selectedPitch * selectedOctave.multiplier * 5,
+                    -1
                 );
 
-                addNewOscillator(
-                    (pan = 1),
-                    (freq = selectedPitch * selectedOctave * 3)
-                );
-
-                addNewOscillator(
-                    (pan = -1),
-                    (freq = selectedPitch * selectedOctave * 5)
-                );
                 selectedOvertones = "Select Overtone Set";
 
-                pan = 0;
-                freq = 440;
                 break;
             case "1 - 3 - 5 - 7":
                 oscillatorArray = [];
+                addNewOscillator(selectedPitch * selectedOctave.multiplier, -1);
                 addNewOscillator(
-                    (pan = -1),
-                    (freq = selectedPitch * selectedOctave)
-                );
-
-                addNewOscillator(
-                    (pan = 1),
-                    (freq = selectedPitch * selectedOctave * 3)
-                );
-
-                addNewOscillator(
-                    (pan = -1),
-                    (freq = selectedPitch * selectedOctave * 5)
+                    selectedPitch * selectedOctave.multiplier * 3,
+                    1
                 );
                 addNewOscillator(
-                    (pan = 1),
-                    (freq = selectedPitch * selectedOctave * 8)
+                    selectedPitch * selectedOctave.multiplier * 5,
+                    1
+                );
+                addNewOscillator(
+                    selectedPitch * selectedOctave.multiplier * 8,
+                    -1
                 );
                 selectedOvertones = "Select Overtone Set";
-
-                pan = 0;
-                freq = 440;
                 break;
         }
     }
@@ -117,7 +98,7 @@
     <section class="oscillator-master-control">
         <button
             class="create-oscillator"
-            on:click={() => addNewOscillator(pan, freq)}
+            on:click={() => addNewOscillator(freq, pan)}
             >Add Tone Generator</button
         >
         <button class="play-all paused" on:click={playAllHandler}
@@ -142,7 +123,7 @@
                     name="pitch-select"
                     id="pitch-select"
                     bind:value={selectedPitch}>
-                    <option>Pitch</option>
+                    <option value="51.9131">Pitch</option>
                     {#each $pitches as pitch, j}
                         <option value={pitch}>{$pitchNames[j]}</option>
                     {/each}
@@ -151,9 +132,9 @@
                     name="octave-select"
                     id="octave-select"
                     bind:value={selectedOctave}>
-                    <option>Octave</option>
-                    {#each $octaves as octave, i}
-                        <option value={octave}>{i}</option>
+                    <option value={$octaves[3]}>Octave</option>
+                    {#each $octaves as octave}
+                        <option label={octave.label} value={octave} />
                     {/each}
                 </select>
 
