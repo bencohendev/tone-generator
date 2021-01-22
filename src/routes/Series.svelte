@@ -151,7 +151,7 @@
         //checks to ensure some node values are returned
         if (oscillator.panNode) {
             //volume control
-            oscillator.oscillatorGainNode.gain.setTargetAtTime(
+            oscillator.oscGainNode.gain.setTargetAtTime(
                 vol / 100,
                 $audioCtx.currentTime,
                 0.001
