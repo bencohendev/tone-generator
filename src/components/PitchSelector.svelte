@@ -116,6 +116,7 @@
 
     @media only screen and (max-width: 768px) {
         .pitch-selector-container {
+            left: 0;
             .pitch-row-container {
                 .pitch-row {
                     grid-template-columns: 16.6% 16.6% 16.6% 16.6% 16.6% 16.6%;

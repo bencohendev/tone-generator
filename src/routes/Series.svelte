@@ -285,15 +285,6 @@
             {/if}
         </button>
     </div>
-    {#if $showPitchSelector}
-        <PitchSelector
-            bind:$showPitchSelector
-            {lowerVal}
-            {upperVal}
-            bind:wasClicked
-            on:message={handleMessage}
-        />
-    {/if}
 </section>
 <section class="page-info">
     <h3>About This Random Note Generator</h3>
@@ -305,6 +296,15 @@
         will play a set of pitches once, or continually.
     </div>
 </section>
+{#if $showPitchSelector}
+    <PitchSelector
+        bind:$showPitchSelector
+        {lowerVal}
+        {upperVal}
+        bind:wasClicked
+        on:message={handleMessage}
+    />
+{/if}
 
 <style lang="scss">
     .page-info {

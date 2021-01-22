@@ -185,4 +185,11 @@
             }
         }
     }
+    @media only screen and (max-width: 768px) {
+        .static {
+            .overtone-preset-container {
+                margin: 0 0 1rem 0;
+            }
+        }
+    }
 </style>

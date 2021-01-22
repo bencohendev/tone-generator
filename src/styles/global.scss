@@ -16,15 +16,13 @@ html, body {
     box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
         0px 3px 4px 0px rgba(0, 0, 0, 0.14),
         0px 1px 8px 0px rgba(0, 0, 0, 0.12);
-    background-color: #2f3437;
-    padding: 1rem;
-    margin-bottom: 1rem;
+ background-color: #2f3437;
+ padding: 1rem;
 
-  }
+}
 }
 
 main {
-    //	position: relative;
     max-width: 65em;
     margin: 2rem auto 0 auto;
     box-sizing: border-box;
@@ -229,4 +227,20 @@ select {
       cursor: not-allowed;
     }
   }
+}
+
+@media only screen and (max-width: 768px) {
+
+  html, body {
+    .card {
+      padding: 0px;
+    }
+  }
+  main {
+    max-width: 24rem;
+
+
+  }
+
+
 }
