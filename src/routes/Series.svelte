@@ -1,5 +1,10 @@
 <script>
-    import { audioCtx, allPitches, showPitchSelector } from "../store.js";
+    import {
+        audioCtx,
+        allPitches,
+        showPitchSelector,
+        pitches,
+    } from "../store.js";
     import { onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
 
@@ -20,6 +25,9 @@
     let bpm;
     let playSpeed = 120;
     let numOfPitches = 4;
+    let pitchesPlayed = [];
+    let showPitches = false;
+    let showAllPitches = false;
     let playOnce = false;
     let freqRange = [];
     let selectedInstrument;
@@ -58,6 +66,13 @@
                 $audioCtx.currentTime,
                 0.0001
             );
+
+            //add new pitch to array of played pitches if still playing
+            if (play) {
+                pitchesPlayed.unshift(pitchToPlay.name);
+                pitchesPlayed = pitchesPlayed;
+            }
+
             i++;
         } else {
             //if player has played requested number of pitches either leave a blank and restart, or turn off depending on playOnce
@@ -79,6 +94,7 @@
                 0.001
             );
         }, bpm - bpm * 0.25);
+
         //loop playhandler
         playHandler();
     }
@@ -285,6 +301,27 @@
             {/if}
         </button>
     </div>
+    <button
+        on:click={() =>
+            showPitches ? (showPitches = false) : (showPitches = true)}
+        >{showPitches ? "Hide Pitches" : "Show Pitches"}</button
+    >
+    <button
+        on:click={() =>
+            showAllPitches ? (showAllPitches = false) : (showAllPitches = true)}
+        >{showAllPitches ? "Hide All Pitches" : "Show All Pitches"}</button
+    >
+    {#if pitchesPlayed[0]}
+        <button on:click={() => (pitchesPlayed = [])}
+            >Clear Pitches PLayed</button
+        >
+    {/if}
+    {#if pitchesPlayed[0] && showPitches}
+        <div>{pitchesPlayed[0]}</div>
+    {/if}
+    {#if pitchesPlayed[0] && showAllPitches}
+        <div>{pitchesPlayed.join(" ")}</div>
+    {/if}
 </section>
 <section class="page-info">
     <h3>About This Random Note Generator</h3>

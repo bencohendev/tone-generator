@@ -24,11 +24,9 @@
 
     function addNewOscillator(freq, pan) {
         let id = uuid.generate();
-        console.log(pan);
         newNode = createNewOscillator($audioCtx, freq, pan, series);
         newNode.id = id;
         oscillatorArray = [...oscillatorArray, newNode];
-        console.log(oscillatorArray);
     }
 
     function handleCloseStaticOscillator(e) {
@@ -44,7 +42,6 @@
             (oscillator) =>
                 (oscillator.onOffNode.gain.value = isAllPlaying ? 0 : 1)
         );
-        console.log(oscillatorArray);
         oscillatorArray = oscillatorArray;
     }
     function muteAllHandler() {
