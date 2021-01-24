@@ -1,7 +1,12 @@
 <script>
     import SeriesAdvancedControls from "../components/SeriesAdvancedControls.svelte";
 
-    import { audioCtx, allPitches, showPitchSelector } from "../store.js";
+    import {
+        audioCtx,
+        allPitches,
+        showPitchSelector,
+        pitches,
+    } from "../store.js";
     import { onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
     import uuid from "shortid";
@@ -27,6 +32,9 @@
     let bpm;
     let playSpeed = 120;
     let numOfPitches = 4;
+    let pitchesPlayed = [];
+    let showPitches = false;
+    let showAllPitches = false;
     let playOnce = false;
     let freqRange = [];
 
@@ -65,12 +73,13 @@
     };
 
     function seriesPlayer() {
+        let pitchToPlay;
         oscillatorArray.map((oscillator) => {
             //sets on/off oscillator volume to full
             oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
             if (oscillator.i < parseInt(numOfPitches) && play) {
                 //chooses and plays a random pitch from within the set range
-                let pitchToPlay =
+                pitchToPlay =
                     freqRange[Math.floor(Math.random() * freqRange.length)];
                 oscillator.oscNode.frequency.setValueAtTime(
                     pitchToPlay.frequency,
@@ -106,8 +115,11 @@
 
         //loop playhandler
         playHandler();
+        if (pitchToPlay) {
+            pitchesPlayed.push(pitchToPlay.name);
+            pitchesPlayed = pitchesPlayed;
+        }
     }
-
     //pitch selector function
     function handleMessage(e) {
         if (e.detail.text === "close") {
@@ -202,7 +214,7 @@
     $: playHandler(play);
 
     $: bpm = (60 * 1000) / playSpeed;
-
+    $: console.log("pitches: ", pitchesPlayed);
     console.groupEnd();
 </script>
 
@@ -317,7 +329,36 @@
             {/if}
         </button>
     </div>
+    <div class="pitch-display-container">
+        <button
+            on:click={() =>
+                showPitches ? (showPitches = false) : (showPitches = true)}
+            >{showPitches ? "Hide Pitches" : "Show Pitches"}</button
+        >
+        <button
+            on:click={() =>
+                showAllPitches
+                    ? (showAllPitches = false)
+                    : (showAllPitches = true)}
+            >{showAllPitches ? "Hide All Pitches" : "Show All Pitches"}</button
+        >
+        {#if pitchesPlayed[0]}
+            <button on:click={() => (pitchesPlayed = [])}
+                >Clear Pitches PLayed</button
+            >
+        {/if}
 
+        {#if pitchesPlayed[0] && showPitches}
+            <!-- {#key pitchesPlayed} -->
+            <div>{pitchesPlayed[pitchesPlayed.length - 1]}</div>
+            <!-- {/key} -->
+        {/if}
+        {#if pitchesPlayed[0] && showAllPitches}
+            {#key pitchesPlayed}
+                <div>{pitchesPlayed.join(" ")}</div>
+            {/key}
+        {/if}
+    </div>
     <button
         class="advanced-toggle"
         on:click={() =>
@@ -327,6 +368,7 @@
             &#8963;
         </div></button
     >
+
     {#if showAdvanced}
         <SeriesAdvancedControls
             bind:keyArray
@@ -436,5 +478,9 @@
         &.down {
             transform: rotate(180deg);
         }
+    }
+
+    .pitch-display-container {
+        margin-bottom: 1rem;
     }
 </style>
