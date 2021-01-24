@@ -2,7 +2,7 @@
     import { createEventDispatcher, onDestroy } from "svelte";
     import { fade } from "svelte/transition";
 
-    import { audioCtx, allPitches, showPitchSelector } from "../store";
+    import { audioCtx, allPitches, showPitchSelector, pitches } from "../store";
     import PitchSelector from "./PitchSelector.svelte";
     import Pan from "./Pan.svelte";
     import WaveType from "./WaveType.svelte";
@@ -180,7 +180,11 @@
             >
                 {#if inputFrequency}
                     <input type="number" autofocus bind:value={freq} step={1} />
-                {:else}{parseFloat(freq.toFixed(2))}{/if}
+                {:else}
+                    {freq != Math.round(freq) ? "~" : ""}{parseFloat(
+                        freq.toFixed(2)
+                    )}
+                {/if}
                 Hz
                 <div class="frequency-click" />
             </div>
@@ -199,9 +203,12 @@
             class="frequency-label pitch"
             on:click={() => (freq = closestPitch.frequency)}
         >
-            {Math.round(freq) === Math.round(closestPitch.frequency)
-                ? closestPitch.name
-                : "~" + closestPitch.name}
+            {#if Math.round(freq) != Math.round(closestPitch.frequency)}
+                {Math.round(freq) > Math.round(closestPitch.frequency)
+                    ? ">"
+                    : "<"}
+            {/if}
+            {closestPitch.name}
         </div>
         <div class="pitch-selector-button-container">
             <button
