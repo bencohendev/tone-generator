@@ -149,7 +149,7 @@
 
 <section class="advanced-container" transition:fade>
     <div class="interval-select-container">
-        <h4>Choose How Many Pitches Are Played at Once</h4>
+        <h4>Choose How Many Pitches Are Played At Once</h4>
 
         <div class="interal-input-container">
             <label>
@@ -171,7 +171,7 @@
         </div>
     </div>
     <div class="key-mode-container">
-        <h4>Choose A Mode/Scale</h4>
+        <h4>Choose a Mode/Scale</h4>
         <div class="key-mode-input-container">
             <label>
                 <input type="radio" value="major" bind:group={modeRadio} />
@@ -190,60 +190,62 @@
                 Symmetrical Scales
             </label>
         </div>
-        <!-- svelte-ignore a11y-no-onchange -->
-        <select
-            name="select-key"
-            id="select-key"
-            bind:value={keySelect}
-            on:change={keyHandler}>
-            <option>Select a Key</option>
-            {#each $pitchNames as pitchName, i}
-                <option value={i}>{pitchName}</option>
-            {/each}
-        </select>
-        <!-- svelte-ignore a11y-no-onchange -->
-        {#if modeRadio === "major"}
+        <div>
+            <!-- svelte-ignore a11y-no-onchange -->
             <select
-                name="major-mode-key"
-                id="major-mode-key"
-                bind:value={modeSelect}
-                on:change={populateKeyedPitches}>
-                <option>Select a Major Mode</option>
-                <option value="ion">Ionian</option>
-                <option value="dor">Dorian</option>
-                <option value="phr">Phrygian</option>
-                <option value="lyd">Lydian</option>
-                <option value="mix">Mixolidian</option>
-                <option value="aeo">Aeolian</option>
-                <option value="loc">Locrian</option>
+                name="select-key"
+                id="select-key"
+                bind:value={keySelect}
+                on:change={keyHandler}>
+                <option>Select a Key</option>
+                {#each $pitchNames as pitchName, i}
+                    <option value={i}>{pitchName}</option>
+                {/each}
             </select>
-        {:else if modeRadio === "minor"}
-            <select
-                name="minor-mode-key"
-                id="minor-mode-key"
-                bind:value={modeSelect}
-                on:change={populateKeyedPitches}>
-                <option>Select a Minor Mode</option>
-                <option value="melmin">Melodic Minor</option>
-                <option value="dorb2">Dorian b2</option>
-                <option value="lydaug">Lydian Augmented</option>
-                <option value="lyddom">Lydian Dominant</option>
-                <option value="mixb6">Mixolidian b6</option>
-                <option value="aeob5">Aeolian b5</option>
-                <option value="suploc">Super Locrian</option>
-            </select>
-        {:else if modeRadio === "symmetrical"}
-            <select
-                name="minor-mode-key"
-                id="minor-mode-key"
-                bind:value={modeSelect}
-                on:change={populateKeyedPitches}>
-                <option>Select a Scale</option>
-                <option value="dim-wh">Diminished Whole Half</option>
-                <option value="dim-hw">Diminished Half Whole</option>
-                <option value="aug">Augmented</option>
-            </select>
-        {/if}
+            <!-- svelte-ignore a11y-no-onchange -->
+            {#if modeRadio === "major"}
+                <select
+                    name="major-mode-key"
+                    id="major-mode-key"
+                    bind:value={modeSelect}
+                    on:change={populateKeyedPitches}>
+                    <option>Select a Major Mode</option>
+                    <option value="ion">Ionian</option>
+                    <option value="dor">Dorian</option>
+                    <option value="phr">Phrygian</option>
+                    <option value="lyd">Lydian</option>
+                    <option value="mix">Mixolidian</option>
+                    <option value="aeo">Aeolian</option>
+                    <option value="loc">Locrian</option>
+                </select>
+            {:else if modeRadio === "minor"}
+                <select
+                    name="minor-mode-key"
+                    id="minor-mode-key"
+                    bind:value={modeSelect}
+                    on:change={populateKeyedPitches}>
+                    <option>Select a Minor Mode</option>
+                    <option value="melmin">Melodic Minor</option>
+                    <option value="dorb2">Dorian b2</option>
+                    <option value="lydaug">Lydian Augmented</option>
+                    <option value="lyddom">Lydian Dominant</option>
+                    <option value="mixb6">Mixolidian b6</option>
+                    <option value="aeob5">Aeolian b5</option>
+                    <option value="suploc">Super Locrian</option>
+                </select>
+            {:else if modeRadio === "symmetrical"}
+                <select
+                    name="minor-mode-key"
+                    id="minor-mode-key"
+                    bind:value={modeSelect}
+                    on:change={populateKeyedPitches}>
+                    <option>Select a Scale</option>
+                    <option value="dim-wh">Diminished Whole Half</option>
+                    <option value="dim-hw">Diminished Half Whole</option>
+                    <option value="aug">Augmented</option>
+                </select>
+            {/if}
+        </div>
     </div>
 </section>
 
@@ -251,5 +253,9 @@
     .advanced-container {
         display: grid;
         grid-template-columns: 50% 50%;
+    }
+
+    .key-mode-input-container {
+        margin-bottom: 0.5rem;
     }
 </style>

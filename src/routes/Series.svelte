@@ -115,6 +115,8 @@
 
         //loop playhandler
         playHandler();
+
+        //add latest pitch to end of array of pitches played
         if (pitchToPlay) {
             pitchesPlayed.push(pitchToPlay.name);
             pitchesPlayed = pitchesPlayed;
