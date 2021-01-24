@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Frequency Generator</title>
+	<title>Tone Generator</title>
 </svelte:head>
 
 <Static />
