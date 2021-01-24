@@ -91,6 +91,9 @@
     console.groupEnd();
 </script>
 
+<svelte:head>
+    <title>Static</title>
+</svelte:head>
 <div class="static">
     <section class="oscillator-master-control">
         <button

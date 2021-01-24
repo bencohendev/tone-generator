@@ -2,6 +2,35 @@
 	export let segment;
 </script>
 
+<nav>
+	<ul>
+		<li>
+			<a
+				aria-current={segment === undefined ? "page" : undefined}
+				href="/">Static</a
+			>
+		</li>
+		<li>
+			<a
+				aria-current={segment === "series" ? "page" : undefined}
+				href="series">Series</a
+			>
+		</li>
+		<li>
+			<a
+				aria-current={segment === "drones" ? "page" : undefined}
+				href="drones">Drones</a
+			>
+		</li>
+		<li>
+			<a
+				aria-current={segment === "about" ? "page" : undefined}
+				href="about">About</a
+			>
+		</li>
+	</ul>
+</nav>
+
 <style>
 	nav {
 		border-bottom: 1px solid rgba(255, 62, 0, 0.1);
@@ -47,23 +76,3 @@
 		display: block;
 	}
 </style>
-
-<nav>
-	<ul>
-		<li>
-			<a
-				aria-current={segment === undefined ? 'page' : undefined}
-				href="/">Static</a>
-		</li>
-		<li>
-			<a
-				aria-current={segment === 'Series' ? 'page' : undefined}
-				href="Series">Series</a>
-		</li>
-		<li>
-			<a
-				aria-current={segment === 'Drones' ? 'page' : undefined}
-				href="Drones">Drones</a>
-		</li>
-	</ul>
-</nav>
