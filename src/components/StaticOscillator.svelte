@@ -186,7 +186,7 @@
             </div>
             <button
                 class="frequency-arith-button"
-                on:click={() => (freqSliderVal = Math.log2((freq += 1)))}
+                on:mousedown={() => (freqSliderVal = Math.log2((freq += 1)))}
                 >&plus 1
             </button>
             <button

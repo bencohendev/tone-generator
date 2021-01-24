@@ -176,10 +176,12 @@
         //checks to ensure node has been created
         if (oscillatorArray[0]) {
             //volume control
-            oscillatorArray[0].oscGainNode.gain.setTargetAtTime(
-                vol / 100,
-                $audioCtx.currentTime,
-                0.001
+            oscillatorArray.map((oscillator) =>
+                oscillator.oscGainNode.gain.setTargetAtTime(
+                    vol / 100,
+                    $audioCtx.currentTime,
+                    0.001
+                )
             );
 
             //Wave Type Selector
