@@ -1,5 +1,5 @@
 <script>
-	import Static from "./Static.svelte";
+	import Static from "./static.svelte";
 </script>
 
 <svelte:head>
