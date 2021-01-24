@@ -204,9 +204,9 @@
 
     async function populateKeyedPitches() {
         allowedPitches = [];
-        //get array of correct
         modeSetter = await modeSelectHandler();
         keyArray = await keyHandler();
+        console.log(keyArray);
         populateAllowedPitches();
     }
 
@@ -214,15 +214,32 @@
     async function modeSelectHandler() {
         modeSetter = [];
         switch (modeSelect) {
-            case "maj":
+            case "ion":
                 modeSetter = [0, 2, 4, 5, 7, 9, 11];
                 break;
-            case "min":
-                modeSetter = [0, 2, 3, 5, 7, 9, 11];
+            case "dor":
+                modeSetter = [0, 2, 3, 5, 7, 9, 10];
                 break;
-            case "dim":
+            case "phr":
+                modeSetter = [0, 1, 3, 5, 7, 8, 10];
+                break;
+            case "lyd":
+                modeSetter = [0, 2, 4, 6, 7, 9, 11];
+                break;
+            case "mix":
+                modeSetter = [0, 2, 4, 5, 7, 9, 10];
+                break;
+            case "aeo":
+                modeSetter = [0, 2, 3, 5, 7, 8, 10];
+                break;
+            case "loc":
+                modeSetter = [0, 1, 3, 5, 6, 8, 10];
+                break;
+            case "dim-wh":
                 modeSetter = [0, 2, 3, 5, 6, 8, 9, 11];
-
+                break;
+            case "dim-hw":
+                modeSetter = [0, 1, 3, 4, 6, 7, 9, 10];
                 break;
             case "aug":
                 modeSetter = [0, 4, 8];
@@ -405,42 +422,39 @@
             <option value={3}>3</option>
             <option value={5}>5</option>
         </select>
+
         <!-- svelte-ignore a11y-no-onchange -->
+
         <select
-            name="select-interval-type"
-            id="select-interval-type"
-            bind:value={intervalType}
-            on:change={intervalSelectHandler}>
-            <option>Select Number Of Intervals</option>
-            <option value="maj">Major</option>
-            <option value="min">Minor</option>
-            <option value="dim">Diminished</option>
-            <option value="aug">Augment</option>
+            name="select-key"
+            id="select-key"
+            bind:value={keySelect}
+            on:change={keyHandler}>
+            <option>Select a Key</option>
+            {#each $pitchNames as pitchName, i}
+                <option value={i}>{pitchName}</option>
+            {/each}
+        </select>
+        <!-- svelte-ignore a11y-no-onchange -->
+
+        <select
+            name="mode-key"
+            id="mode-key"
+            bind:value={modeSelect}
+            on:change={populateKeyedPitches}>
+            <option>Select a Mode</option>
+            <option value="ion">Ionian</option>
+            <option value="dor">Dorian</option>
+            <option value="phr">Phrygian</option>
+            <option value="lyd">Lydian</option>
+            <option value="mix">Mixolidian</option>
+            <option value="aeo">Aeolian</option>
+            <option value="loc">Locrian</option>
+            <option value="dim-wh">Diminished Whole Half</option>
+            <option value="dim-hw">Diminished Half Whole</option>
+            <option value="aug">Augmented</option>
         </select>
     </div>
-    <!-- svelte-ignore a11y-no-onchange -->
-
-    <select
-        name="select-key"
-        id="select-key"
-        bind:value={keySelect}
-        on:change={keyHandler}>
-        {#each $pitchNames as pitchName, i}
-            <option value={i}>{pitchName}</option>
-        {/each}
-    </select>
-    <!-- svelte-ignore a11y-no-onchange -->
-
-    <select
-        name="mode-key"
-        id="mode-key"
-        bind:value={modeSelect}
-        on:change={populateKeyedPitches}>
-        <option value="maj">Major</option>
-        <option value="min">Minor</option>
-        <option value="dim">Diminished</option>
-        <option value="aug">Augment</option>
-    </select>
 </section>
 <section class="page-info">
     <h3>About This Random Note Generator</h3>
