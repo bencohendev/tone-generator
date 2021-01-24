@@ -240,7 +240,7 @@
 
     .vol-pan-wav-container {
         display: grid;
-        grid-template-columns: 20% 50% 10% 10%;
+        grid-template-columns: 21% 50% 10% 10%;
         justify-content: center;
         margin: 1rem 0;
 
