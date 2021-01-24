@@ -7,6 +7,9 @@
     );
 </script>
 
+<svelte:head>
+    <title>Drones</title>
+</svelte:head>
 <section>
     <div class="key-btn-container">
         {#each keys as key, i}

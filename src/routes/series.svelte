@@ -220,6 +220,9 @@
     console.groupEnd();
 </script>
 
+<svelte:head>
+    <title>Series</title>
+</svelte:head>
 <section class="series card">
     <div class="pitch-select-container">
         <h3 class="text-info">
