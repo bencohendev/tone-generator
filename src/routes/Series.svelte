@@ -331,36 +331,7 @@
             {/if}
         </button>
     </div>
-    <div class="pitch-display-container">
-        <button
-            on:click={() =>
-                showPitches ? (showPitches = false) : (showPitches = true)}
-            >{showPitches ? "Hide Pitches" : "Show Pitches"}</button
-        >
-        <button
-            on:click={() =>
-                showAllPitches
-                    ? (showAllPitches = false)
-                    : (showAllPitches = true)}
-            >{showAllPitches ? "Hide All Pitches" : "Show All Pitches"}</button
-        >
-        {#if pitchesPlayed[0]}
-            <button on:click={() => (pitchesPlayed = [])}
-                >Clear Pitches PLayed</button
-            >
-        {/if}
 
-        {#if pitchesPlayed[0] && showPitches}
-            <!-- {#key pitchesPlayed} -->
-            <div>{pitchesPlayed[pitchesPlayed.length - 1]}</div>
-            <!-- {/key} -->
-        {/if}
-        {#if pitchesPlayed[0] && showAllPitches}
-            {#key pitchesPlayed}
-                <div>{pitchesPlayed.join(" ")}</div>
-            {/key}
-        {/if}
-    </div>
     <button
         class="advanced-toggle"
         on:click={() =>
@@ -378,6 +349,9 @@
             bind:oscillatorArray
             bind:modeSetter
             bind:allowedPitches
+            bind:showAllPitches
+            bind:pitchesPlayed
+            bind:showPitches
         />
     {/if}
 </section>

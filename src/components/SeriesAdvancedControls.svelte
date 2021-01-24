@@ -13,6 +13,10 @@
     let pan = 0;
     let series = 0;
 
+    export let showAllPitches;
+    export let pitchesPlayed;
+    export let showPitches;
+
     let interval = 1;
     let modeRadio = "major";
     let modeSelect;
@@ -148,111 +152,147 @@
 </script>
 
 <section class="advanced-container" transition:fade>
-    <div class="interval-select-container">
-        <h4>Choose How Many Pitches Are Played At Once</h4>
+    <div class="pitch-display-container">
+        <button
+            on:click={() =>
+                showPitches ? (showPitches = false) : (showPitches = true)}
+            >{showPitches ? "Hide Pitches" : "Show Pitches"}</button
+        >
+        <button
+            on:click={() =>
+                showAllPitches
+                    ? (showAllPitches = false)
+                    : (showAllPitches = true)}
+            >{showAllPitches ? "Hide All Pitches" : "Show All Pitches"}</button
+        >
+        {#if pitchesPlayed[0]}
+            <button on:click={() => (pitchesPlayed = [])}
+                >Clear Pitches PLayed</button
+            >
+        {/if}
 
-        <div class="interal-input-container">
-            <label>
-                <input type="radio" value={1} bind:group={interval} />
-                1
-            </label>
-            <label>
-                <input type="radio" value={2} bind:group={interval} />
-                2
-            </label>
-            <label>
-                <input type="radio" value={3} bind:group={interval} />
-                3
-            </label>
-            <label>
-                <input type="radio" value={4} bind:group={interval} />
-                4
-            </label>
-        </div>
+        {#if pitchesPlayed[0] && showPitches}
+            <!-- {#key pitchesPlayed} -->
+            <div>{pitchesPlayed[pitchesPlayed.length - 1]}</div>
+            <!-- {/key} -->
+        {/if}
+        {#if pitchesPlayed[0] && showAllPitches}
+            {#key pitchesPlayed}
+                <div>{pitchesPlayed.join(" ")}</div>
+            {/key}
+        {/if}
     </div>
-    <div class="key-mode-container">
-        <h4>Choose a Mode/Scale</h4>
-        <div class="key-mode-input-container">
-            <label>
-                <input type="radio" value="major" bind:group={modeRadio} />
-                Major Modes
-            </label>
-            <label>
-                <input type="radio" value="minor" bind:group={modeRadio} />
-                Minor Modes
-            </label>
-            <label>
-                <input
-                    type="radio"
-                    value="symmetrical"
-                    bind:group={modeRadio}
-                />
-                Symmetrical Scales
-            </label>
+    <div class="interval-mode-container">
+        <div class="interval-select-container">
+            <h4>Choose How Many Pitches Are Played At Once</h4>
+
+            <div class="interal-input-container">
+                <label>
+                    <input type="radio" value={1} bind:group={interval} />
+                    1
+                </label>
+                <label>
+                    <input type="radio" value={2} bind:group={interval} />
+                    2
+                </label>
+                <label>
+                    <input type="radio" value={3} bind:group={interval} />
+                    3
+                </label>
+                <label>
+                    <input type="radio" value={4} bind:group={interval} />
+                    4
+                </label>
+            </div>
         </div>
-        <div>
-            <!-- svelte-ignore a11y-no-onchange -->
-            <select
-                name="select-key"
-                id="select-key"
-                bind:value={keySelect}
-                on:change={keyHandler}>
-                <option>Select a Key</option>
-                {#each $pitchNames as pitchName, i}
-                    <option value={i}>{pitchName}</option>
-                {/each}
-            </select>
-            <!-- svelte-ignore a11y-no-onchange -->
-            {#if modeRadio === "major"}
+        <div class="key-mode-container">
+            <h4>Choose a Mode/Scale</h4>
+            <div class="key-mode-input-container">
+                <label>
+                    <input type="radio" value="major" bind:group={modeRadio} />
+                    Major Modes
+                </label>
+                <label>
+                    <input type="radio" value="minor" bind:group={modeRadio} />
+                    Minor Modes
+                </label>
+                <label>
+                    <input
+                        type="radio"
+                        value="symmetrical"
+                        bind:group={modeRadio}
+                    />
+                    Symmetrical Scales
+                </label>
+            </div>
+            <div>
+                <!-- svelte-ignore a11y-no-onchange -->
                 <select
-                    name="major-mode-key"
-                    id="major-mode-key"
-                    bind:value={modeSelect}
-                    on:change={populateKeyedPitches}>
-                    <option>Select a Major Mode</option>
-                    <option value="ion">Ionian</option>
-                    <option value="dor">Dorian</option>
-                    <option value="phr">Phrygian</option>
-                    <option value="lyd">Lydian</option>
-                    <option value="mix">Mixolidian</option>
-                    <option value="aeo">Aeolian</option>
-                    <option value="loc">Locrian</option>
+                    name="select-key"
+                    id="select-key"
+                    bind:value={keySelect}
+                    on:change={keyHandler}>
+                    <option>Select a Key</option>
+                    {#each $pitchNames as pitchName, i}
+                        <option value={i}>{pitchName}</option>
+                    {/each}
                 </select>
-            {:else if modeRadio === "minor"}
-                <select
-                    name="minor-mode-key"
-                    id="minor-mode-key"
-                    bind:value={modeSelect}
-                    on:change={populateKeyedPitches}>
-                    <option>Select a Minor Mode</option>
-                    <option value="melmin">Melodic Minor</option>
-                    <option value="dorb2">Dorian b2</option>
-                    <option value="lydaug">Lydian Augmented</option>
-                    <option value="lyddom">Lydian Dominant</option>
-                    <option value="mixb6">Mixolidian b6</option>
-                    <option value="aeob5">Aeolian b5</option>
-                    <option value="suploc">Super Locrian</option>
-                </select>
-            {:else if modeRadio === "symmetrical"}
-                <select
-                    name="minor-mode-key"
-                    id="minor-mode-key"
-                    bind:value={modeSelect}
-                    on:change={populateKeyedPitches}>
-                    <option>Select a Scale</option>
-                    <option value="dim-wh">Diminished Whole Half</option>
-                    <option value="dim-hw">Diminished Half Whole</option>
-                    <option value="aug">Augmented</option>
-                </select>
-            {/if}
+                <!-- svelte-ignore a11y-no-onchange -->
+                {#if modeRadio === "major"}
+                    <select
+                        name="major-mode-key"
+                        id="major-mode-key"
+                        bind:value={modeSelect}
+                        on:change={populateKeyedPitches}>
+                        <option>Select a Major Mode</option>
+                        <option value="ion">Ionian</option>
+                        <option value="dor">Dorian</option>
+                        <option value="phr">Phrygian</option>
+                        <option value="lyd">Lydian</option>
+                        <option value="mix">Mixolidian</option>
+                        <option value="aeo">Aeolian</option>
+                        <option value="loc">Locrian</option>
+                    </select>
+                {:else if modeRadio === "minor"}
+                    <select
+                        name="minor-mode-key"
+                        id="minor-mode-key"
+                        bind:value={modeSelect}
+                        on:change={populateKeyedPitches}>
+                        <option>Select a Minor Mode</option>
+                        <option value="melmin">Melodic Minor</option>
+                        <option value="dorb2">Dorian b2</option>
+                        <option value="lydaug">Lydian Augmented</option>
+                        <option value="lyddom">Lydian Dominant</option>
+                        <option value="mixb6">Mixolidian b6</option>
+                        <option value="aeob5">Aeolian b5</option>
+                        <option value="suploc">Super Locrian</option>
+                    </select>
+                {:else if modeRadio === "symmetrical"}
+                    <select
+                        name="minor-mode-key"
+                        id="minor-mode-key"
+                        bind:value={modeSelect}
+                        on:change={populateKeyedPitches}>
+                        <option>Select a Scale</option>
+                        <option value="dim-wh">Diminished Whole Half</option>
+                        <option value="dim-hw">Diminished Half Whole</option>
+                        <option value="aug">Augmented</option>
+                    </select>
+                {/if}
+            </div>
         </div>
     </div>
 </section>
 
 <style lang="scss">
-    .advanced-container {
+    .interval-mode-container {
         display: grid;
         grid-template-columns: 50% 50%;
+    }
+
+    .pitch-display-container {
+        margin-bottom: 2rem;
     }
 
     .key-mode-input-container {
