@@ -94,6 +94,7 @@
 <svelte:head>
     <title>Static</title>
 </svelte:head>
+
 <div class="static">
     <section class="oscillator-master-control">
         <button
@@ -162,9 +163,57 @@
             on:closeStaticOscillator={handleCloseStaticOscillator}
         />
     {/each}
+    <section class="warning-container">
+        <h2 class="warning-header">
+            WARNING
+            <img
+                class="warning-img"
+                alt="sine"
+                src="../icons/warning-light.png"
+            />
+        </h2>
+        <div class="warning-text">
+            You can do real damage to your hearing by playing pitches,
+            especially pitches starting above 10,000, too loudly using this
+            generator. The average human can hear pitches between 20Hz and
+            20,000Hz and this tone generator can play pitches both above and
+            below this range. If you can't hear a pitch, don't start by trying
+            to turn up the volume as you could do real lasting damage to your
+            ears.
+        </div>
+    </section>
+    <section class="about-container">
+        <h3>Instructions</h3>
+        This page generates pure tones of any frequency between 8hz and ~21,618hz.
+        Please note that the average human can't hear tones below 20Hz and above
+        20,000Hz and if you turn up the volume to compensate YOU COULD DAMAGE YOUR
+        HEARING. You an add additional tone generators with the Add Tone Generator
+        button. You can also automatically create generators that correspond to either
+        the first three or first four overtones in the overtone series with the Generate
+        Overtone Presets button. You can also change the wave type from sine to square,
+        triangle or sawtooth by pressing the<img
+            class="sine-img"
+            alt="sine"
+            src="../icons/sine-light.png"
+        /> button. The plus and minus buttons add +/-1 to the Hz value and the divison
+        and multiplication buttons halve or double the Hz value respectively. Hz
+        values are showed as approximate, but if you click on the Hz value itself,
+        you can see the full value as well as setting it manually to whatever you'd
+        like. The displayed pitch name shows the nearest pitch to your current Hz
+        value. Click on it to automatically change the Hz value to that pitch's value.
+    </section>
 </div>
 
 <style lang="scss">
+    @import "../styles/theme.scss";
+
+    .warning-img {
+        width: 20px;
+    }
+
+    .warning-header {
+        background-color: $pause-btn;
+    }
     .static {
         align-items: center;
         justify-content: center;
@@ -184,7 +233,13 @@
                 margin-right: 1rem;
             }
         }
+
+        .sine-img {
+            width: 2rem;
+            background-color: $main-btn;
+        }
     }
+
     @media only screen and (max-width: 768px) {
         .static {
             .overtone-preset-container {

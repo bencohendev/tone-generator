@@ -15,7 +15,7 @@
 	<div>
 		This page generates pure tones of any frequency between 8hz and
 		~21,618hz. Please note that the average human can't hear tones below
-		20Hz and above 10,000Hz and if you turn up the volume to compensate YOU
+		20Hz and above 20,000Hz and if you turn up the volume to compensate YOU
 		COULD DAMAGE YOUR HEARING. You an add additional tone generators with
 		the Add Tone Generator button. You can also automatically create
 		generators that correspond to either the first three or first four
