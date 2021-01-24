@@ -16,8 +16,8 @@
     export let freq = freq ? freq : 440;
 
     let vol = 50;
-    let wavType = "sine";
-    let showWavSelector = false;
+    let waveType = "sine";
+    let showWaveSelector = false;
     let showPanSelector = false;
     let inputFrequency = false;
     let pitchName;
@@ -70,7 +70,7 @@
     //pan control
     $: oscillator.panNode.setPosition(pan, 0, -1);
     //Wave Type Selector
-    $: oscillator.oscNode.type = wavType;
+    $: oscillator.oscNode.type = waveType;
     $: playHandler(onOffVal);
     //   $: changeFreqSlider(freqSliderVal);
 
@@ -121,17 +121,17 @@
             />
         </div>
 
-        <div class=" wav-select-container">
+        <div class=" wave-select-container">
             <button
-                class="wav-select-button {wavType}"
+                class="wave-select-button {waveType}"
                 on:click={() =>
-                    showWavSelector
-                        ? (showWavSelector = false)
-                        : (showWavSelector = true)}>
-                {#if showWavSelector}
-                    <WaveType bind:wavType bind:showWavSelector />
-                {/if}
-            </button>
+                    showWaveSelector
+                        ? (showWaveSelector = false)
+                        : (showWaveSelector = true)}
+            />
+            {#if showWaveSelector}
+                <WaveType bind:waveType bind:showWaveSelector />
+            {/if}
         </div>
 
         <div class="slide-container pan">
@@ -313,9 +313,9 @@
             }
         }
 
-        .wav-select-container {
+        .wave-select-container {
             position: relative;
-            .wav-select {
+            .wave-select {
                 position: absolute;
                 top: 3rem;
                 left: -100%;
@@ -336,12 +336,12 @@
                     //box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
                 }
 
-                .wav-select-box {
+                .wave-select-box {
                     margin: 0.5rem;
                 }
             }
 
-            .wav-select-button {
+            .wave-select-button {
                 background-size: contain;
                 margin-right: 1rem;
                 background-position: center;
@@ -361,7 +361,7 @@
                     background-image: url("/icons/sawtooth-light.png");
                 }
             }
-            .wav-select-box {
+            .wave-select-box {
                 img {
                     width: 20px;
                 }

@@ -10,6 +10,7 @@
 
 <svelte:window
     on:click={(e) => {
+        console.log(e.target.classList.value);
         if (!e.target.classList.value.includes("pan")) showPanSelector = false;
     }}
 />

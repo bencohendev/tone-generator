@@ -1,7 +1,7 @@
 <script>
     import { fade } from "svelte/transition";
 
-    export let wavType;
+    export let waveType;
     export let showWaveSelector;
 </script>
 
@@ -17,7 +17,7 @@
         class="wave-select-box"
         on:click={() => {
             showWaveSelector = false;
-            wavType = "sine";
+            waveType = "sine";
         }}>
         <img src="./icons/sine-light.png" alt="sin wave" class="wave-image" />
     </button>
@@ -25,7 +25,7 @@
         class="wave-select-box"
         on:click={() => {
             showWaveSelector = false;
-            wavType = "square";
+            waveType = "square";
         }}>
         <img
             src="./icons/square-light.png"
@@ -38,7 +38,7 @@
         class="wave-select-box"
         on:click={() => {
             showWaveSelector = false;
-            wavType = "triangle";
+            waveType = "triangle";
         }}>
         <img
             src="./icons/triangle-light.png"
@@ -50,7 +50,7 @@
         class="wave-select-box"
         on:click={() => {
             showWaveSelector = false;
-            wavType = "sawtooth";
+            waveType = "sawtooth";
         }}>
         <img
             src="./icons/sawtooth-light.png"
