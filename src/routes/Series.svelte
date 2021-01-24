@@ -1,4 +1,6 @@
 <script>
+    import SeriesAdvancedControls from "../components/SeriesAdvancedControls.svelte";
+
     import {
         audioCtx,
         allPitches,
@@ -7,18 +9,23 @@
     } from "../store.js";
     import { onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
+    import uuid from "shortid";
 
     import { createNewOscillator } from "../services/NewOscillator.svelte";
 
     console.group("series");
-
+    //oscillator creation
     let oscillator = {};
+    let oscillatorArray = [];
+    let newNode;
     let vol = 50;
     let play = false;
     let freq = 440;
     let pan = 0;
     let series = 0;
     let wavType = "sine";
+
+    //speed and pitch range
     let wasClicked = null;
     let lowerVal;
     let upperVal;
@@ -30,75 +37,89 @@
     let showAllPitches = false;
     let playOnce = false;
     let freqRange = [];
+
+    //advanced controls
+    let showAdvanced = false;
     let selectedInstrument;
-    let i = 0;
+    let keySelect;
+    //array representing pitches in a scale
+    let modeSetter = [0, 2, 4, 5, 7, 9, 11];
+    //key array places pitches in order of key chosen by user
+    let keyArray = ["C", "D", "E", "F", "G", "A", "B"];
+    let allowedPitches = [];
 
     //Create Audio Context and Oscillator
     onMount(() => {
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
-        oscillator = createNewOscillator($audioCtx, freq, pan, series);
+        let id = uuid.generate();
+        newNode = createNewOscillator($audioCtx, freq, pan, series);
+        newNode.id = id;
+        newNode.i = 0;
+        oscillatorArray = [newNode];
     });
 
     let playHandler = () => {
         if (play) {
             setTimeout(seriesPlayer, bpm);
         } else if (!play && oscillator.onOffNode) {
-            i = 0;
-            oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+            oscillatorArray.map((oscillator) => {
+                oscillator.i = 0;
+                oscillator.onOffNode.gain.setValueAtTime(
+                    0,
+                    $audioCtx.currentTime
+                );
+            });
         }
     };
 
     function seriesPlayer() {
-        //sets on/off oscillator volume to full
-        oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
+        let pitchToPlay;
+        oscillatorArray.map((oscillator) => {
+            //sets on/off oscillator volume to full
+            oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
+            if (oscillator.i < parseInt(numOfPitches) && play) {
+                //chooses and plays a random pitch from within the set range
+                pitchToPlay =
+                    freqRange[Math.floor(Math.random() * freqRange.length)];
+                oscillator.oscNode.frequency.setValueAtTime(
+                    pitchToPlay.frequency,
+                    $audioCtx.currentTime
+                );
+                oscillator.seriesGainNode.gain.setTargetAtTime(
+                    1,
+                    $audioCtx.currentTime,
+                    0.0001
+                );
+                oscillator.i++;
+            } else {
+                //if player has played requested number of pitches either leave a blank and restart, or turn off depending on playOnce
+                oscillator.seriesGainNode.gain.setValueAtTime(
+                    0,
+                    $audioCtx.currentTime
+                );
+                if (playOnce) {
+                    play = false;
+                }
 
-        if (i < parseInt(numOfPitches)) {
-            //chooses and plays a random pitch from within the set range
-            const pitchToPlay =
-                freqRange[Math.floor(Math.random() * freqRange.length)];
-
-            oscillator.oscNode.frequency.setValueAtTime(
-                pitchToPlay.frequency,
-                $audioCtx.currentTime
-            );
-            oscillator.seriesGainNode.gain.setTargetAtTime(
-                1,
-                $audioCtx.currentTime,
-                0.0001
-            );
-
-            //add new pitch to array of played pitches if still playing
-            if (play) {
-                pitchesPlayed.unshift(pitchToPlay.name);
-                pitchesPlayed = pitchesPlayed;
+                oscillator.i = 0;
             }
-
-            i++;
-        } else {
-            //if player has played requested number of pitches either leave a blank and restart, or turn off depending on playOnce
-            oscillator.seriesGainNode.gain.setValueAtTime(
-                0,
-                $audioCtx.currentTime
-            );
-            if (playOnce) {
-                play = false;
-            }
-
-            i = 0;
-        }
-        //shaves the last 25% of each note off so there is a gap between notes
-        setTimeout(() => {
-            oscillator.seriesGainNode.gain.setTargetAtTime(
-                0,
-                $audioCtx.currentTime,
-                0.001
-            );
-        }, bpm - bpm * 0.25);
+            //shaves the last 25% of each note off so there is a gap between notes
+            setTimeout(() => {
+                oscillator.seriesGainNode.gain.setTargetAtTime(
+                    0,
+                    $audioCtx.currentTime,
+                    0.001
+                );
+            }, bpm - bpm * 0.25);
+        });
 
         //loop playhandler
         playHandler();
+        if (pitchToPlay) {
+            pitchesPlayed.push(pitchToPlay.name);
+            pitchesPlayed = pitchesPlayed;
+        }
     }
-
     //pitch selector function
     function handleMessage(e) {
         if (e.detail.text === "close") {
@@ -130,6 +151,7 @@
         $showPitchSelector = true;
         wasClicked = e.srcElement.id;
     }
+
     let handleSelectedInstrument = (selectedInstrument) => {
         switch (selectedInstrument) {
             case "Electric Guitar":
@@ -162,21 +184,26 @@
                 break;
         }
     };
-
     $: {
-        //checks to ensure some node values are returned
-        if (oscillator.panNode) {
+        //checks to ensure node has been created
+        if (oscillatorArray[0]) {
             //volume control
-            oscillator.oscGainNode.gain.setTargetAtTime(
-                vol / 100,
-                $audioCtx.currentTime,
-                0.001
+            oscillatorArray.map((oscillator) =>
+                oscillator.oscGainNode.gain.setTargetAtTime(
+                    vol / 100,
+                    $audioCtx.currentTime,
+                    0.001
+                )
             );
 
             //Wave Type Selector
-            oscillator.oscNode.type = wavType.toLowerCase();
+            oscillatorArray[0].oscNode.type = wavType.toLowerCase();
+            //frequency range setter
             if (lowerVal && upperVal) {
-                freqRange = $allPitches.filter(
+                allowedPitches[0]
+                    ? (allowedPitches = allowedPitches)
+                    : (allowedPitches = $allPitches);
+                freqRange = allowedPitches.filter(
                     (pitch) =>
                         pitch.frequency >= lowerVal.frequency &&
                         pitch.frequency <= upperVal.frequency
@@ -187,15 +214,15 @@
     $: playHandler(play);
 
     $: bpm = (60 * 1000) / playSpeed;
-
+    $: console.log("pitches: ", pitchesPlayed);
     console.groupEnd();
 </script>
 
 <section class="series card">
     <div class="pitch-select-container">
-        <div class="text-info">
+        <h3 class="text-info">
             Choose a Pitch Range By Instrument Or Set Range Manually
-        </div>
+        </h3>
 
         <div class="instrument-select-container">
             <!-- svelte-ignore a11y-no-onchange -->
@@ -261,7 +288,6 @@
                 type="checkbox"
                 id="play-once-checkbox"
                 bind:checked={playOnce}
-                disabled={play}
             />
         </label>
     </div>
@@ -293,7 +319,9 @@
         <button
             class="play-button {play ? 'playing' : 'paused'}"
             disabled={!(lowerVal && upperVal)}
-            on:click={() => (!play ? (play = true) : (play = false))}>
+            on:click={() => {
+                !play ? (play = true) : (play = false);
+            }}>
             {#if !(lowerVal && upperVal)}
                 Select a Pitch Range to Play
             {:else}
@@ -301,28 +329,57 @@
             {/if}
         </button>
     </div>
-    <button
-        on:click={() =>
-            showPitches ? (showPitches = false) : (showPitches = true)}
-        >{showPitches ? "Hide Pitches" : "Show Pitches"}</button
-    >
-    <button
-        on:click={() =>
-            showAllPitches ? (showAllPitches = false) : (showAllPitches = true)}
-        >{showAllPitches ? "Hide All Pitches" : "Show All Pitches"}</button
-    >
-    {#if pitchesPlayed[0]}
-        <button on:click={() => (pitchesPlayed = [])}
-            >Clear Pitches PLayed</button
+    <div class="pitch-display-container">
+        <button
+            on:click={() =>
+                showPitches ? (showPitches = false) : (showPitches = true)}
+            >{showPitches ? "Hide Pitches" : "Show Pitches"}</button
         >
-    {/if}
-    {#if pitchesPlayed[0] && showPitches}
-        <div>{pitchesPlayed[0]}</div>
-    {/if}
-    {#if pitchesPlayed[0] && showAllPitches}
-        <div>{pitchesPlayed.join(" ")}</div>
+        <button
+            on:click={() =>
+                showAllPitches
+                    ? (showAllPitches = false)
+                    : (showAllPitches = true)}
+            >{showAllPitches ? "Hide All Pitches" : "Show All Pitches"}</button
+        >
+        {#if pitchesPlayed[0]}
+            <button on:click={() => (pitchesPlayed = [])}
+                >Clear Pitches PLayed</button
+            >
+        {/if}
+
+        {#if pitchesPlayed[0] && showPitches}
+            <!-- {#key pitchesPlayed} -->
+            <div>{pitchesPlayed[pitchesPlayed.length - 1]}</div>
+            <!-- {/key} -->
+        {/if}
+        {#if pitchesPlayed[0] && showAllPitches}
+            {#key pitchesPlayed}
+                <div>{pitchesPlayed.join(" ")}</div>
+            {/key}
+        {/if}
+    </div>
+    <button
+        class="advanced-toggle"
+        on:click={() =>
+            showAdvanced ? (showAdvanced = false) : (showAdvanced = true)}
+        >{showAdvanced ? "Hide Advanced Controls" : "Show Advanced Controls"}
+        <div class={showAdvanced ? "chevron down" : "chevron"}>
+            &#8963;
+        </div></button
+    >
+
+    {#if showAdvanced}
+        <SeriesAdvancedControls
+            bind:keyArray
+            bind:keySelect
+            bind:oscillatorArray
+            bind:modeSetter
+            bind:allowedPitches
+        />
     {/if}
 </section>
+
 <section class="page-info">
     <h3>About This Random Note Generator</h3>
     <div>
@@ -335,7 +392,6 @@
 </section>
 {#if $showPitchSelector}
     <PitchSelector
-        bind:$showPitchSelector
         {lowerVal}
         {upperVal}
         bind:wasClicked
@@ -344,6 +400,9 @@
 {/if}
 
 <style lang="scss">
+    .series {
+        text-align: center;
+    }
     .page-info {
         padding: 1rem;
         margin-bottom: 2rem;
@@ -405,5 +464,23 @@
             width: 5rem;
             margin: 0rem 0.5rem;
         }
+    }
+
+    .advanced-toggle {
+        margin-bottom: 1rem;
+    }
+
+    .chevron {
+        font-size: 2rem;
+        height: 1rem;
+        margin: 0.5rem;
+        transition: transform 0.5s;
+        &.down {
+            transform: rotate(180deg);
+        }
+    }
+
+    .pitch-display-container {
+        margin-bottom: 1rem;
     }
 </style>
