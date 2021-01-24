@@ -2,7 +2,9 @@
     import { pitchNames } from "../store.js";
 
     let selectedKey = "ab";
-    let keys = $pitchNames.map((pitch) => pitch.toLowerCase().substr(0, 2));
+    let keys = $pitchNames.map((pitch) =>
+        pitch.length === 1 ? pitch.toLowerCase() : pitch.toLowerCase().substr(3)
+    );
 </script>
 
 <section>
