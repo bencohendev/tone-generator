@@ -7,33 +7,42 @@
 
     console.group("advanced-control");
 
-    let oscillator = {};
     export let oscillatorArray = [];
     let newNode;
-
     let freq = 440;
     let pan = 0;
     let series = 0;
 
     let interval = 1;
     let modeRadio = "major";
-    export let keySelect;
     let modeSelect;
+    export let keySelect;
     //array representing pitches in a scale
     export let modeSetter = [0, 2, 4, 5, 7, 9, 11];
     //key array places pitches in order of key chosen by user
     export let keyArray = ["C", "D", "E", "F", "G", "A", "B"];
     export let allowedPitches = [];
-    let i = 0;
-    //Create Audio Context and Oscillator
 
     function intervalHandler() {
-        for (let j = interval; j > oscillatorArray.length; j) {
-            let id = uuid.generate();
-            newNode = createNewOscillator($audioCtx, freq, pan, series);
-            newNode.id = id;
-            newNode.j = 0;
-            oscillatorArray = [...oscillatorArray, newNode];
+        //adds oscillators to oscillatorArray if interval increases
+        if (interval > oscillatorArray.length) {
+            for (interval; interval > oscillatorArray.length; interval) {
+                if (pan === 0) {
+                    pan = -1;
+                }
+                pan === -1 ? (pan = 1) : (pan = -1);
+                let id = uuid.generate();
+                newNode = createNewOscillator($audioCtx, freq, pan, series);
+                newNode.id = id;
+                newNode.i = oscillatorArray[0].i;
+                oscillatorArray = [...oscillatorArray, newNode];
+            }
+        }
+        //subtracts oscillators from oscillatorArray if interval decreases
+        if (interval < oscillatorArray.length) {
+            for (let i = oscillatorArray.length - 1; i >= interval; i--) {
+                oscillatorArray.splice(-1, i);
+            }
         }
     }
 
@@ -51,7 +60,6 @@
         allowedPitches = [];
         modeSetter = await modeSelectHandler();
         keyArray = await keyHandler();
-        console.log(keyArray);
         populateAllowedPitches();
     }
 
@@ -78,6 +86,27 @@
                 modeSetter = [0, 2, 3, 5, 7, 8, 10];
                 break;
             case "loc":
+                modeSetter = [0, 1, 3, 5, 6, 8, 10];
+                break;
+            case "melmin":
+                modeSetter = [0, 2, 3, 5, 7, 9, 11];
+                break;
+            case "dorb2":
+                modeSetter = [0, 1, 3, 5, 7, 9, 10];
+                break;
+            case "lydaug":
+                modeSetter = [0, 2, 4, 6, 8, 9, 11];
+                break;
+            case "lyddom":
+                modeSetter = [0, 2, 4, 6, 7, 9, 10];
+                break;
+            case "mixb6":
+                modeSetter = [0, 2, 4, 5, 7, 8, 10];
+                break;
+            case "aeob5":
+                modeSetter = [0, 2, 3, 5, 6, 8, 10];
+                break;
+            case "suploc":
                 modeSetter = [0, 1, 3, 5, 6, 8, 10];
                 break;
             case "dim-wh":
@@ -187,9 +216,6 @@
                 <option value="mix">Mixolidian</option>
                 <option value="aeo">Aeolian</option>
                 <option value="loc">Locrian</option>
-                <option value="dim-wh">Diminished Whole Half</option>
-                <option value="dim-hw">Diminished Half Whole</option>
-                <option value="aug">Augmented</option>
             </select>
         {:else if modeRadio === "minor"}
             <select
@@ -198,13 +224,13 @@
                 bind:value={modeSelect}
                 on:change={populateKeyedPitches}>
                 <option>Select a Minor Mode</option>
-                <option value="ion">Melodic Minor</option>
-                <option value="dor">Dorian b2</option>
-                <option value="phr">Lydian Augmented</option>
-                <option value="lyd">Lydian Dominant</option>
-                <option value="mix">Mixolidian b6</option>
-                <option value="aeo">Aeolian b5</option>
-                <option value="loc">Super Locrian</option>
+                <option value="melmin">Melodic Minor</option>
+                <option value="dorb2">Dorian b2</option>
+                <option value="lydaug">Lydian Augmented</option>
+                <option value="lyddom">Lydian Dominant</option>
+                <option value="mixb6">Mixolidian b6</option>
+                <option value="aeob5">Aeolian b5</option>
+                <option value="suploc">Super Locrian</option>
             </select>
         {:else if modeRadio === "symmetrical"}
             <select

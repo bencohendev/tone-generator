@@ -1,13 +1,7 @@
 <script>
     import SeriesAdvancedControls from "../components/SeriesAdvancedControls.svelte";
 
-    import {
-        audioCtx,
-        allPitches,
-        pitches,
-        pitchNames,
-        showPitchSelector,
-    } from "../store.js";
+    import { audioCtx, allPitches, showPitchSelector } from "../store.js";
     import { onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
     import uuid from "shortid";
@@ -15,7 +9,7 @@
     import { createNewOscillator } from "../services/NewOscillator.svelte";
 
     console.group("series");
-
+    //oscillator creation
     let oscillator = {};
     let oscillatorArray = [];
     let newNode;
@@ -25,6 +19,8 @@
     let pan = 0;
     let series = 0;
     let wavType = "sine";
+
+    //speed and pitch range
     let wasClicked = null;
     let lowerVal;
     let upperVal;
@@ -33,40 +29,33 @@
     let numOfPitches = 4;
     let playOnce = false;
     let freqRange = [];
-    let selectedInstrument;
+
+    //advanced controls
     let showAdvanced = false;
-    let interval;
-    let intervalType;
-    let modeRadio;
+    let selectedInstrument;
     let keySelect;
-    let modeSelect;
     //array representing pitches in a scale
     let modeSetter = [0, 2, 4, 5, 7, 9, 11];
     //key array places pitches in order of key chosen by user
     let keyArray = ["C", "D", "E", "F", "G", "A", "B"];
     let allowedPitches = [];
-    let i = 0;
+
     //Create Audio Context and Oscillator
     onMount(() => {
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
-        addNewOscillator(freq, pan);
-    });
-
-    function addNewOscillator(freq, pan) {
         let id = uuid.generate();
         newNode = createNewOscillator($audioCtx, freq, pan, series);
         newNode.id = id;
-        newNode.j = 0;
-        oscillatorArray = [...oscillatorArray, newNode];
-    }
+        newNode.i = 0;
+        oscillatorArray = [newNode];
+    });
 
     let playHandler = () => {
         if (play) {
-            console.log("allowed pitches; ", allowedPitches);
             setTimeout(seriesPlayer, bpm);
         } else if (!play && oscillator.onOffNode) {
             oscillatorArray.map((oscillator) => {
-                oscillator.j = 0;
+                oscillator.i = 0;
                 oscillator.onOffNode.gain.setValueAtTime(
                     0,
                     $audioCtx.currentTime
@@ -79,11 +68,10 @@
         oscillatorArray.map((oscillator) => {
             //sets on/off oscillator volume to full
             oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-            if (oscillator.j < parseInt(numOfPitches) && play) {
+            if (oscillator.i < parseInt(numOfPitches) && play) {
                 //chooses and plays a random pitch from within the set range
                 let pitchToPlay =
                     freqRange[Math.floor(Math.random() * freqRange.length)];
-                console.log(pitchToPlay.name);
                 oscillator.oscNode.frequency.setValueAtTime(
                     pitchToPlay.frequency,
                     $audioCtx.currentTime
@@ -93,7 +81,7 @@
                     $audioCtx.currentTime,
                     0.0001
                 );
-                oscillator.j++;
+                oscillator.i++;
             } else {
                 //if player has played requested number of pitches either leave a blank and restart, or turn off depending on playOnce
                 oscillator.seriesGainNode.gain.setValueAtTime(
@@ -104,7 +92,7 @@
                     play = false;
                 }
 
-                oscillator.j = 0;
+                oscillator.i = 0;
             }
             //shaves the last 25% of each note off so there is a gap between notes
             setTimeout(() => {
@@ -184,7 +172,6 @@
                 break;
         }
     };
-
     $: {
         //checks to ensure node has been created
         if (oscillatorArray[0]) {
@@ -287,7 +274,6 @@
                 type="checkbox"
                 id="play-once-checkbox"
                 bind:checked={playOnce}
-                disabled={play}
             />
         </label>
     </div>
@@ -319,7 +305,9 @@
         <button
             class="play-button {play ? 'playing' : 'paused'}"
             disabled={!(lowerVal && upperVal)}
-            on:click={() => (!play ? (play = true) : (play = false))}>
+            on:click={() => {
+                !play ? (play = true) : (play = false);
+            }}>
             {#if !(lowerVal && upperVal)}
                 Select a Pitch Range to Play
             {:else}
@@ -333,8 +321,8 @@
         on:click={() =>
             showAdvanced ? (showAdvanced = false) : (showAdvanced = true)}
         >{showAdvanced ? "Hide Advanced Controls" : "Show Advanced Controls"}
-        <div class={showAdvanced ? "down-chevron" : "up-chevron"}>
-            &#8964;
+        <div class={showAdvanced ? "chevron down" : "chevron"}>
+            &#8963;
         </div></button
     >
     {#if showAdvanced}
@@ -436,5 +424,15 @@
 
     .advanced-toggle {
         margin-bottom: 1rem;
+    }
+
+    .chevron {
+        font-size: 2rem;
+        height: 1rem;
+        margin: 0.5rem;
+        transition: transform 0.5s;
+        &.down {
+            transform: rotate(180deg);
+        }
     }
 </style>

@@ -42,7 +42,6 @@
             (oscillator) =>
                 (oscillator.onOffNode.gain.value = isAllPlaying ? 0 : 1)
         );
-        console.log(oscillatorArray);
         oscillatorArray = oscillatorArray;
     }
     function muteAllHandler() {
