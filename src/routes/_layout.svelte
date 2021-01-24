@@ -15,19 +15,19 @@
 
 	let lowestPitches = [
 		{
-			name: "D0",
+			name: "B0",
 			frequency: 30.86770632850775,
 			octave: 0,
 			multiplier: 1,
 		},
 		{
-			name: "Db/C#0",
+			name: "Gb/A#0",
 			frequency: 29.13523509488062,
 			octave: 0,
 			multiplier: 1,
 		},
 		{
-			name: "C0",
+			name: "A0",
 			frequency: 27.5,
 			octave: 0,
 			multiplier: 1,
