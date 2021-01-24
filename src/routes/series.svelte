@@ -157,32 +157,40 @@
     let handleSelectedInstrument = (selectedInstrument) => {
         switch (selectedInstrument) {
             case "Electric Guitar":
-                lowerVal = {
-                    text: "pitch",
-                    frequency: 82.406,
-                    name: "E2",
-                    i: 2,
-                };
-                upperVal = {
-                    text: "pitch",
-                    frequency: 1174.656,
-                    name: "D6",
-                    i: 6,
-                };
+                lowerVal = $allPitches.find((pitch) => pitch.name === "E2");
+                upperVal = $allPitches.find((pitch) => pitch.name === "D6");
                 break;
             case "Tenor Saxophone":
-                lowerVal = {
-                    text: "pitch",
-                    frequency: 103,
-                    name: "G#/Ab3",
-                    i: 3,
-                };
-                upperVal = {
-                    text: "pitch",
-                    frequency: 622,
-                    name: "D#/Eb7",
-                    i: 7,
-                };
+                lowerVal = $allPitches.find((pitch) => pitch.name === "G#/Ab2");
+                upperVal = $allPitches.find((pitch) => pitch.name === "E5");
+                break;
+            case "Soprano Saxophone":
+                lowerVal = $allPitches.find((pitch) => pitch.name === "G#/Ab3");
+                upperVal = $allPitches.find((pitch) => pitch.name === "E6");
+                break;
+            case "Alto Saxophone":
+                lowerVal = $allPitches.find((pitch) => pitch.name === "C#/Db3");
+                upperVal = $allPitches.find((pitch) => pitch.name === "G#/Ab5");
+                break;
+            case "Bari Saxophone":
+                lowerVal = $allPitches.find((pitch) => pitch.name === "C#/Db2");
+                upperVal = $allPitches.find((pitch) => pitch.name === "G#/Ab4");
+                break;
+            case "Trumpet":
+                lowerVal = $allPitches.find((pitch) => pitch.name === "F#/Gb3");
+                upperVal = $allPitches.find((pitch) => pitch.name === "D6");
+                break;
+            case "Trombone":
+                lowerVal = $allPitches.find((pitch) => pitch.name === "E2");
+                upperVal = $allPitches.find((pitch) => pitch.name === "F5");
+                break;
+            case "Flute":
+                lowerVal = $allPitches.find((pitch) => pitch.name === "C4");
+                upperVal = $allPitches.find((pitch) => pitch.name === "D7");
+                break;
+            case "Clarinet":
+                lowerVal = $allPitches.find((pitch) => pitch.name === "D3");
+                upperVal = $allPitches.find((pitch) => pitch.name === "C7");
                 break;
         }
     };
@@ -243,7 +251,14 @@
                     )}>
                 <option>Select an Instrument</option>
                 <option>Electric Guitar</option>
+                <option>Soprano Saxophone</option>
+                <option>Alto Saxophone</option>
                 <option>Tenor Saxophone</option>
+                <option>Bari Saxophone</option>
+                <option>Trumpet</option>
+                <option>Trombone</option>
+                <option>Flute</option>
+                <option>Clarinet</option>
             </select>
         </div>
         {#if !(lowerVal && upperVal)}
