@@ -393,9 +393,4 @@
             margin: 1rem 0;
         }
     }
-    @media only screen and (max-width: 768px) {
-        .vol-pan-wav-container {
-            grid-template-columns: 25% 50% 12% 10%;
-        }
-    }
 </style>
