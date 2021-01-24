@@ -7,13 +7,13 @@
 		<li>
 			<a
 				aria-current={segment === undefined ? "page" : undefined}
-				href="/">Static</a
+				href="/">Tone Generator</a
 			>
 		</li>
 		<li>
 			<a
 				aria-current={segment === "series" ? "page" : undefined}
-				href="series">Series</a
+				href="series">Random Pitch Sequences</a
 			>
 		</li>
 		<li>
