@@ -277,7 +277,7 @@
                         <option>Select a Scale</option>
                         <option value="dim-wh">Diminished Whole Half</option>
                         <option value="dim-hw">Diminished Half Whole</option>
-                        <option value="aug">Augmented</option>
+                        <option value="aug">Whole Tone</option>
                     </select>
                 {/if}
             </div>
