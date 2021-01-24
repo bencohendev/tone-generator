@@ -74,7 +74,7 @@
         oscillatorArray.map((oscillator) => {
             //sets on/off oscillator volume to full
             oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-            if (oscillator.j < parseInt(numOfPitches)) {
+            if (oscillator.j < parseInt(numOfPitches) && play) {
                 //chooses and plays a random pitch from within the set range
                 let pitchToPlay =
                     freqRange[Math.floor(Math.random() * freqRange.length)];
