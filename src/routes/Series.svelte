@@ -1,4 +1,6 @@
 <script>
+    import SeriesAdvancedControls from "../components/SeriesAdvancedControls.svelte";
+
     import {
         audioCtx,
         allPitches,
@@ -32,8 +34,10 @@
     let playOnce = false;
     let freqRange = [];
     let selectedInstrument;
+    let showAdvanced = false;
     let interval;
     let intervalType;
+    let modeRadio;
     let keySelect;
     let modeSelect;
     //array representing pitches in a scale
@@ -58,6 +62,7 @@
 
     let playHandler = () => {
         if (play) {
+            console.log("allowed pitches; ", allowedPitches);
             setTimeout(seriesPlayer, bpm);
         } else if (!play && oscillator.onOffNode) {
             oscillatorArray.map((oscillator) => {
@@ -78,7 +83,7 @@
                 //chooses and plays a random pitch from within the set range
                 let pitchToPlay =
                     freqRange[Math.floor(Math.random() * freqRange.length)];
-
+                console.log(pitchToPlay.name);
                 oscillator.oscNode.frequency.setValueAtTime(
                     pitchToPlay.frequency,
                     $audioCtx.currentTime
@@ -180,95 +185,8 @@
         }
     };
 
-    function intervalHandler() {
-        for (let j = interval; j > oscillatorArray.length; j) {
-            let id = uuid.generate();
-            newNode = createNewOscillator($audioCtx, freq, pan, series);
-            newNode.id = id;
-            newNode.j = 0;
-            oscillatorArray = [...oscillatorArray, newNode];
-        }
-    }
-
-    function intervalSelectHandler() {}
-
-    async function populateAllowedPitches() {
-        allowedPitches = [];
-        $allPitches.map((pitch) =>
-            keyArray.forEach((key) => {
-                if (pitch.name.slice(0, pitch.name.length - 1) === key)
-                    allowedPitches.push(pitch);
-            })
-        );
-    }
-
-    async function populateKeyedPitches() {
-        allowedPitches = [];
-        modeSetter = await modeSelectHandler();
-        keyArray = await keyHandler();
-        console.log(keyArray);
-        populateAllowedPitches();
-    }
-
-    //mode setter is used to create array of pitches for specific modes
-    async function modeSelectHandler() {
-        modeSetter = [];
-        switch (modeSelect) {
-            case "ion":
-                modeSetter = [0, 2, 4, 5, 7, 9, 11];
-                break;
-            case "dor":
-                modeSetter = [0, 2, 3, 5, 7, 9, 10];
-                break;
-            case "phr":
-                modeSetter = [0, 1, 3, 5, 7, 8, 10];
-                break;
-            case "lyd":
-                modeSetter = [0, 2, 4, 6, 7, 9, 11];
-                break;
-            case "mix":
-                modeSetter = [0, 2, 4, 5, 7, 9, 10];
-                break;
-            case "aeo":
-                modeSetter = [0, 2, 3, 5, 7, 8, 10];
-                break;
-            case "loc":
-                modeSetter = [0, 1, 3, 5, 6, 8, 10];
-                break;
-            case "dim-wh":
-                modeSetter = [0, 2, 3, 5, 6, 8, 9, 11];
-                break;
-            case "dim-hw":
-                modeSetter = [0, 1, 3, 4, 6, 7, 9, 10];
-                break;
-            case "aug":
-                modeSetter = [0, 4, 8];
-                break;
-        }
-        return modeSetter;
-    }
-    //key handler returns keyArray with pitches in the correct order based on key chosen by user. mode default to major
-    async function keyHandler() {
-        keyArray = [];
-
-        //reorders array of pitches based on key
-        let pitchFront = $pitchNames.slice(keySelect, 12);
-        let pitchBack = $pitchNames.slice(0, keySelect);
-        let keyOrdered = pitchFront.concat(pitchBack);
-
-        //populates key array with pitches based on mode setter
-        modeSetter.map((key) => {
-            let pitchToReturn = keyOrdered[key];
-            keyArray.push(pitchToReturn);
-        });
-
-        //sets allPitches
-        populateAllowedPitches();
-
-        return keyArray;
-    }
     $: {
-        //checks to ensure some node values are returned
+        //checks to ensure node has been created
         if (oscillatorArray[0]) {
             //volume control
             oscillatorArray[0].oscGainNode.gain.setTargetAtTime(
@@ -279,7 +197,7 @@
 
             //Wave Type Selector
             oscillatorArray[0].oscNode.type = wavType.toLowerCase();
-            //frequency range selector
+            //frequency range setter
             if (lowerVal && upperVal) {
                 allowedPitches[0]
                     ? (allowedPitches = allowedPitches)
@@ -301,9 +219,9 @@
 
 <section class="series card">
     <div class="pitch-select-container">
-        <div class="text-info">
+        <h3 class="text-info">
             Choose a Pitch Range By Instrument Or Set Range Manually
-        </div>
+        </h3>
 
         <div class="instrument-select-container">
             <!-- svelte-ignore a11y-no-onchange -->
@@ -410,52 +328,26 @@
         </button>
     </div>
 
-    <div class="interval-select-container">
-        <!-- svelte-ignore a11y-no-onchange -->
-        <select
-            name="select-interval"
-            id="select-interval"
-            bind:value={interval}
-            on:change={intervalHandler}>
-            <option>Select Number Of Intervals</option>
-            <option value={2}>2</option>
-            <option value={3}>3</option>
-            <option value={5}>5</option>
-        </select>
-
-        <!-- svelte-ignore a11y-no-onchange -->
-
-        <select
-            name="select-key"
-            id="select-key"
-            bind:value={keySelect}
-            on:change={keyHandler}>
-            <option>Select a Key</option>
-            {#each $pitchNames as pitchName, i}
-                <option value={i}>{pitchName}</option>
-            {/each}
-        </select>
-        <!-- svelte-ignore a11y-no-onchange -->
-
-        <select
-            name="mode-key"
-            id="mode-key"
-            bind:value={modeSelect}
-            on:change={populateKeyedPitches}>
-            <option>Select a Mode</option>
-            <option value="ion">Ionian</option>
-            <option value="dor">Dorian</option>
-            <option value="phr">Phrygian</option>
-            <option value="lyd">Lydian</option>
-            <option value="mix">Mixolidian</option>
-            <option value="aeo">Aeolian</option>
-            <option value="loc">Locrian</option>
-            <option value="dim-wh">Diminished Whole Half</option>
-            <option value="dim-hw">Diminished Half Whole</option>
-            <option value="aug">Augmented</option>
-        </select>
-    </div>
+    <button
+        class="advanced-toggle"
+        on:click={() =>
+            showAdvanced ? (showAdvanced = false) : (showAdvanced = true)}
+        >{showAdvanced ? "Hide Advanced Controls" : "Show Advanced Controls"}
+        <div class={showAdvanced ? "down-chevron" : "up-chevron"}>
+            &#8964;
+        </div></button
+    >
+    {#if showAdvanced}
+        <SeriesAdvancedControls
+            bind:keyArray
+            bind:keySelect
+            bind:oscillatorArray
+            bind:modeSetter
+            bind:allowedPitches
+        />
+    {/if}
 </section>
+
 <section class="page-info">
     <h3>About This Random Note Generator</h3>
     <div>
@@ -468,7 +360,6 @@
 </section>
 {#if $showPitchSelector}
     <PitchSelector
-        bind:$showPitchSelector
         {lowerVal}
         {upperVal}
         bind:wasClicked
@@ -477,6 +368,9 @@
 {/if}
 
 <style lang="scss">
+    .series {
+        text-align: center;
+    }
     .page-info {
         padding: 1rem;
         margin-bottom: 2rem;
@@ -538,5 +432,9 @@
             width: 5rem;
             margin: 0rem 0.5rem;
         }
+    }
+
+    .advanced-toggle {
+        margin-bottom: 1rem;
     }
 </style>
