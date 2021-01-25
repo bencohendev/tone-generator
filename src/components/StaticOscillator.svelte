@@ -82,7 +82,7 @@
     console.groupEnd();
 </script>
 
-<section class="card oscillator-container" transition:fade>
+<section class="card oscillator-container" in:fade>
     <div class="close-container">
         <button
             on:click={() => dispatch("closeStaticOscillator", i)}
