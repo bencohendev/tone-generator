@@ -117,7 +117,7 @@
     </section>
     {#if showGenerateOvertones}
         <div class="overtone-preset-container">
-            <div>Select a Fundamental</div>
+            <h3>Select a Fundamental</h3>
             <div class="overtone-select-container">
                 <select
                     name="pitch-select"
@@ -172,14 +172,19 @@
 
         .oscillator-master-control {
             display: flex;
-            margin-bottom: 2rem;
 
             button {
                 margin: 1rem;
             }
+            .create-oscillator {
+                margin-left: 0;
+            }
         }
         .overtone-preset-container {
-            margin: 1rem;
+            h3 {
+                margin-bottom: 0.5rem;
+            }
+            margin-bottom: 1rem;
             select {
                 margin-right: 1rem;
             }

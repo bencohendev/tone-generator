@@ -40,7 +40,9 @@
         margin: 0.4rem;
 
         &.active {
-            border: solid 1px #b81a1a;
+            &.active {
+                box-shadow: 0px 0px 4px 5px rgba(20, 108, 22, 1);
+            }
         }
     }
     .drone-container {

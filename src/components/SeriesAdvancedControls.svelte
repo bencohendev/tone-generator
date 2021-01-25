@@ -151,7 +151,7 @@
     console.groupEnd();
 </script>
 
-<section class="advanced-container" transition:fade>
+<section class="advanced-container">
     <div class="pitch-display-container">
         <button
             on:click={() =>
@@ -165,16 +165,13 @@
                     : (showAllPitches = true)}
             >{showAllPitches ? "Hide All Pitches" : "Show All Pitches"}</button
         >
-        {#if pitchesPlayed[0]}
-            <button on:click={() => (pitchesPlayed = [])}
-                >Clear Pitches PLayed</button
-            >
-        {/if}
+        <button
+            disabled={!pitchesPlayed[0]}
+            on:click={() => (pitchesPlayed = [])}>Clear Pitches PLayed</button
+        >
 
         {#if pitchesPlayed[0] && showPitches}
-            <!-- {#key pitchesPlayed} -->
             <div>{pitchesPlayed[pitchesPlayed.length - 1]}</div>
-            <!-- {/key} -->
         {/if}
         {#if pitchesPlayed[0] && showAllPitches}
             {#key pitchesPlayed}
@@ -274,7 +271,7 @@
                         id="minor-mode-key"
                         bind:value={modeSelect}
                         on:change={populateKeyedPitches}>
-                        <option>Select a Scale</option>
+                        <option>Select a Symmetrical Scale</option>
                         <option value="dim-wh">Diminished Whole Half</option>
                         <option value="dim-hw">Diminished Half Whole</option>
                         <option value="aug">Whole Tone</option>
