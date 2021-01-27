@@ -1,7 +1,6 @@
 <script>
     import { audioCtx, allPitches, pitchNames } from "../store.js";
     import uuid from "shortid";
-    import { fade } from "svelte/transition";
 
     import { createNewOscillator } from "../services/NewOscillator.svelte";
 
@@ -180,28 +179,7 @@
         {/if}
     </div>
     <div class="interval-mode-container">
-        <div class="interval-select-container">
-            <h4>Choose How Many Pitches Are Played At Once</h4>
 
-            <div class="interal-input-container">
-                <label>
-                    <input type="radio" value={1} bind:group={interval} />
-                    1
-                </label>
-                <label>
-                    <input type="radio" value={2} bind:group={interval} />
-                    2
-                </label>
-                <label>
-                    <input type="radio" value={3} bind:group={interval} />
-                    3
-                </label>
-                <label>
-                    <input type="radio" value={4} bind:group={interval} />
-                    4
-                </label>
-            </div>
-        </div>
         <div class="key-mode-container">
             <h4>Choose a Mode/Scale</h4>
             <div class="key-mode-input-container">
@@ -279,13 +257,38 @@
                 {/if}
             </div>
         </div>
+        <div class="interval-select-container">
+            <h4>Choose How Many Pitches Are Played At Once</h4>
+
+            <div class="interal-input-container">
+                <label>
+                    <input type="radio" value={1} bind:group={interval} />
+                    1
+                </label>
+                <label>
+                    <input type="radio" value={2} bind:group={interval} />
+                    2
+                </label>
+                <label>
+                    <input type="radio" value={3} bind:group={interval} />
+                    3
+                </label>
+                <label>
+                    <input type="radio" value={4} bind:group={interval} />
+                    4
+                </label>
+            </div>
+        </div>
     </div>
 </section>
 
 <style lang="scss">
+
     .interval-mode-container {
         display: grid;
-        grid-template-columns: 50% 50%;
+        div {
+            margin: 1rem 0  
+        }
     }
 
     .pitch-display-container {
@@ -294,5 +297,7 @@
 
     .key-mode-input-container {
         margin-bottom: 0.5rem;
+        display: grid;
     }
+
 </style>

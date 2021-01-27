@@ -5,7 +5,7 @@
         audioCtx,
         allPitches,
         showPitchSelector,
-        pitches,
+
     } from "../store.js";
     import { onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
@@ -287,8 +287,8 @@
             </div>
         {/if}
     </div>
+    <div class="pitch-number-container">
 
-    <div class="bpm-container">
         <label>
             number of pitches:
             <input
@@ -297,13 +297,21 @@
                 bind:value={numOfPitches}
             />
         </label>
-        <label>
-            bpm:
-            <input type="number" label="play speed" bind:value={playSpeed} />
-        </label>
-        <label>
-            play once
+    </div>
 
+
+    <div class="bpm-container">
+
+    <label>
+        bpm:
+        <input type="number" label="play speed" bind:value={playSpeed} />
+    </label>
+</div>
+
+    <div class="play-once-container">
+        <label >
+            play once
+    
             <input
                 type="checkbox"
                 id="play-once-checkbox"
@@ -311,6 +319,7 @@
             />
         </label>
     </div>
+
 
     <div class="slide-container volume">
         <img
@@ -384,6 +393,14 @@
 {/if}
 
 <style lang="scss">
+.pitch-number-container {
+    input {
+        max-width: 4rem;
+    }
+}
+    .play-once-container  {
+        margin: 1rem 0;
+    }
     .series {
         text-align: center;
     }
@@ -467,4 +484,6 @@
     .pitch-display-container {
         margin-bottom: 1rem;
     }
+
+
 </style>

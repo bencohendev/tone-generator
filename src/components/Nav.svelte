@@ -75,4 +75,10 @@
 		padding: 1em 0.5em;
 		display: block;
 	}
+
+	@media only screen and (max-width: 768px) {
+		ul {
+			font-size: 13px;
+		}
+	}
 </style>

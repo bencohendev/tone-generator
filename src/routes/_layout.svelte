@@ -34,6 +34,10 @@
 		},
 	];
 
+	let window
+	let maxWidth 
+$: maxWidth = (window > 1400) ? 1280 : window-40;
+
 	//populateAllPitches runs on mount of site itself. It creates array of pitch objects including name and frequency
 	onMount(() => {
 		$allPitches = populateAllPitches();
@@ -57,8 +61,8 @@
 </script>
 
 <Nav {segment} />
-
-<main class:add-bg-opacity={$showPitchSelector}>
+<svelte:window bind:innerWidth={window}/>
+<main class:add-bg-opacity={$showPitchSelector} style="max-width: {maxWidth}px" >
 	<slot />
 </main>
 

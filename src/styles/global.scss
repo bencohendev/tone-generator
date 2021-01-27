@@ -24,7 +24,7 @@ html, body {
 }
 
 main {
-    max-width: 65em;
+  //  max-width: 65em;
     margin: 2rem auto 0 auto;
     box-sizing: border-box;
 
@@ -230,18 +230,3 @@ select {
   }
 }
 
-@media only screen and (max-width: 768px) {
-
-  html, body {
-    .card {
-      padding: 0px;
-    }
-  }
-  main {
-    max-width: 24rem;
-
-
-  }
-
-
-}

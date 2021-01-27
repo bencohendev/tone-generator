@@ -89,63 +89,50 @@
             class="close">X</button
         >
     </div>
+    <div class="play-button-container">
+    <button
+    class="play-button {onOffVal === 1 ? 'playing' : 'paused'}"
+    on:click={() => {
+        onOffVal === 1 ? (onOffVal = 0) : (onOffVal = 1);
+    }}>{onOffVal === 1 ? "Pause" : "Play"}
+</button>
+<div class="slide-container volume">
+    <img
+        class="volume-low"
+        src={vol === 0
+            ? "../icons/volume-off-light.png"
+            : "../icons/volume-low-light.png"}
+        alt="volume"
+        on:click={() => (vol = 0)}
+    />
+    <input
+        type="range"
+        min="0"
+        max="100"
+        bind:value={vol}
+        class="slider volume"
+    />
+    <img
+        class="volume-full"
+        src="../icons/volume-full-light.png"
+        alt="volume"
+        on:click={() => (vol = 100)}
+    />
+</div>
+</div>
 
-    <div class="vol-pan-wav-container">
-        <button
-            class="play-button {onOffVal === 1 ? 'playing' : 'paused'}"
-            on:click={() => {
-                onOffVal === 1 ? (onOffVal = 0) : (onOffVal = 1);
-            }}>{onOffVal === 1 ? "Pause" : "Play"}
-        </button>
-        <div class="slide-container volume">
-            <img
-                class="volume-low"
-                src={vol === 0
-                    ? "../icons/volume-off-light.png"
-                    : "../icons/volume-low-light.png"}
-                alt="volume"
-                on:click={() => (vol = 0)}
-            />
-            <input
-                type="range"
-                min="0"
-                max="100"
-                bind:value={vol}
-                class="slider volume"
-            />
-            <img
-                class="volume-full"
-                src="../icons/volume-full-light.png"
-                alt="volume"
-                on:click={() => (vol = 100)}
-            />
-        </div>
 
-        <div class=" wave-select-container">
+        <div class="pitch-selector-container">
             <button
-                class="wave-select-button {waveType}"
+                class="pitch-selector"
                 on:click={() =>
-                    showWaveSelector
-                        ? (showWaveSelector = false)
-                        : (showWaveSelector = true)}
-            />
-            {#if showWaveSelector}
-                <WaveType bind:waveType bind:showWaveSelector />
-            {/if}
+                    $showPitchSelector
+                        ? ($showPitchSelector = false)
+                        : ($showPitchSelector = true)}>Select a Pitch
+            </button>
         </div>
 
-        <div class="slide-container pan">
-            <button
-                class="pan-button"
-                on:click={() =>
-                    showPanSelector
-                        ? (showPanSelector = false)
-                        : (showPanSelector = true)}> Pan </button>
-            {#if showPanSelector}
-                <Pan bind:pan bind:showPanSelector />
-            {/if}
-        </div>
-    </div>
+
 
     <div class="frequency-container">
         <div class="slide-container Frequency">
@@ -187,6 +174,17 @@
                 {/if}
                 Hz
                 <div class="frequency-click" />
+                <div
+                class="frequency-label pitch"
+                on:click={() => (freq = closestPitch.frequency)}
+            >
+                {#if Math.round(freq) != Math.round(closestPitch.frequency)}
+                    {Math.round(freq) > Math.round(closestPitch.frequency)
+                        ? ">"
+                        : "<"}
+                {/if}
+                {closestPitch.name}
+            </div>
             </div>
             <button
                 class="frequency-arith-button"
@@ -199,25 +197,31 @@
                 >&times 2
             </button>
         </div>
-        <div
-            class="frequency-label pitch"
-            on:click={() => (freq = closestPitch.frequency)}
-        >
-            {#if Math.round(freq) != Math.round(closestPitch.frequency)}
-                {Math.round(freq) > Math.round(closestPitch.frequency)
-                    ? ">"
-                    : "<"}
-            {/if}
-            {closestPitch.name}
-        </div>
-        <div class="pitch-selector-button-container">
+    </div>
+    <div class="pan-wave-container">
+        <div class=" wave-select-container">
             <button
-                class="pitch-selector"
+                class="wave-select-button {waveType}"
                 on:click={() =>
-                    $showPitchSelector
-                        ? ($showPitchSelector = false)
-                        : ($showPitchSelector = true)}>Select a Pitch
-            </button>
+                    showWaveSelector
+                        ? (showWaveSelector = false)
+                        : (showWaveSelector = true)}
+            />
+            {#if showWaveSelector}
+                <WaveType bind:waveType bind:showWaveSelector />
+            {/if}
+        </div>
+
+        <div class="slide-container pan">
+            <button
+                class="pan-button"
+                on:click={() =>
+                    showPanSelector
+                        ? (showPanSelector = false)
+                        : (showPanSelector = true)}> Pan </button>
+            {#if showPanSelector}
+                <Pan bind:pan bind:showPanSelector />
+            {/if}
         </div>
     </div>
 </section>
@@ -233,20 +237,15 @@
     .close-container {
         display: flex;
         justify-content: flex-end;
-        .close {
-            margin: 1rem 1rem 0 0;
-        }
+
+    }
+    .play-button-container{ 
+            display: grid;
+            grid-template-columns: 15% 85%;
+            margin: 1rem;
+
     }
 
-    .vol-pan-wav-container {
-        display: grid;
-        grid-template-columns: 21% 50% 10% 10%;
-        justify-content: center;
-        margin: 1rem 0;
-
-        .play-button {
-            width: 5rem;
-        }
 
         .volume {
             display: flex;
@@ -264,9 +263,8 @@
         .pan {
             position: relative;
 
-            img {
-                width: 40px;
             }
+            
 
             .pan-controller {
                 display: grid;
@@ -291,7 +289,7 @@
 
                 .pan-buttons {
                     display: grid;
-                    grid-template-columns: 33% 33% 33%;
+                    grid-template-columns: auto auto auto;
                     justify-content: center;
 
                     button {
@@ -311,7 +309,7 @@
                     }
                 }
             }
-        }
+        
 
         .wave-select-container {
             position: relative;
@@ -343,7 +341,6 @@
 
             .wave-select-button {
                 background-size: contain;
-                margin-right: 1rem;
                 background-position: center;
                 background-repeat: no-repeat;
                 width: 40px;
@@ -366,7 +363,7 @@
                     width: 20px;
                 }
             }
-        }
+        
     }
 
     .frequency-container {
@@ -382,22 +379,30 @@
 
             .frequency-arith-button {
                 margin: 0px 5px;
+                font-size: 10px;
             }
         }
 
         .frequency-label {
             text-align: center;
+
         }
     }
 
-    .pitch-selector-button-container {
+    .pan-wave-container {
         display: grid;
+        grid-template-columns: auto auto;
+        margin: 1rem;
         justify-content: center;
-        margin-bottom: 1rem;
-        grid-template-rows: 100% auto;
-
-        .pitch-selector {
-            margin: 1rem 0;
+        div {
+            margin: 1rem;
         }
     }
+
+    .pitch-selector-container {
+        text-align: center;
+        margin: 2rem 0;
+    }
+
+
 </style>
