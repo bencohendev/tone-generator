@@ -73,15 +73,18 @@
         display: grid;
         position: fixed;
         width: 100%;
-        max-width: 65rem;
-        height: 38rem;
+        max-width: 45rem;
+        height: 100vh;
         overflow-y: auto;
-        top: 25%;
+        top: 10%;
         background-color: rgb(47, 52, 55);
         box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
             12px 12px 4px 0px rgba(0, 0, 0, 0.14),
             0px 1px 8px 0px rgba(0, 0, 0, 0.12);
         z-index: 2;
+        left: 50%;
+        transform: translate(-50%, 0);
+        max-height: 45rem;
 
         .pitch-selector-inner {
             position: absolute;
@@ -117,6 +120,9 @@
     @media only screen and (max-width: 768px) {
         .pitch-selector-container {
             left: 0;
+            top: 0;
+            transform: unset;
+            max-height: unset;
             .pitch-row-container {
                 .pitch-row {
                     grid-template-columns: 16.6% 16.6% 16.6% 16.6% 16.6% 16.6%;
