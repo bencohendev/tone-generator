@@ -197,6 +197,15 @@
                 break;
         }
     };
+
+    function handleKeydown(e) {
+
+       if (e.keyCode === 32 && (lowerVal && upperVal))
+            //space
+            play ? play = false : play = true
+    }
+
+
     $: {
         //checks to ensure node has been created
         if (oscillatorArray[0]) {
@@ -232,6 +241,10 @@
 <svelte:head>
     <title>Series</title>
 </svelte:head>
+
+<svelte:window on:keydown={handleKeydown} ></svelte:window>
+
+
 <section class="series card">
     <div class="pitch-select-container">
         <h3 class="text-info">

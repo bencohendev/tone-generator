@@ -12,6 +12,8 @@
 
 	export let segment;
 
+
+
 	//multiplier is used to programatically create allPitches
 	let multiplier = 1;
 
@@ -58,6 +60,8 @@
 		return pitchArrayConstructor;
 	};
 
+
+
 	//window listener helps set max width of card
 	let window
 	let maxWidth 
@@ -67,7 +71,7 @@
 </script>
 
 <Nav {segment} />
-<svelte:window bind:innerWidth={window}/>
+<svelte:window bind:innerWidth={window} />
 <main class:add-bg-opacity={$showPitchSelector} style="max-width: {maxWidth}px" >
 	<slot />
 </main>

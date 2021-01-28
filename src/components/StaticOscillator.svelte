@@ -25,6 +25,11 @@
     //uses logarithm to make slider with 440 as middle value
     let freqSliderVal = Math.log2(freq);
 
+    //used for keypresses
+    let key;
+    let ctrl = false;
+    let shift = false;
+
     const dispatch = createEventDispatcher();
 
     //turns off oscillator if destroyed
@@ -57,6 +62,48 @@
         freq = 2 ** freqSliderVal;
     }
 
+
+    function handleKeydown(e) {
+        if (e.ctrlKey) {
+            ctrl = true;
+        }
+        if (e.shiftKey) {
+            shift = true;
+        }
+        key = e.keyCode;
+
+		switch(key) {
+            //space
+			case 32:
+                (onOffVal === 1) ? onOffVal = 0 : onOffVal = 1;
+            break;
+            //right arrow
+			case 39:
+                if (!ctrl && !shift)
+                freq += 1;
+                if (ctrl && !shift)
+                freq += 100;
+                if (ctrl && shift)
+                freq += .1;
+            break;
+            //left arrow
+			case 37:
+                if (!ctrl && !shift)
+                freq -= 1;
+                if (ctrl && !shift)
+                freq -= 100;
+                if (ctrl && shift)
+                freq -= .1;
+            break;
+        }		
+        key = null
+    }
+    
+    function handleKeyup() {
+        ctrl ? ctrl = false : ctrl;
+        shift ? shift = false: shift;
+    }
+
     $: {
         //frequency control
         oscillator.oscNode.frequency.setValueAtTime(
@@ -83,8 +130,12 @@
         vol / 100,
         $audioCtx.currentTime
     );
+
+
     console.groupEnd();
 </script>
+
+<svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup}></svelte:window>
 
 <section class="card oscillator-container" in:fade>
     <div class="close-container">
