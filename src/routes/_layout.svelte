@@ -8,11 +8,14 @@
 		allPitches,
 		showPitchSelector,
 	} from "../store.js";
-	let allThePitches = [];
+	let pitchArrayConstructor = [];
 
 	export let segment;
+
+	//multiplier is used to programatically create allPitches
 	let multiplier = 1;
 
+	//These three pitches cannot be added programatically as they fall outside of the full octave
 	let lowestPitches = [
 		{
 			name: "B0",
@@ -34,11 +37,7 @@
 		},
 	];
 
-	let window
-	let maxWidth 
-$: maxWidth = (window > 1400) ? 1280 : window-40;
-
-	//populateAllPitches runs on mount of site itself. It creates array of pitch objects including name and frequency
+	//populateAllPitches runs on mount of site itself. It creates a complete array of pitch objects
 	onMount(() => {
 		$allPitches = populateAllPitches();
 	});
@@ -46,7 +45,7 @@ $: maxWidth = (window > 1400) ? 1280 : window-40;
 	let populateAllPitches = () => {
 		for (let i = 1; i < 10; i++) {
 			for (let j = 0; j < $pitches.length; j++) {
-				allThePitches.push({
+				pitchArrayConstructor.push({
 					name: $pitchNames[j] + i,
 					frequency: $pitches[j] * multiplier,
 					octave: i,
@@ -55,9 +54,16 @@ $: maxWidth = (window > 1400) ? 1280 : window-40;
 			}
 			multiplier = multiplier * 2;
 		}
-		lowestPitches.map((pitch) => allThePitches.unshift(pitch));
-		return allThePitches;
+		lowestPitches.map((pitch) => pitchArrayConstructor.unshift(pitch));
+		return pitchArrayConstructor;
 	};
+
+	//window listener helps set max width of card
+	let window
+	let maxWidth 
+	$: maxWidth = (window > 1400) ? 1280 : window-40;
+
+
 </script>
 
 <Nav {segment} />

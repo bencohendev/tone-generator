@@ -5,6 +5,7 @@
     export let showWaveSelector;
 </script>
 
+<!--toggle showWaveSelector if click outside of Wave Selector-->
 <svelte:window
     on:click={(e) => {
         if (!e.target.classList.value.includes("wave"))

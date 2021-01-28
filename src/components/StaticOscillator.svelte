@@ -22,9 +22,12 @@
     let inputFrequency = false;
     let pitchName;
     let closestPitch;
+    //uses logarithm to make slider with 440 as middle value
     let freqSliderVal = Math.log2(freq);
 
     const dispatch = createEventDispatcher();
+
+    //turns off oscillator if destroyed
     onDestroy(() => {
         oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
     });
@@ -48,6 +51,8 @@
             changeFreqSlider();
         }
     }
+
+    //compensates for log difference between freq and freqSliderVal
     function changeFreqSlider() {
         freq = 2 ** freqSliderVal;
     }
@@ -58,9 +63,8 @@
             freq,
             $audioCtx.currentTime
         );
-        // freqSliderVal = Math.log2(freq);
+        //finds closest pitch based on current freq 
         closestPitch = $allPitches.reduce((a, b) => {
-            //            console.log(b);
             return Math.abs(b.frequency - freq) < Math.abs(a.frequency - freq)
                 ? b
                 : a;
@@ -75,7 +79,7 @@
     //   $: changeFreqSlider(freqSliderVal);
 
     //volume control
-    $: oscillator.oscGainNode.gain.setValueAtTime(
+    $: oscillator.volGainNode.gain.setValueAtTime(
         vol / 100,
         $audioCtx.currentTime
     );
@@ -89,51 +93,50 @@
             class="close">X</button
         >
     </div>
-    <div class="play-button-container">
-    <button
-    class="play-button {onOffVal === 1 ? 'playing' : 'paused'}"
-    on:click={() => {
-        onOffVal === 1 ? (onOffVal = 0) : (onOffVal = 1);
-    }}>{onOffVal === 1 ? "Pause" : "Play"}
-</button>
-<div class="slide-container volume">
-    <img
-        class="volume-low"
-        src={vol === 0
-            ? "../icons/volume-off-light.png"
-            : "../icons/volume-low-light.png"}
-        alt="volume"
-        on:click={() => (vol = 0)}
-    />
-    <input
-        type="range"
-        min="0"
-        max="100"
-        bind:value={vol}
-        class="slider volume"
-    />
-    <img
-        class="volume-full"
-        src="../icons/volume-full-light.png"
-        alt="volume"
-        on:click={() => (vol = 100)}
-    />
-</div>
-</div>
-
-
-        <div class="pitch-selector-container">
-            <button
-                class="pitch-selector"
-                on:click={() =>
-                    $showPitchSelector
-                        ? ($showPitchSelector = false)
-                        : ($showPitchSelector = true)}>Select a Pitch
-            </button>
+    <div class="play-vol-container">
+        <button
+            class="play-button {onOffVal === 1 ? 'playing' : 'paused'}"
+            on:click={() => {
+                onOffVal === 1 ? (onOffVal = 0) : (onOffVal = 1);
+            }}>{onOffVal === 1 ? "Pause" : "Play"}
+        </button>
+        <div class="slide-container volume">
+            <img
+                class="volume-low"
+                src={vol === 0
+                    ? "../icons/volume-off-light.png"
+                    : "../icons/volume-low-light.png"}
+                alt="volume"
+                on:click={() => (vol = 0)}
+            />
+            <input
+                type="range"
+                min="0"
+                max="100"
+                bind:value={vol}
+                class="slider volume"
+            />
+            <img
+                class="volume-full"
+                src="../icons/volume-full-light.png"
+                alt="volume"
+                on:click={() => (vol = 100)}
+            />
         </div>
+    </div>
+
+<div class="pitch-selector-container">
+    <button
+        class="pitch-selector"
+        on:click={() =>
+            $showPitchSelector
+                ? ($showPitchSelector = false)
+                : ($showPitchSelector = true)}>Select a Pitch
+    </button>
+</div>
 
 
-
+    <!--min and max value of frequency slider are arbitrary. The slider functions logarithmically with 440 as the center-->
     <div class="frequency-container">
         <div class="slide-container Frequency">
             <input
@@ -168,23 +171,20 @@
                 {#if inputFrequency}
                     <input type="number" autofocus bind:value={freq} step={1} />
                 {:else}
-                    {freq != Math.round(freq) ? "~" : ""}{parseFloat(
-                        freq.toFixed(2)
-                    )}
+                    {freq.toFixed(8) != Math.round(freq) ? "~" : ""}{parseFloat(freq.toFixed(2))}
                 {/if}
                 Hz
-                <div class="frequency-click" />
                 <div
-                class="frequency-label pitch"
-                on:click={() => (freq = closestPitch.frequency)}
-            >
-                {#if Math.round(freq) != Math.round(closestPitch.frequency)}
-                    {Math.round(freq) > Math.round(closestPitch.frequency)
-                        ? ">"
-                        : "<"}
-                {/if}
-                {closestPitch.name}
-            </div>
+                    class="frequency-label pitch"
+                    on:click={() => (freq = closestPitch.frequency)}
+                >
+                    {#if Math.round(freq) != Math.round(closestPitch.frequency)}
+                        {Math.round(freq) > Math.round(closestPitch.frequency)
+                            ? ">"
+                            : "<"}
+                    {/if}
+                    {closestPitch.name}
+                </div>
             </div>
             <button
                 class="frequency-arith-button"
@@ -239,9 +239,9 @@
         justify-content: flex-end;
 
     }
-    .play-button-container{ 
+    .play-vol-container{ 
             display: grid;
-            grid-template-columns: 15% 85%;
+            grid-template-columns: 20% 80%;
             margin: 1rem;
 
     }
@@ -348,12 +348,13 @@
 
         .frequency-controls {
             display: grid;
-            grid-template-columns: 15% 15% 40% 15% 15%;
+            grid-template-columns: 18% 18% 28% 18% 18%;
             justify-content: center;
 
             .frequency-arith-button {
                 margin: 0px 5px;
-                font-size: 10px;
+                font-size: .65rem;
+                max-width: 5rem;
             }
         }
 

@@ -2,7 +2,7 @@
     import { audioCtx, allPitches, pitchNames } from "../store.js";
     import uuid from "shortid";
 
-    import { createNewOscillator } from "../services/NewOscillator.svelte";
+    import { createNewOscillator } from "../helpers/NewOscillator.svelte";
 
     console.group("advanced-control");
 
@@ -293,6 +293,9 @@
 
     .pitch-display-container {
         margin-bottom: 2rem;
+        button {
+            margin-top: .5rem;
+        }
     }
 
     .key-mode-input-container {

@@ -38,25 +38,26 @@
 		</span>
 	  </button>
 	<ul class="mobile {active ? 'is-active' : ''}">
-		<li>
+		<li on:click={()=>active = false}>
 			<a
 				aria-current={segment === undefined ? "page" : undefined}
-				href="/">Tone Generator</a
+				href="/"
+				>Tone Generator</a
 			>
 		</li>
-		<li>
+		<li on:click={()=>active = false}>
 			<a
 				aria-current={segment === "series" ? "page" : undefined}
 				href="series">Random Pitch Sequences</a
 			>
 		</li>
-		<li>
+		<li on:click={()=>active = false}>
 			<a
 				aria-current={segment === "drones" ? "page" : undefined}
 				href="drones">Drones</a
 			>
 		</li>
-		<li>
+		<li on:click={()=>active = false}>
 			<a
 				aria-current={segment === "about" ? "page" : undefined}
 				href="about">About</a

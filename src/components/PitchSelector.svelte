@@ -57,7 +57,7 @@
                                     sendPitch(pitch.frequency, pitch.name, i)}
                                 >{pitch.name}
                                 <div class="pitch-frequency">
-                                    ~{Math.floor(pitch.frequency)}
+                                    {pitch.frequency.toFixed(8) != Math.round(pitch.frequency) ? "~" : ""}{Math.floor(pitch.frequency)}
                                 </div>
                             </button>
                         {/if}
@@ -73,7 +73,8 @@
         display: grid;
         position: fixed;
         width: 100%;
-        max-width: 45rem;
+        max-width: 50rem;
+        max-height: 45rem;
         height: 100vh;
         overflow-y: auto;
         top: 10%;
@@ -84,7 +85,6 @@
         z-index: 2;
         left: 50%;
         transform: translate(-50%, 0);
-        max-height: 45rem;
 
         .pitch-selector-inner {
             position: absolute;

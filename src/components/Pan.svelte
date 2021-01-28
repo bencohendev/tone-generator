@@ -8,6 +8,7 @@
     console.groupEnd();
 </script>
 
+<!--toggle showPanSelector if click outside of Pan Selector-->
 <svelte:window
     on:click={(e) => {
         console.log(e.target.classList.value);
