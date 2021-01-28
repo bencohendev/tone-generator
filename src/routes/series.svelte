@@ -11,7 +11,7 @@
     import PitchSelector from "../components/PitchSelector.svelte";
     import uuid from "shortid";
 
-    import { createNewOscillator } from "../services/NewOscillator.svelte";
+    import { createNewOscillator } from "../helpers/NewOscillator.svelte";
 
     console.group("series");
     //oscillator creation
@@ -47,20 +47,23 @@
     //key array places pitches in order of key chosen by user
     let keyArray = ["C", "D", "E", "F", "G", "A", "B"];
     let allowedPitches = [];
-
+    let id
     //Create Audio Context and Oscillator
     onMount(() => {
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
-        let id = uuid.generate();
+        id = uuid.generate();
         newNode = createNewOscillator($audioCtx, freq, pan, series);
         newNode.id = id;
+        //counter for number of pitches played in sequence
         newNode.i = 0;
         oscillatorArray = [newNode];
     });
 
+
     let playHandler = () => {
         if (play) {
-            setTimeout(seriesPlayer, bpm);
+            //sequencePlayer runs after waiting bpm. sequencePlayer ends in a call to playHandler
+            setTimeout(sequencePlayer, bpm);
         } else if (!play && oscillator.onOffNode) {
             oscillatorArray.map((oscillator) => {
                 oscillator.i = 0;
@@ -72,10 +75,10 @@
         }
     };
 
-    function seriesPlayer() {
+    function sequencePlayer() {
         let pitchToPlay;
         oscillatorArray.map((oscillator) => {
-            //sets on/off oscillator volume to full
+            //on/off oscillator volume to full volume
             oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
             if (oscillator.i < parseInt(numOfPitches) && play) {
                 //chooses and plays a random pitch from within the set range
@@ -85,7 +88,7 @@
                     pitchToPlay.frequency,
                     $audioCtx.currentTime
                 );
-                oscillator.seriesGainNode.gain.setTargetAtTime(
+                oscillator.sequenceGainNode.gain.setTargetAtTime(
                     1,
                     $audioCtx.currentTime,
                     0.0001
@@ -93,7 +96,7 @@
                 oscillator.i++;
             } else {
                 //if player has played requested number of pitches either leave a blank and restart, or turn off depending on playOnce
-                oscillator.seriesGainNode.gain.setValueAtTime(
+                oscillator.sequenceGainNode.gain.setValueAtTime(
                     0,
                     $audioCtx.currentTime
                 );
@@ -105,7 +108,7 @@
             }
             //shaves the last 25% of each note off so there is a gap between notes
             setTimeout(() => {
-                oscillator.seriesGainNode.gain.setTargetAtTime(
+                oscillator.sequenceGainNode.gain.setTargetAtTime(
                     0,
                     $audioCtx.currentTime,
                     0.001
@@ -194,12 +197,21 @@
                 break;
         }
     };
+
+    function handleKeydown(e) {
+
+       if (e.keyCode === 32 && (lowerVal && upperVal))
+            //space
+            play ? play = false : play = true
+    }
+
+
     $: {
         //checks to ensure node has been created
         if (oscillatorArray[0]) {
             //volume control
             oscillatorArray.map((oscillator) =>
-                oscillator.oscGainNode.gain.setTargetAtTime(
+                oscillator.volGainNode.gain.setTargetAtTime(
                     vol / 100,
                     $audioCtx.currentTime,
                     0.001
@@ -222,15 +234,17 @@
         }
     }
     $: playHandler(play);
-
     $: bpm = (60 * 1000) / playSpeed;
-    $: console.log("pitches: ", pitchesPlayed);
     console.groupEnd();
 </script>
 
 <svelte:head>
     <title>Series</title>
 </svelte:head>
+
+<svelte:window on:keydown={handleKeydown} ></svelte:window>
+
+
 <section class="series card">
     <div class="pitch-select-container">
         <h3 class="text-info">
@@ -301,17 +315,15 @@
 
 
     <div class="bpm-container">
-
-    <label>
-        bpm:
-        <input type="number" label="play speed" bind:value={playSpeed} />
-    </label>
-</div>
+        <label>
+            bpm:
+            <input type="number" label="play speed" bind:value={playSpeed} />
+        </label>
+    </div>
 
     <div class="play-once-container">
         <label >
-            play once
-    
+            play once    
             <input
                 type="checkbox"
                 id="play-once-checkbox"
@@ -366,8 +378,8 @@
         >{showAdvanced ? "Hide Advanced Controls" : "Show Advanced Controls"}
         <div class={showAdvanced ? "chevron down" : "chevron"}>
             &#8963;
-        </div></button
-    >
+        </div>
+    </button>
 
     {#if showAdvanced}
         <SeriesAdvancedControls
@@ -404,10 +416,7 @@
     .series {
         text-align: center;
     }
-    .page-info {
-        padding: 1rem;
-        margin-bottom: 2rem;
-    }
+
 
     .text-info {
         text-align: center;
@@ -438,9 +447,6 @@
             }
         }
 
-        #play-once-checkbox {
-            width: 1rem;
-        }
     }
 
     .volume {
@@ -480,10 +486,4 @@
             transform: rotate(180deg);
         }
     }
-
-    .pitch-display-container {
-        margin-bottom: 1rem;
-    }
-
-
 </style>

@@ -55,6 +55,10 @@
     }
 
     @media only screen and (max-width: 768px) {
+
+        .key-btn {
+            font-size: .65rem;
+        }
         .drone-container {
             .drone-player {
                 width: 20rem;

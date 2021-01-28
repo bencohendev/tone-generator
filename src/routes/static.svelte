@@ -4,27 +4,31 @@
     import { audioCtx, pitches, octaves, pitchNames } from "../store.js";
     import uuid from "shortid";
     import StaticOscillator from "../components/StaticOscillator.svelte";
-    import { createNewOscillator } from "../services/NewOscillator.svelte";
+    import { createNewOscillator } from "../helpers/NewOscillator.svelte";
 
     $: console.group("static");
     let oscillatorArray = [];
     let newNode;
     let pan = 0;
-    let series = 1;
+    //sequence is used in random sequence generator. For static it is always 1.
+    let sequence = 1;
     let freq = 440;
     let selectedOctave;
     let selectedPitch;
     let selectedOvertones;
     let showGenerateOvertones = false;
+    let id
 
+    //Creates audio context and one oscillator on mount
     onMount(() => {
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
         addNewOscillator(freq, pan);
     });
 
+    //Creates new oscillators with unique id
     function addNewOscillator(freq, pan) {
-        let id = uuid.generate();
-        newNode = createNewOscillator($audioCtx, freq, pan, series);
+        id = uuid.generate();
+        newNode = createNewOscillator($audioCtx, freq, pan, sequence);
         newNode.id = id;
         oscillatorArray = [...oscillatorArray, newNode];
     }
@@ -35,9 +39,11 @@
     }
 
     function playAllHandler() {
+        //checks if all are already playing
         let isAllPlaying = oscillatorArray.every(
             (oscillator) => oscillator.onOffNode.gain.value === 1
         );
+        //if allPlaying is true, pause. Otherwise play
         oscillatorArray.forEach(
             (oscillator) =>
                 (oscillator.onOffNode.gain.value = isAllPlaying ? 0 : 1)
@@ -87,13 +93,14 @@
                 break;
         }
     }
-
     console.groupEnd();
+
 </script>
 
 <svelte:head>
     <title>Static</title>
 </svelte:head>
+
 <div class="static">
     <section class="oscillator-master-control">
         <button
@@ -113,7 +120,7 @@
                 showGenerateOvertones
                     ? (showGenerateOvertones = false)
                     : (showGenerateOvertones = true);
-            }}> Generate Overtone Presets </button>
+            }}> Auto Generate Overtones </button>
     </section>
     {#if showGenerateOvertones}
         <div class="overtone-preset-container">
