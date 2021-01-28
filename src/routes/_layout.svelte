@@ -1,6 +1,5 @@
 <script>
 	import Nav from "../components/Nav.svelte";
-	import GoogleAnalytics from "../services/GoogleAnalytics.svelte"
 	import { onMount } from "svelte";
 	import {
 		pitches,
@@ -11,10 +10,6 @@
 	let pitchArrayConstructor = [];
 
 	export let segment;
-
-
-
-
 
 	//multiplier is used to programatically create allPitches
 	let multiplier = 1;
@@ -71,19 +66,7 @@
 
 
 </script>
-<svelte:head>
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id={process.env.GA_TAG}"></script>
-	<script>
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
 
-	gtag('config', process.env.GA_TAG);
-	</script>
-</svelte:head>
-
-<GoogleAnalytics />
 <Nav {segment} />
 <svelte:window bind:innerWidth={window} />
 <main class:add-bg-opacity={$showPitchSelector} style="max-width: {maxWidth}px" >
