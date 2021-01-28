@@ -404,10 +404,7 @@
     .series {
         text-align: center;
     }
-    .page-info {
-        padding: 1rem;
-        margin-bottom: 2rem;
-    }
+
 
     .text-info {
         text-align: center;
@@ -438,9 +435,6 @@
             }
         }
 
-        #play-once-checkbox {
-            width: 1rem;
-        }
     }
 
     .volume {
@@ -480,10 +474,4 @@
             transform: rotate(180deg);
         }
     }
-
-    .pitch-display-container {
-        margin-bottom: 1rem;
-    }
-
-
 </style>

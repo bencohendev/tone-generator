@@ -287,27 +287,7 @@
                     background-color: rgb(221, 221, 221);
                 }
 
-                .pan-buttons {
-                    display: grid;
-                    grid-template-columns: auto auto auto;
-                    justify-content: center;
 
-                    button {
-                        margin: 1rem;
-                        font-size: 10px;
-                        width: 25px;
-                        height: 25px;
-                    }
-                    .pan-left-button {
-                        position: relative;
-                        right: 25%;
-                    }
-
-                    .pan-right-button {
-                        position: relative;
-                        left: 25%;
-                    }
-                }
             }
         
 
@@ -357,13 +337,7 @@
                 &.sawtooth {
                     background-image: url("/icons/sawtooth-light.png");
                 }
-            }
-            .wave-select-box {
-                img {
-                    width: 20px;
-                }
-            }
-        
+            }  
     }
 
     .frequency-container {
@@ -385,6 +359,9 @@
 
         .frequency-label {
             text-align: center;
+            input {
+                width: 5rem;
+            }
 
         }
     }

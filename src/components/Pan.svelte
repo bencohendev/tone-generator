@@ -106,9 +106,9 @@
                     border-right: solid 1px black;
                     position: absolute;
                     left: 49.5%;
-                    top: 70px;
+                    top: 75px;
                     width: 1px;
-                    height: 25px;
+                    height: 30px;
                 }
             }
         }
