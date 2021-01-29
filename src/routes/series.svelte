@@ -1,12 +1,7 @@
 <script>
     import SeriesAdvancedControls from "../components/SeriesAdvancedControls.svelte";
 
-    import {
-        audioCtx,
-        allPitches,
-        showPitchSelector,
-
-    } from "../store.js";
+    import { audioCtx, allPitches, showPitchSelector } from "../store.js";
     import { onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
     import uuid from "shortid";
@@ -47,7 +42,7 @@
     //key array places pitches in order of key chosen by user
     let keyArray = ["C", "D", "E", "F", "G", "A", "B"];
     let allowedPitches = [];
-    let id
+    let id;
     //Create Audio Context and Oscillator
     onMount(() => {
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
@@ -58,7 +53,6 @@
         newNode.i = 0;
         oscillatorArray = [newNode];
     });
-
 
     let playHandler = () => {
         if (play) {
@@ -199,12 +193,10 @@
     };
 
     function handleKeydown(e) {
-
-       if (e.keyCode === 32 && (lowerVal && upperVal))
+        if (e.keyCode === 32 && lowerVal && upperVal)
             //space
-            play ? play = false : play = true
+            play ? (play = false) : (play = true);
     }
-
 
     $: {
         //checks to ensure node has been created
@@ -242,8 +234,7 @@
     <title>Random Pitch Sequences</title>
 </svelte:head>
 
-<svelte:window on:keydown={handleKeydown} ></svelte:window>
-
+<svelte:window on:keydown={handleKeydown} />
 
 <section class="series card">
     <div class="pitch-select-container">
@@ -262,7 +253,8 @@
                         selectedInstrument,
                         lowerVal,
                         upperVal
-                    )}>
+                    )}
+            >
                 <option>Select an Instrument</option>
                 <option>Electric Guitar</option>
                 <option>Soprano Saxophone</option>
@@ -302,7 +294,6 @@
         {/if}
     </div>
     <div class="pitch-number-container">
-
         <label>
             number of pitches:
             <input
@@ -313,7 +304,6 @@
         </label>
     </div>
 
-
     <div class="bpm-container">
         <label>
             bpm:
@@ -322,8 +312,8 @@
     </div>
 
     <div class="play-once-container">
-        <label >
-            play once    
+        <label>
+            play once
             <input
                 type="checkbox"
                 id="play-once-checkbox"
@@ -331,7 +321,6 @@
             />
         </label>
     </div>
-
 
     <div class="slide-container volume">
         <img
@@ -362,7 +351,8 @@
             disabled={!(lowerVal && upperVal)}
             on:click={() => {
                 !play ? (play = true) : (play = false);
-            }}>
+            }}
+        >
             {#if !(lowerVal && upperVal)}
                 Select a Pitch Range to Play
             {:else}
@@ -376,9 +366,7 @@
         on:click={() =>
             showAdvanced ? (showAdvanced = false) : (showAdvanced = true)}
         >{showAdvanced ? "Hide Advanced Controls" : "Show Advanced Controls"}
-        <div class={showAdvanced ? "chevron down" : "chevron"}>
-            &#8963;
-        </div>
+        <div class={showAdvanced ? "chevron down" : "chevron"}>&#8963;</div>
     </button>
 
     {#if showAdvanced}
@@ -405,18 +393,17 @@
 {/if}
 
 <style lang="scss">
-.pitch-number-container {
-    input {
-        max-width: 4rem;
+    .pitch-number-container {
+        input {
+            max-width: 4rem;
+        }
     }
-}
-    .play-once-container  {
+    .play-once-container {
         margin: 1rem 0;
     }
     .series {
         text-align: center;
     }
-
 
     .text-info {
         text-align: center;
@@ -446,7 +433,6 @@
                 width: 3rem;
             }
         }
-
     }
 
     .volume {

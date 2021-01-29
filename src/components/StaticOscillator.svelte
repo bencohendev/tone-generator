@@ -62,7 +62,6 @@
         freq = 2 ** freqSliderVal;
     }
 
-
     function handleKeydown(e) {
         if (e.ctrlKey) {
             ctrl = true;
@@ -72,36 +71,30 @@
         }
         key = e.keyCode;
 
-		switch(key) {
+        switch (key) {
             //space
-			case 32:
-                (onOffVal === 1) ? onOffVal = 0 : onOffVal = 1;
-            break;
+            case 32:
+                onOffVal === 1 ? (onOffVal = 0) : (onOffVal = 1);
+                break;
             //right arrow
-			case 39:
-                if (!ctrl && !shift)
-                freq += 1;
-                if (ctrl && !shift)
-                freq += 100;
-                if (ctrl && shift)
-                freq += .1;
-            break;
+            case 39:
+                if (!ctrl && !shift) freq += 1;
+                if (ctrl && !shift) freq += 100;
+                if (ctrl && shift) freq += 0.1;
+                break;
             //left arrow
-			case 37:
-                if (!ctrl && !shift)
-                freq -= 1;
-                if (ctrl && !shift)
-                freq -= 100;
-                if (ctrl && shift)
-                freq -= .1;
-            break;
-        }		
-        key = null
+            case 37:
+                if (!ctrl && !shift) freq -= 1;
+                if (ctrl && !shift) freq -= 100;
+                if (ctrl && shift) freq -= 0.1;
+                break;
+        }
+        key = null;
     }
-    
+
     function handleKeyup() {
-        ctrl ? ctrl = false : ctrl;
-        shift ? shift = false: shift;
+        ctrl ? (ctrl = false) : ctrl;
+        shift ? (shift = false) : shift;
     }
 
     $: {
@@ -110,7 +103,7 @@
             freq,
             $audioCtx.currentTime
         );
-        //finds closest pitch based on current freq 
+        //finds closest pitch based on current freq
         closestPitch = $allPitches.reduce((a, b) => {
             return Math.abs(b.frequency - freq) < Math.abs(a.frequency - freq)
                 ? b
@@ -131,11 +124,10 @@
         $audioCtx.currentTime
     );
 
-
     console.groupEnd();
 </script>
 
-<svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup}></svelte:window>
+<svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup} />
 
 <section class="card oscillator-container" in:fade>
     <div class="close-container">
@@ -149,7 +141,8 @@
             class="play-button {onOffVal === 1 ? 'playing' : 'paused'}"
             on:click={() => {
                 onOffVal === 1 ? (onOffVal = 0) : (onOffVal = 1);
-            }}>{onOffVal === 1 ? "Pause" : "Play"}
+            }}
+            >{onOffVal === 1 ? "Pause" : "Play"}
         </button>
         <div class="slide-container volume">
             <img
@@ -176,16 +169,16 @@
         </div>
     </div>
 
-<div class="pitch-selector-container">
-    <button
-        class="pitch-selector"
-        on:click={() =>
-            $showPitchSelector
-                ? ($showPitchSelector = false)
-                : ($showPitchSelector = true)}>Select a Pitch
-    </button>
-</div>
-
+    <div class="pitch-selector-container">
+        <button
+            class="pitch-selector"
+            on:click={() =>
+                $showPitchSelector
+                    ? ($showPitchSelector = false)
+                    : ($showPitchSelector = true)}
+            >Select a Pitch
+        </button>
+    </div>
 
     <!--min and max value of frequency slider are arbitrary. The slider functions logarithmically with 440 as the center-->
     <div class="frequency-container">
@@ -222,7 +215,9 @@
                 {#if inputFrequency}
                     <input type="number" autofocus bind:value={freq} step={1} />
                 {:else}
-                    {freq.toFixed(8) != Math.round(freq) ? "~" : ""}{parseFloat(freq.toFixed(2))}
+                    {freq.toFixed(8) != Math.round(freq) ? "~" : ""}{parseFloat(
+                        freq.toFixed(2)
+                    )}
                 {/if}
                 Hz
                 <div
@@ -269,7 +264,10 @@
                 on:click={() =>
                     showPanSelector
                         ? (showPanSelector = false)
-                        : (showPanSelector = true)}> Pan </button>
+                        : (showPanSelector = true)}
+            >
+                Pan
+            </button>
             {#if showPanSelector}
                 <Pan bind:pan bind:showPanSelector />
             {/if}
@@ -288,107 +286,99 @@
     .close-container {
         display: flex;
         justify-content: flex-end;
-
     }
-    .play-vol-container{ 
-            display: grid;
-            grid-template-columns: 20% 80%;
-            margin: 1rem;
-
+    .play-vol-container {
+        display: grid;
+        grid-template-columns: 20% 80%;
+        margin: 1rem;
     }
 
+    .volume {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        input {
+            width: 60%;
+            margin: 0rem 0.5rem;
+        }
+        img {
+            width: 20px;
+        }
+    }
 
-        .volume {
+    .pan {
+        position: relative;
+    }
+
+    .pan-controller {
+        display: grid;
+        position: absolute;
+        top: 3rem;
+        left: -20%;
+        padding: 1rem;
+        background-color: rgb(221, 221, 221);
+        box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
+            0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+            0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+        &::after {
+            content: "";
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            left: 50%;
+            top: -10px;
+            transform: translate(-50%, 50%) rotate(45deg);
+            background-color: rgb(221, 221, 221);
+        }
+    }
+
+    .wave-select-container {
+        position: relative;
+        .wave-select {
+            position: absolute;
+            top: 3rem;
+            left: -100%;
+            background-color: rgb(221, 221, 221);
             display: flex;
-            justify-content: center;
-            align-items: center;
-            input {
-                width: 60%;
-                margin: 0rem 0.5rem;
+            box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
+                0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+                0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+            &::after {
+                content: "";
+                position: absolute;
+                width: 12px;
+                height: 12px;
+                left: 50%;
+                top: -10px;
+                transform: translate(-50%, 50%) rotate(45deg);
+                background-color: rgb(221, 221, 221);
+                //box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
             }
-            img {
-                width: 20px;
+
+            .wave-select-box {
+                margin: 0.5rem;
             }
         }
 
-        .pan {
-            position: relative;
-
+        .wave-select-button {
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 40px;
+            height: 100%;
+            &.sine {
+                background-image: url("/icons/sine-light.png");
             }
-            
-
-            .pan-controller {
-                display: grid;
-                position: absolute;
-                top: 3rem;
-                left: -20%;
-                padding: 1rem;
-                background-color: rgb(221, 221, 221);
-                box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
-                    0px 3px 4px 0px rgba(0, 0, 0, 0.14),
-                    0px 1px 8px 0px rgba(0, 0, 0, 0.12);
-                &::after {
-                    content: "";
-                    position: absolute;
-                    width: 12px;
-                    height: 12px;
-                    left: 50%;
-                    top: -10px;
-                    transform: translate(-50%, 50%) rotate(45deg);
-                    background-color: rgb(221, 221, 221);
-                }
-
-
+            &.square {
+                background-image: url("/icons/square-light.png");
             }
-        
-
-        .wave-select-container {
-            position: relative;
-            .wave-select {
-                position: absolute;
-                top: 3rem;
-                left: -100%;
-                background-color: rgb(221, 221, 221);
-                display: flex;
-                box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
-                    0px 3px 4px 0px rgba(0, 0, 0, 0.14),
-                    0px 1px 8px 0px rgba(0, 0, 0, 0.12);
-                &::after {
-                    content: "";
-                    position: absolute;
-                    width: 12px;
-                    height: 12px;
-                    left: 50%;
-                    top: -10px;
-                    transform: translate(-50%, 50%) rotate(45deg);
-                    background-color: rgb(221, 221, 221);
-                    //box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
-                }
-
-                .wave-select-box {
-                    margin: 0.5rem;
-                }
+            &.triangle {
+                background-image: url("/icons/triangle-light.png");
             }
-
-            .wave-select-button {
-                background-size: contain;
-                background-position: center;
-                background-repeat: no-repeat;
-                width: 40px;
-                height: 100%;
-                &.sine {
-                    background-image: url("/icons/sine-light.png");
-                }
-                &.square {
-                    background-image: url("/icons/square-light.png");
-                }
-                &.triangle {
-                    background-image: url("/icons/triangle-light.png");
-                }
-                &.sawtooth {
-                    background-image: url("/icons/sawtooth-light.png");
-                }
-            }  
+            &.sawtooth {
+                background-image: url("/icons/sawtooth-light.png");
+            }
+        }
     }
 
     .frequency-container {
@@ -404,7 +394,6 @@
 
             .frequency-arith-button {
                 margin: 0px 5px;
-                font-size: .65rem;
                 max-width: 5rem;
             }
         }
@@ -414,7 +403,6 @@
             input {
                 width: 5rem;
             }
-
         }
     }
 
@@ -433,5 +421,11 @@
         margin: 2rem 0;
     }
 
-
+    @media only screen and (max-width: 768px) {
+        .frequency-controls {
+            .frequency-arith-button {
+                font-size: 0.65rem;
+            }
+        }
+    }
 </style>

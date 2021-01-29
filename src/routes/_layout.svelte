@@ -57,19 +57,15 @@
 		return pitchArrayConstructor;
 	};
 
-
-
 	//window listener helps set max width of card
-	let window
-	let maxWidth 
-	$: maxWidth = (window > 1400) ? 1280 : window-40;
-
-
+	let window;
+	let maxWidth;
+	$: maxWidth = window > 1400 ? 1280 : window - 40;
 </script>
 
 <Nav {segment} />
 <svelte:window bind:innerWidth={window} />
-<main class:add-bg-opacity={$showPitchSelector} style="max-width: {maxWidth}px" >
+<main class:add-bg-opacity={$showPitchSelector} style="max-width: {maxWidth}px">
 	<slot />
 </main>
 
