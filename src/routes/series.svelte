@@ -239,7 +239,7 @@
 </script>
 
 <svelte:head>
-    <title>Series</title>
+    <title>Random Pitch Sequences</title>
 </svelte:head>
 
 <svelte:window on:keydown={handleKeydown} ></svelte:window>
