@@ -115,7 +115,7 @@
 
         //add latest pitch to end of array of pitches played
         if (pitchToPlay) {
-            pitchesPlayed.push(pitchToPlay.name);
+            pitchesPlayed.push(pitchToPlay.note);
             pitchesPlayed = pitchesPlayed;
         }
     }
@@ -154,40 +154,40 @@
     let handleSelectedInstrument = (selectedInstrument) => {
         switch (selectedInstrument) {
             case "Electric Guitar":
-                lowerVal = $allPitches.find((pitch) => pitch.name === "E2");
-                upperVal = $allPitches.find((pitch) => pitch.name === "D6");
+                lowerVal = $allPitches.find((pitch) => pitch.note === "E2");
+                upperVal = $allPitches.find((pitch) => pitch.note === "D6");
                 break;
             case "Tenor Saxophone":
-                lowerVal = $allPitches.find((pitch) => pitch.name === "G#/Ab2");
-                upperVal = $allPitches.find((pitch) => pitch.name === "E5");
+                lowerVal = $allPitches.find((pitch) => pitch.note === "G#/Ab2");
+                upperVal = $allPitches.find((pitch) => pitch.note === "E5");
                 break;
             case "Soprano Saxophone":
-                lowerVal = $allPitches.find((pitch) => pitch.name === "G#/Ab3");
-                upperVal = $allPitches.find((pitch) => pitch.name === "E6");
+                lowerVal = $allPitches.find((pitch) => pitch.note === "G#/Ab3");
+                upperVal = $allPitches.find((pitch) => pitch.note === "E6");
                 break;
             case "Alto Saxophone":
-                lowerVal = $allPitches.find((pitch) => pitch.name === "C#/Db3");
-                upperVal = $allPitches.find((pitch) => pitch.name === "G#/Ab5");
+                lowerVal = $allPitches.find((pitch) => pitch.note === "C#/Db3");
+                upperVal = $allPitches.find((pitch) => pitch.note === "G#/Ab5");
                 break;
             case "Bari Saxophone":
-                lowerVal = $allPitches.find((pitch) => pitch.name === "C#/Db2");
-                upperVal = $allPitches.find((pitch) => pitch.name === "G#/Ab4");
+                lowerVal = $allPitches.find((pitch) => pitch.note === "C#/Db2");
+                upperVal = $allPitches.find((pitch) => pitch.note === "G#/Ab4");
                 break;
             case "Trumpet":
-                lowerVal = $allPitches.find((pitch) => pitch.name === "F#/Gb3");
-                upperVal = $allPitches.find((pitch) => pitch.name === "D6");
+                lowerVal = $allPitches.find((pitch) => pitch.note === "F#/Gb3");
+                upperVal = $allPitches.find((pitch) => pitch.note === "D6");
                 break;
             case "Trombone":
-                lowerVal = $allPitches.find((pitch) => pitch.name === "E2");
-                upperVal = $allPitches.find((pitch) => pitch.name === "F5");
+                lowerVal = $allPitches.find((pitch) => pitch.note === "E2");
+                upperVal = $allPitches.find((pitch) => pitch.note === "F5");
                 break;
             case "Flute":
-                lowerVal = $allPitches.find((pitch) => pitch.name === "C4");
-                upperVal = $allPitches.find((pitch) => pitch.name === "D7");
+                lowerVal = $allPitches.find((pitch) => pitch.note === "C4");
+                upperVal = $allPitches.find((pitch) => pitch.note === "D7");
                 break;
             case "Clarinet":
-                lowerVal = $allPitches.find((pitch) => pitch.name === "D3");
-                upperVal = $allPitches.find((pitch) => pitch.name === "C7");
+                lowerVal = $allPitches.find((pitch) => pitch.note === "D3");
+                upperVal = $allPitches.find((pitch) => pitch.note === "C7");
                 break;
         }
     };
@@ -278,14 +278,14 @@
                     <button
                         id="lower"
                         class="pitch-selector lower"
-                        on:click={pitchSelector}>{lowerVal.name}</button
+                        on:click={pitchSelector}>{lowerVal.note}</button
                     >
                 {/key}
                 {#key upperVal}
                     <button
                         id="upper"
                         class="pitch-selector upper"
-                        on:click={pitchSelector}>{upperVal.name}</button
+                        on:click={pitchSelector}>{upperVal.note}</button
                     >
                 {/key}
                 <div>Lower</div>
@@ -393,7 +393,7 @@
 {/if}
 
 <style lang="scss">
-    .pitch-number-container {
+    .note-number-container {
         input {
             max-width: 4rem;
         }
@@ -410,7 +410,7 @@
         margin-bottom: 0.25rem;
     }
 
-    .pitch-select-container,
+    .note-select-container,
     .instrument-select-container,
     .bpm-container {
         text-align: center;
@@ -453,7 +453,7 @@
         grid-template-columns: auto auto;
         justify-content: center;
 
-        .pitch-selector {
+        .note-selector {
             width: 5rem;
             margin: 0rem 0.5rem;
         }

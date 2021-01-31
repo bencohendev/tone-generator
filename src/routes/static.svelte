@@ -1,7 +1,13 @@
 <script>
     import { onMount } from "svelte";
 
-    import { audioCtx, pitches, octaves, pitchNames } from "../store.js";
+    import {
+        audioCtx,
+        pitches,
+        octaves,
+        pitchNames,
+        pitchObj,
+    } from "../store.js";
     import uuid from "shortid";
     import StaticOscillator from "../components/StaticOscillator.svelte";
     import { createNewOscillator } from "../helpers/NewOscillator.svelte";
@@ -17,7 +23,9 @@
     let selectedPitch;
     let selectedOvertones;
     let showGenerateOvertones = false;
-    let id
+    let id;
+
+    let keyArray = ["C", "D", "E", "F", "G", "A", "B"];
 
     //Creates audio context and one oscillator on mount
     onMount(() => {
@@ -57,19 +65,33 @@
         oscillatorArray = oscillatorArray;
     }
 
-    function handleSelectedOvertones(selectedOctave, selectedPitch) {
+    async function keyHandler() {
+        keyArray = [];
+        //reorders array of pitches based on key
+        let pitchFront = $pitchObj.slice(selectedPitch, 12);
+        let pitchBack = $pitchObj.slice(0, selectedPitch);
+        keyArray = pitchFront.concat(pitchBack);
+
+        return keyArray;
+    }
+
+    async function handleSelectedOvertones(selectedOctave, selectedPitch) {
+        keyArray = await keyHandler();
+        console.log(selectedOctave);
+        //I need a set of fundamental frequencies. I am given a note name, I create an array of notes
+
         switch (selectedOvertones) {
             case "1 - 3 - 5":
                 oscillatorArray = [];
-                addNewOscillator(selectedPitch * selectedOctave.multiplier, -1);
-                addNewOscillator(
-                    selectedPitch * selectedOctave.multiplier * 3,
-                    1
-                );
-                addNewOscillator(
-                    selectedPitch * selectedOctave.multiplier * 5,
-                    -1
-                );
+                let fundamentals = [
+                    keyArray[0].frequency * selectedOctave,
+                    keyArray[7].frequency * selectedOctave * 2,
+                    keyArray[4].frequency * selectedOctave * 8,
+                ];
+                console.log("fundamentals", fundamentals);
+                addNewOscillator(fundamentals[0], -1);
+                addNewOscillator(fundamentals[1], 1);
+                addNewOscillator(fundamentals[2], -1);
 
                 selectedOvertones = "Select Overtone Set";
 
@@ -82,7 +104,7 @@
                     1
                 );
                 addNewOscillator(
-                    selectedPitch * selectedOctave.multiplier * 5,
+                    selectedPitch * selectedOctave.multiplier * 5.0396842,
                     1
                 );
                 addNewOscillator(
@@ -94,7 +116,6 @@
         }
     }
     console.groupEnd();
-
 </script>
 
 <svelte:head>
@@ -120,7 +141,10 @@
                 showGenerateOvertones
                     ? (showGenerateOvertones = false)
                     : (showGenerateOvertones = true);
-            }}> Auto Generate Overtones </button>
+            }}
+        >
+            Auto Generate Overtones
+        </button>
     </section>
     {#if showGenerateOvertones}
         <div class="overtone-preset-container">
@@ -129,19 +153,24 @@
                 <select
                     name="pitch-select"
                     id="pitch-select"
-                    bind:value={selectedPitch}>
-                    <option value="51.9131">Pitch</option>
-                    {#each $pitches as pitch, j}
-                        <option value={pitch}>{$pitchNames[j]}</option>
+                    bind:value={selectedPitch}
+                >
+                    <option value="8">Pitch</option>
+                    {#each $pitchObj as pitch, j}
+                        <option value={j}>{pitch.note}</option>
                     {/each}
                 </select>
                 <select
                     name="octave-select"
                     id="octave-select"
-                    bind:value={selectedOctave}>
-                    <option value={$octaves[3]}>Octave</option>
+                    bind:value={selectedOctave}
+                >
+                    <option value={$octaves[3].multiplier}>Octave</option>
                     {#each $octaves as octave}
-                        <option label={octave.label} value={octave} />
+                        <option
+                            label={octave.label}
+                            value={octave.multiplier}
+                        />
                     {/each}
                 </select>
 
@@ -151,7 +180,8 @@
                     id="overtone-series-select"
                     bind:value={selectedOvertones}
                     on:change={() =>
-                        handleSelectedOvertones(selectedOctave, selectedPitch)}>
+                        handleSelectedOvertones(selectedOctave, selectedPitch)}
+                >
                     <option>Select Overtone Set</option>
                     <option>1 - 3 - 5</option>
                     <option>1 - 3 - 5 - 7</option>

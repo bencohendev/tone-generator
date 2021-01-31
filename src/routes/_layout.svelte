@@ -1,35 +1,30 @@
 <script>
 	import Nav from "../components/Nav.svelte";
 	import { onMount } from "svelte";
-	import {
-		pitches,
-		pitchNames,
-		allPitches,
-		showPitchSelector,
-	} from "../store.js";
+	import { pitchObj, allPitches, showPitchSelector } from "../store.js";
 	let pitchArrayConstructor = [];
 
 	export let segment;
 
 	//multiplier is used to programatically create allPitches
-	let multiplier = 1;
+	let themultiplier = 1;
 
 	//These three pitches cannot be added programatically as they fall outside of the full octave
 	let lowestPitches = [
 		{
-			name: "B0",
+			note: "B0",
 			frequency: 30.86770632850775,
 			octave: 0,
 			multiplier: 1,
 		},
 		{
-			name: "Gb/A#0",
+			note: "Gb/A#0",
 			frequency: 29.13523509488062,
 			octave: 0,
 			multiplier: 1,
 		},
 		{
-			name: "A0",
+			note: "A0",
 			frequency: 27.5,
 			octave: 0,
 			multiplier: 1,
@@ -42,18 +37,19 @@
 	});
 
 	let populateAllPitches = () => {
-		for (let i = 1; i < 10; i++) {
-			for (let j = 0; j < $pitches.length; j++) {
+		for (let i = 1; i < 9; i++) {
+			for (let j = 0; j < $pitchObj.length; j++) {
 				pitchArrayConstructor.push({
-					name: $pitchNames[j] + i,
-					frequency: $pitches[j] * multiplier,
+					note: $pitchObj[j].note + i,
+					frequency: $pitchObj[j].frequency * themultiplier,
 					octave: i,
-					multiplier,
+					multiplier: themultiplier,
 				});
 			}
-			multiplier = multiplier * 2;
+			themultiplier = themultiplier * 2;
 		}
 		lowestPitches.map((pitch) => pitchArrayConstructor.unshift(pitch));
+
 		return pitchArrayConstructor;
 	};
 

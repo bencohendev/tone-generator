@@ -46,7 +46,7 @@
                     {#each $allPitches as pitch, j}
                         {#if octave.label === pitch.octave}
                             <button
-                                class="pitch-button {pitch.name.length > 2
+                                class="pitch-button {pitch.note.length > 2
                                     ? 'halftone'
                                     : ''}"
                                 disabled={(wasClicked != "upper" &&
@@ -54,10 +54,13 @@
                                     (wasClicked != "lower" &&
                                         lowerVal.frequency >= pitch.frequency)}
                                 on:click={() =>
-                                    sendPitch(pitch.frequency, pitch.name, i)}
-                                >{pitch.name}
+                                    sendPitch(pitch.frequency, pitch.note, i)}
+                                >{pitch.note}
                                 <div class="pitch-frequency">
-                                    {pitch.frequency.toFixed(8) != Math.round(pitch.frequency) ? "~" : ""}{Math.floor(pitch.frequency)}
+                                    {pitch.frequency.toFixed(8) !=
+                                    Math.round(pitch.frequency)
+                                        ? "~"
+                                        : ""}{Math.round(pitch.frequency)}
                                 </div>
                             </button>
                         {/if}

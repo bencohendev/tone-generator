@@ -53,7 +53,7 @@
         allowedPitches = [];
         $allPitches.map((pitch) =>
             keyArray.forEach((key) => {
-                if (pitch.name.slice(0, pitch.name.length - 1) === key)
+                if (pitch.note.slice(0, pitch.note.length - 1) === key)
                     allowedPitches.push(pitch);
             })
         );
@@ -127,7 +127,6 @@
     //key handler returns keyArray with pitches in the correct order based on key chosen by user. mode default to major
     async function keyHandler() {
         keyArray = [];
-
         //reorders array of pitches based on key
         let pitchFront = $pitchNames.slice(keySelect, 12);
         let pitchBack = $pitchNames.slice(0, keySelect);
@@ -179,7 +178,6 @@
         {/if}
     </div>
     <div class="interval-mode-container">
-
         <div class="key-mode-container">
             <h4>Choose a Mode/Scale</h4>
             <div class="key-mode-input-container">
@@ -206,7 +204,8 @@
                     name="select-key"
                     id="select-key"
                     bind:value={keySelect}
-                    on:change={keyHandler}>
+                    on:change={keyHandler}
+                >
                     <option>Select a Key</option>
                     {#each $pitchNames as pitchName, i}
                         <option value={i}>{pitchName}</option>
@@ -218,7 +217,8 @@
                         name="major-mode-key"
                         id="major-mode-key"
                         bind:value={modeSelect}
-                        on:change={populateKeyedPitches}>
+                        on:change={populateKeyedPitches}
+                    >
                         <option>Select a Major Mode</option>
                         <option value="ion">Ionian</option>
                         <option value="dor">Dorian</option>
@@ -233,7 +233,8 @@
                         name="minor-mode-key"
                         id="minor-mode-key"
                         bind:value={modeSelect}
-                        on:change={populateKeyedPitches}>
+                        on:change={populateKeyedPitches}
+                    >
                         <option>Select a Minor Mode</option>
                         <option value="melmin">Melodic Minor</option>
                         <option value="dorb2">Dorian b2</option>
@@ -248,7 +249,8 @@
                         name="minor-mode-key"
                         id="minor-mode-key"
                         bind:value={modeSelect}
-                        on:change={populateKeyedPitches}>
+                        on:change={populateKeyedPitches}
+                    >
                         <option>Select a Symmetrical Scale</option>
                         <option value="dim-wh">Diminished Whole Half</option>
                         <option value="dim-hw">Diminished Half Whole</option>
@@ -283,18 +285,17 @@
 </section>
 
 <style lang="scss">
-
     .interval-mode-container {
         display: grid;
         div {
-            margin: 1rem 0  
+            margin: 1rem 0;
         }
     }
 
-    .pitch-display-container {
+    .note-display-container {
         margin-bottom: 2rem;
         button {
-            margin-top: .5rem;
+            margin-top: 0.5rem;
         }
     }
 
@@ -302,5 +303,4 @@
         margin-bottom: 0.5rem;
         display: grid;
     }
-
 </style>

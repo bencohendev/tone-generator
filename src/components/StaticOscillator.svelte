@@ -1,8 +1,8 @@
 <script>
-    import { createEventDispatcher, onDestroy } from "svelte";
+    import { createEventDispatcher, onDestroy, onMount } from "svelte";
     import { fade } from "svelte/transition";
 
-    import { audioCtx, allPitches, showPitchSelector, pitches } from "../store";
+    import { audioCtx, allPitches, showPitchSelector } from "../store";
     import PitchSelector from "./PitchSelector.svelte";
     import Pan from "./Pan.svelte";
     import WaveType from "./WaveType.svelte";
@@ -37,6 +37,8 @@
         oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
     });
 
+    onMount(() => console.log(oscillator));
+
     function playHandler() {
         if (onOffVal === 1) {
             oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
@@ -51,7 +53,7 @@
         }
         if (event.detail.text === "pitch") {
             $showPitchSelector = false;
-            pitchName = event.detail.pitchName;
+            pitchName = event.detail.note;
             freqSliderVal = Math.log2(event.detail.frequency);
             changeFreqSlider();
         }
@@ -59,6 +61,7 @@
 
     //compensates for log difference between freq and freqSliderVal
     function changeFreqSlider() {
+        //console.log("changeslider: ", freq);
         freq = 2 ** freqSliderVal;
     }
 
@@ -123,7 +126,7 @@
         vol / 100,
         $audioCtx.currentTime
     );
-
+    //console.log("freqwatch: ", freq);
     console.groupEnd();
 </script>
 
@@ -204,7 +207,6 @@
                 on:click={() => (freqSliderVal = Math.log2((freq -= 1)))}
                 >&minus 1
             </button>
-
             <div
                 class="frequency-label"
                 on:click={() =>
@@ -215,9 +217,9 @@
                 {#if inputFrequency}
                     <input type="number" autofocus bind:value={freq} step={1} />
                 {:else}
-                    {freq.toFixed(8) != Math.round(freq) ? "~" : ""}{parseFloat(
-                        freq.toFixed(2)
-                    )}
+                    {freq.toFixed(13) != Math.round(freq)
+                        ? "~"
+                        : ""}{parseFloat(freq.toFixed(2))}
                 {/if}
                 Hz
                 <div
@@ -229,7 +231,7 @@
                             ? ">"
                             : "<"}
                     {/if}
-                    {closestPitch.name}
+                    {closestPitch.note}
                 </div>
             </div>
             <button
