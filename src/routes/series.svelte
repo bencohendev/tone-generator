@@ -2,7 +2,7 @@
     import SeriesAdvancedControls from "../components/SeriesAdvancedControls.svelte";
 
     import { audioCtx, allPitches } from "../store.js";
-    import { onMount } from "svelte";
+    import { onDestroy, onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
     import uuid from "shortid";
 
@@ -53,6 +53,10 @@
         //counter for number of pitches played in sequence
         newNode.i = 0;
         oscillatorArray = [newNode];
+    });
+
+    onDestroy(() => {
+        if (play) play = false;
     });
 
     let playHandler = () => {

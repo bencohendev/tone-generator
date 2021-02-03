@@ -35,8 +35,8 @@
             oscNode.start();
             return (oscillator = {
                 oscNode,
-                volGainNode: volGainNode,
-                sequenceGainNode: sequenceGainNode,
+                volGainNode,
+                sequenceGainNode,
                 onOffNode,
                 panNode,
             });
