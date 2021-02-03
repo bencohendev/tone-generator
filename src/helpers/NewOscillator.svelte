@@ -39,6 +39,11 @@
                 sequenceGainNode,
                 onOffNode,
                 panNode,
+                initVals: {
+                    freq,
+                    pan,
+                    sequence,
+                },
             });
         }
     }

@@ -38,7 +38,18 @@
         oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
     });
 
-    onMount(() => console.log("osc", oscillator));
+    onMount(() => {
+        initVals();
+    });
+
+    function initVals() {
+        freq = oscillator.initVals.freq;
+
+        oscillator.oscNode.frequency.setValueAtTime(
+            freq,
+            $audioCtx.currentTime
+        );
+    }
 
     function playHandler() {
         if (onOffVal === 1) {
@@ -370,6 +381,9 @@
                         ? "~"
                         : ""}{parseFloat(freq.toFixed(2))}
                 {/if}
+                {#key freq}
+                    {freq}
+                {/key}
                 Hz
                 <div
                     class="frequency-label pitch"
