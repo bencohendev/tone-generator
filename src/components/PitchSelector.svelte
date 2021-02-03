@@ -17,11 +17,11 @@
         dispatch("message", { text: "close" });
     }
 
-    function sendPitch(frequency, name, i) {
+    function sendPitch(frequency, note, i) {
         dispatch("message", {
             text: "pitch",
             frequency,
-            name,
+            note,
             i,
         });
     }
