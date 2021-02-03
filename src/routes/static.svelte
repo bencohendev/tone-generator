@@ -1,44 +1,33 @@
 <script>
     import { onMount } from "svelte";
 
-    import {
-        audioCtx,
-        pitches,
-        octaves,
-        pitchNames,
-        pitchObj,
-    } from "../store.js";
+    import { audioCtx, octaves, pitchObj } from "../store.js";
     import uuid from "shortid";
-    import StaticOscillator from "../components/StaticOscillator.svelte";
-    import { createNewOscillator } from "../helpers/NewOscillator.svelte";
+    import StaticOscillator, {
+        muteAll,
+    } from "../components/StaticOscillator.svelte";
 
     $: console.group("static");
     let oscillatorArray = [];
-    let newNode;
     let pan = 0;
-    //sequence is used in random sequence generator. For static it is always 1.
-    let sequence = 1;
     let freq = 440;
     let selectedOctave;
     let selectedPitch;
     let selectedOvertones;
     let showGenerateOvertones = false;
-    let id;
 
     let keyArray = ["C", "D", "E", "F", "G", "A", "B"];
 
     //Creates audio context and one oscillator on mount
     onMount(() => {
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
-        addNewOscillator(freq, pan);
+        addNewOscillator();
     });
 
     //Creates new oscillators with unique id
-    function addNewOscillator(freq, pan) {
-        id = uuid.generate();
-        newNode = createNewOscillator($audioCtx, freq, pan, sequence);
-        newNode.id = id;
-        oscillatorArray = [...oscillatorArray, newNode];
+    function addNewOscillator() {
+        let id = uuid.generate();
+        oscillatorArray = [...oscillatorArray, id];
     }
 
     function handleCloseStaticOscillator(e) {
@@ -59,10 +48,11 @@
         oscillatorArray = oscillatorArray;
     }
     function muteAllHandler() {
-        oscillatorArray.forEach(
-            (oscillator) => (oscillator.onOffNode.gain.value = 0)
-        );
-        oscillatorArray = oscillatorArray;
+        muteAll();
+        // oscillatorArray.forEach(
+        //     (oscillator) => (oscillator.onOffNode.gain.value = 0)
+        // );
+        // oscillatorArray = oscillatorArray;
     }
 
     async function keyHandler() {
@@ -189,13 +179,12 @@
             </div>
         </div>
     {/if}
-    {#each oscillatorArray as oscillator, i (oscillator.id)}
+    {#each oscillatorArray as id, i (id)}
         <StaticOscillator
-            {oscillator}
+            {id}
             {i}
-            pan={oscillator.panNode.positionX.value}
-            onOffVal={oscillator.onOffNode.gain.value}
-            freq={oscillator.oscNode.frequency.value}
+            {freq}
+            {pan}
             on:closeStaticOscillator={handleCloseStaticOscillator}
         />
     {/each}

@@ -6,7 +6,7 @@
     export let lowerVal = NaN;
     export let upperVal = NaN;
     export let wasClicked = null;
-
+    export let oscillator;
     const dispatch = createEventDispatcher();
 
     function closePitchSelector() {
@@ -21,6 +21,7 @@
             i,
         });
     }
+    console.log(oscillator);
 </script>
 
 <svelte:window
