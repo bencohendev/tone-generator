@@ -118,6 +118,41 @@
     console.groupEnd();
 </script>
 
+<style lang="scss">
+    .static {
+        align-items: center;
+        justify-content: center;
+        background-color: #4c4c4c;
+
+        .oscillator-master-control {
+            display: flex;
+
+            button {
+                margin: 1rem;
+            }
+            .create-oscillator {
+                margin-left: 0;
+            }
+        }
+        .overtone-preset-container {
+            h3 {
+                margin-bottom: 0.5rem;
+            }
+            margin-bottom: 1rem;
+            select {
+                margin-right: 1rem;
+            }
+        }
+    }
+    @media only screen and (max-width: 768px) {
+        .static {
+            .overtone-preset-container {
+                margin: 0 0 1rem 0;
+            }
+        }
+    }
+</style>
+
 <svelte:head>
     <title>Static</title>
 </svelte:head>
@@ -200,38 +235,3 @@
         />
     {/each}
 </div>
-
-<style lang="scss">
-    .static {
-        align-items: center;
-        justify-content: center;
-        background-color: #4c4c4c;
-
-        .oscillator-master-control {
-            display: flex;
-
-            button {
-                margin: 1rem;
-            }
-            .create-oscillator {
-                margin-left: 0;
-            }
-        }
-        .overtone-preset-container {
-            h3 {
-                margin-bottom: 0.5rem;
-            }
-            margin-bottom: 1rem;
-            select {
-                margin-right: 1rem;
-            }
-        }
-    }
-    @media only screen and (max-width: 768px) {
-        .static {
-            .overtone-preset-container {
-                margin: 0 0 1rem 0;
-            }
-        }
-    }
-</style>

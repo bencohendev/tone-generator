@@ -1,7 +1,7 @@
 <script>
 	import Nav from "../components/Nav.svelte";
 	import { onMount } from "svelte";
-	import { pitchObj, allPitches, showPitchSelector } from "../store.js";
+	import { pitchObj, allPitches, opacityToggle } from "../store.js";
 	let pitchArrayConstructor = [];
 
 	export let segment;
@@ -59,12 +59,12 @@
 	$: maxWidth = window > 1400 ? 1280 : window - 40;
 </script>
 
-<Nav {segment} />
-<svelte:window bind:innerWidth={window} />
-<main class:add-bg-opacity={$showPitchSelector} style="max-width: {maxWidth}px">
-	<slot />
-</main>
-
 <style lang="scss" global>
 	@import "../styles/global.scss";
 </style>
+
+<Nav {segment} />
+<svelte:window bind:innerWidth={window} />
+<main class:add-bg-opacity={$opacityToggle} style="max-width: {maxWidth}px">
+	<slot />
+</main>

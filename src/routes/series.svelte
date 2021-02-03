@@ -1,7 +1,7 @@
 <script>
     import SeriesAdvancedControls from "../components/SeriesAdvancedControls.svelte";
 
-    import { audioCtx, allPitches, showPitchSelector } from "../store.js";
+    import { audioCtx, allPitches } from "../store.js";
     import { onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
     import uuid from "shortid";
@@ -19,6 +19,7 @@
     let pan = 0;
     let series = 0;
     let wavType = "sine";
+    let showPitchSelector = false;
 
     //speed and pitch range
     let wasClicked = null;
@@ -122,14 +123,14 @@
     //pitch selector function
     function handleMessage(e) {
         if (e.detail.text === "close") {
-            $showPitchSelector = false;
+            showPitchSelector = false;
         }
         if (e.detail.text === "pitch") {
             //pitch range selector on first time
             if (wasClicked === "range") {
                 if (lowerVal) {
                     upperVal = e.detail;
-                    $showPitchSelector = false;
+                    showPitchSelector = false;
                     wasClicked = null;
                 } else {
                     lowerVal = e.detail;
@@ -140,14 +141,14 @@
                 wasClicked === "lower"
                     ? (lowerVal = e.detail)
                     : (upperVal = e.detail);
-                $showPitchSelector = false;
+                showPitchSelector = false;
                 wasClicked = null;
             }
         }
     }
 
     function pitchSelector(e) {
-        $showPitchSelector = true;
+        showPitchSelector = true;
         wasClicked = e.srcElement.id;
     }
 
@@ -229,6 +230,88 @@
     $: bpm = (60 * 1000) / playSpeed;
     console.groupEnd();
 </script>
+
+<style lang="scss">
+    .note-number-container {
+        input {
+            max-width: 4rem;
+        }
+    }
+    .play-once-container {
+        margin: 1rem 0;
+    }
+    .series {
+        text-align: center;
+    }
+
+    .text-info {
+        text-align: center;
+        margin-bottom: 0.25rem;
+    }
+
+    .note-select-container,
+    .instrument-select-container,
+    .bpm-container {
+        text-align: center;
+        margin: 1rem 0;
+    }
+
+    .play-container {
+        text-align: center;
+        margin: 1rem 0;
+
+        button {
+            padding: 1rem 2.5rem;
+        }
+    }
+
+    .bpm-container {
+        label {
+            margin: 0 1rem;
+            input {
+                width: 3rem;
+            }
+        }
+    }
+
+    .volume {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        input {
+            width: 60%;
+            margin: 0rem 0.5rem;
+        }
+        img {
+            width: 20px;
+        }
+    }
+
+    .freq-select-container {
+        display: grid;
+        grid-template-columns: auto auto;
+        justify-content: center;
+
+        .note-selector {
+            width: 5rem;
+            margin: 0rem 0.5rem;
+        }
+    }
+
+    .advanced-toggle {
+        margin-bottom: 1rem;
+    }
+
+    .chevron {
+        font-size: 2rem;
+        height: 1rem;
+        margin: 0.5rem;
+        transition: transform 0.5s;
+        &.down {
+            transform: rotate(180deg);
+        }
+    }
+</style>
 
 <svelte:head>
     <title>Random Pitch Sequences</title>
@@ -383,93 +466,12 @@
     {/if}
 </section>
 
-{#if $showPitchSelector}
+{#if showPitchSelector}
     <PitchSelector
         {lowerVal}
         {upperVal}
+        bind:showPitchSelector
         bind:wasClicked
         on:message={handleMessage}
     />
 {/if}
-
-<style lang="scss">
-    .note-number-container {
-        input {
-            max-width: 4rem;
-        }
-    }
-    .play-once-container {
-        margin: 1rem 0;
-    }
-    .series {
-        text-align: center;
-    }
-
-    .text-info {
-        text-align: center;
-        margin-bottom: 0.25rem;
-    }
-
-    .note-select-container,
-    .instrument-select-container,
-    .bpm-container {
-        text-align: center;
-        margin: 1rem 0;
-    }
-
-    .play-container {
-        text-align: center;
-        margin: 1rem 0;
-
-        button {
-            padding: 1rem 2.5rem;
-        }
-    }
-
-    .bpm-container {
-        label {
-            margin: 0 1rem;
-            input {
-                width: 3rem;
-            }
-        }
-    }
-
-    .volume {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        input {
-            width: 60%;
-            margin: 0rem 0.5rem;
-        }
-        img {
-            width: 20px;
-        }
-    }
-
-    .freq-select-container {
-        display: grid;
-        grid-template-columns: auto auto;
-        justify-content: center;
-
-        .note-selector {
-            width: 5rem;
-            margin: 0rem 0.5rem;
-        }
-    }
-
-    .advanced-toggle {
-        margin-bottom: 1rem;
-    }
-
-    .chevron {
-        font-size: 2rem;
-        height: 1rem;
-        margin: 0.5rem;
-        transition: transform 0.5s;
-        &.down {
-            transform: rotate(180deg);
-        }
-    }
-</style>

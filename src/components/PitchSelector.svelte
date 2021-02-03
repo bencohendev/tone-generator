@@ -1,13 +1,17 @@
 <script>
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onDestroy, onMount } from "svelte";
     import { fade } from "svelte/transition";
-    import { octaves, showPitchSelector, allPitches } from "../store.js";
+    import { octaves, opacityToggle, allPitches } from "../store.js";
 
     export let lowerVal = NaN;
     export let upperVal = NaN;
     export let wasClicked = null;
+    export let showPitchSelector;
 
     const dispatch = createEventDispatcher();
+
+    onMount(() => ($opacityToggle = true));
+    onDestroy(() => ($opacityToggle = false));
 
     function closePitchSelector() {
         dispatch("message", { text: "close" });
@@ -22,54 +26,6 @@
         });
     }
 </script>
-
-<svelte:window
-    on:click={(e) => {
-        if (!e.target.classList.value.includes("pitch"))
-            $showPitchSelector = false;
-    }}
-/>
-
-<section class="pitch-selector-container" transition:fade>
-    <div class="pitch-selector-inner">
-        <div class="close-container">
-            {#if wasClicked}
-                <div class="text-info">
-                    Set the {wasClicked != "upper" ? "lower" : "upper"} pitch range
-                </div>
-            {/if}
-            <button on:click={closePitchSelector} class="close">X</button>
-        </div>
-        <div class="pitch-row-container">
-            {#each $octaves as octave, i}
-                <div class="pitch-row">
-                    {#each $allPitches as pitch, j}
-                        {#if octave.label === pitch.octave}
-                            <button
-                                class="pitch-button {pitch.note.length > 2
-                                    ? 'halftone'
-                                    : ''}"
-                                disabled={(wasClicked != "upper" &&
-                                    upperVal.frequency <= pitch.frequency) ||
-                                    (wasClicked != "lower" &&
-                                        lowerVal.frequency >= pitch.frequency)}
-                                on:click={() =>
-                                    sendPitch(pitch.frequency, pitch.note, i)}
-                                >{pitch.note}
-                                <div class="pitch-frequency">
-                                    {pitch.frequency.toFixed(8) !=
-                                    Math.round(pitch.frequency)
-                                        ? "~"
-                                        : ""}{Math.round(pitch.frequency)}
-                                </div>
-                            </button>
-                        {/if}
-                    {/each}
-                </div>
-            {/each}
-        </div>
-    </div>
-</section>
 
 <style lang="scss">
     .pitch-selector-container {
@@ -135,3 +91,51 @@
         }
     }
 </style>
+
+<svelte:window
+    on:click={(e) => {
+        if (!e.target.classList.value.includes("pitch"))
+            showPitchSelector = false;
+    }}
+/>
+
+<section class="pitch-selector-container" transition:fade>
+    <div class="pitch-selector-inner">
+        <div class="close-container">
+            {#if wasClicked}
+                <div class="text-info">
+                    Set the {wasClicked != "upper" ? "lower" : "upper"} pitch range
+                </div>
+            {/if}
+            <button on:click={closePitchSelector} class="close">X</button>
+        </div>
+        <div class="pitch-row-container">
+            {#each $octaves as octave, i}
+                <div class="pitch-row">
+                    {#each $allPitches as pitch, j}
+                        {#if octave.label === pitch.octave}
+                            <button
+                                class="pitch-button {pitch.note.length > 2
+                                    ? 'halftone'
+                                    : ''}"
+                                disabled={(wasClicked != "upper" &&
+                                    upperVal.frequency <= pitch.frequency) ||
+                                    (wasClicked != "lower" &&
+                                        lowerVal.frequency >= pitch.frequency)}
+                                on:click={() =>
+                                    sendPitch(pitch.frequency, pitch.note, i)}
+                                >{pitch.note}
+                                <div class="pitch-frequency">
+                                    {pitch.frequency.toFixed(8) !=
+                                    Math.round(pitch.frequency)
+                                        ? "~"
+                                        : ""}{Math.round(pitch.frequency)}
+                                </div>
+                            </button>
+                        {/if}
+                    {/each}
+                </div>
+            {/each}
+        </div>
+    </div>
+</section>

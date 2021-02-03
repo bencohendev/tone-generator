@@ -148,5 +148,5 @@ export let octaves = readable([
 
 export let allPitches = writable([])
 
-export let showPitchSelector = writable(false)
+export let opacityToggle = writable(false)
 

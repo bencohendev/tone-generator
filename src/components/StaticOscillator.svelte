@@ -2,7 +2,7 @@
     import { createEventDispatcher, onDestroy, onMount } from "svelte";
     import { fade } from "svelte/transition";
 
-    import { audioCtx, allPitches, showPitchSelector } from "../store";
+    import { audioCtx, allPitches } from "../store";
     import PitchSelector from "./PitchSelector.svelte";
     import Pan from "./Pan.svelte";
     import WaveType from "./WaveType.svelte";
@@ -17,6 +17,7 @@
 
     let vol = 50;
     let waveType = "sine";
+    let showPitchSelector = false;
     let showWaveSelector = false;
     let showPanSelector = false;
     let inputFrequency = false;
@@ -37,7 +38,7 @@
         oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
     });
 
-    onMount(() => console.log(oscillator));
+    onMount(() => console.log("osc", oscillator));
 
     function playHandler() {
         if (onOffVal === 1) {
@@ -49,10 +50,10 @@
 
     function handlePitchSelector(event) {
         if (event.detail.text === "close") {
-            $showPitchSelector = false;
+            showPitchSelector = false;
         }
         if (event.detail.text === "pitch") {
-            $showPitchSelector = false;
+            showPitchSelector = false;
             pitchName = event.detail.note;
             freqSliderVal = Math.log2(event.detail.frequency);
             changeFreqSlider();
@@ -129,160 +130,6 @@
     //console.log("freqwatch: ", freq);
     console.groupEnd();
 </script>
-
-<svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup} />
-
-<section class="card oscillator-container" in:fade>
-    <div class="close-container">
-        <button
-            on:click={() => dispatch("closeStaticOscillator", i)}
-            class="close">X</button
-        >
-    </div>
-    <div class="play-vol-container">
-        <button
-            class="play-button {onOffVal === 1 ? 'playing' : 'paused'}"
-            on:click={() => {
-                onOffVal === 1 ? (onOffVal = 0) : (onOffVal = 1);
-            }}
-            >{onOffVal === 1 ? "Pause" : "Play"}
-        </button>
-        <div class="slide-container volume">
-            <img
-                class="volume-low"
-                src={vol === 0
-                    ? "../icons/volume-off-light.png"
-                    : "../icons/volume-low-light.png"}
-                alt="volume"
-                on:click={() => (vol = 0)}
-            />
-            <input
-                type="range"
-                min="0"
-                max="100"
-                bind:value={vol}
-                class="slider volume"
-            />
-            <img
-                class="volume-full"
-                src="../icons/volume-full-light.png"
-                alt="volume"
-                on:click={() => (vol = 100)}
-            />
-        </div>
-    </div>
-
-    <div class="pitch-selector-container">
-        <button
-            class="pitch-selector"
-            on:click={() =>
-                $showPitchSelector
-                    ? ($showPitchSelector = false)
-                    : ($showPitchSelector = true)}
-            >Select a Pitch
-        </button>
-    </div>
-
-    <!--min and max value of frequency slider are arbitrary. The slider functions logarithmically with 440 as the center-->
-    <div class="frequency-container">
-        <div class="slide-container Frequency">
-            <input
-                type="range"
-                min={3}
-                max={14.4}
-                step={0.001}
-                bind:value={freqSliderVal}
-                on:input={changeFreqSlider}
-                class="slider frequency"
-            />
-        </div>
-        <div class="frequency-controls">
-            <button
-                class="frequency-arith-button"
-                on:click={() => (freqSliderVal = Math.log2((freq *= 0.5)))}
-                >&divide; 2
-            </button>
-            <button
-                class="frequency-arith-button"
-                on:click={() => (freqSliderVal = Math.log2((freq -= 1)))}
-                >&minus 1
-            </button>
-            <div
-                class="frequency-label"
-                on:click={() =>
-                    inputFrequency
-                        ? (inputFrequency = false)
-                        : (inputFrequency = true)}
-            >
-                {#if inputFrequency}
-                    <input type="number" autofocus bind:value={freq} step={1} />
-                {:else}
-                    {freq.toFixed(13) != Math.round(freq)
-                        ? "~"
-                        : ""}{parseFloat(freq.toFixed(2))}
-                {/if}
-                Hz
-                <div
-                    class="frequency-label pitch"
-                    on:click={() => (freq = closestPitch.frequency)}
-                >
-                    {#if Math.round(freq) != Math.round(closestPitch.frequency)}
-                        {Math.round(freq) > Math.round(closestPitch.frequency)
-                            ? ">"
-                            : "<"}
-                    {/if}
-                    {closestPitch.note}
-                </div>
-            </div>
-            <button
-                class="frequency-arith-button"
-                on:mousedown={() => (freqSliderVal = Math.log2((freq += 1)))}
-                >&plus 1
-            </button>
-            <button
-                class="frequency-arith-button"
-                on:click={() => (freqSliderVal = Math.log2((freq *= 2)))}
-                >&times 2
-            </button>
-        </div>
-    </div>
-    <div class="pan-wave-container">
-        <div class=" wave-select-container">
-            <button
-                class="wave-select-button {waveType}"
-                on:click={() =>
-                    showWaveSelector
-                        ? (showWaveSelector = false)
-                        : (showWaveSelector = true)}
-            />
-            {#if showWaveSelector}
-                <WaveType bind:waveType bind:showWaveSelector />
-            {/if}
-        </div>
-
-        <div class="slide-container pan">
-            <button
-                class="pan-button"
-                on:click={() =>
-                    showPanSelector
-                        ? (showPanSelector = false)
-                        : (showPanSelector = true)}
-            >
-                Pan
-            </button>
-            {#if showPanSelector}
-                <Pan bind:pan bind:showPanSelector />
-            {/if}
-        </div>
-    </div>
-</section>
-{#if $showPitchSelector}
-    <PitchSelector
-        bind:$showPitchSelector
-        on:message={handlePitchSelector}
-        bind:pitchName
-    />
-{/if}
 
 <style type="scss">
     .close-container {
@@ -431,3 +278,157 @@
         }
     }
 </style>
+
+<svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup} />
+
+<section class="card oscillator-container" in:fade>
+    <div class="close-container">
+        <button
+            on:click={() => dispatch("closeStaticOscillator", i)}
+            class="close">X</button
+        >
+    </div>
+    <div class="play-vol-container">
+        <button
+            class="play-button {onOffVal === 1 ? 'playing' : 'paused'}"
+            on:click={() => {
+                onOffVal === 1 ? (onOffVal = 0) : (onOffVal = 1);
+            }}
+            >{onOffVal === 1 ? "Pause" : "Play"}
+        </button>
+        <div class="slide-container volume">
+            <img
+                class="volume-low"
+                src={vol === 0
+                    ? "../icons/volume-off-light.png"
+                    : "../icons/volume-low-light.png"}
+                alt="volume"
+                on:click={() => (vol = 0)}
+            />
+            <input
+                type="range"
+                min="0"
+                max="100"
+                bind:value={vol}
+                class="slider volume"
+            />
+            <img
+                class="volume-full"
+                src="../icons/volume-full-light.png"
+                alt="volume"
+                on:click={() => (vol = 100)}
+            />
+        </div>
+    </div>
+
+    <div class="pitch-selector-container">
+        <button
+            class="pitch-selector"
+            on:click={() =>
+                showPitchSelector
+                    ? (showPitchSelector = false)
+                    : (showPitchSelector = true)}
+            >Select a Pitch
+        </button>
+    </div>
+
+    <!--min and max value of frequency slider are arbitrary. The slider functions logarithmically with 440 as the center-->
+    <div class="frequency-container">
+        <div class="slide-container Frequency">
+            <input
+                type="range"
+                min={3}
+                max={14.4}
+                step={0.001}
+                bind:value={freqSliderVal}
+                on:input={changeFreqSlider}
+                class="slider frequency"
+            />
+        </div>
+        <div class="frequency-controls">
+            <button
+                class="frequency-arith-button"
+                on:click={() => (freqSliderVal = Math.log2((freq *= 0.5)))}
+                >&divide; 2
+            </button>
+            <button
+                class="frequency-arith-button"
+                on:click={() => (freqSliderVal = Math.log2((freq -= 1)))}
+                >&minus 1
+            </button>
+            <div
+                class="frequency-label"
+                on:click={() =>
+                    inputFrequency
+                        ? (inputFrequency = false)
+                        : (inputFrequency = true)}
+            >
+                {#if inputFrequency}
+                    <input type="number" autofocus bind:value={freq} step={1} />
+                {:else}
+                    {freq.toFixed(13) != Math.round(freq)
+                        ? "~"
+                        : ""}{parseFloat(freq.toFixed(2))}
+                {/if}
+                Hz
+                <div
+                    class="frequency-label pitch"
+                    on:click={() => (freq = closestPitch.frequency)}
+                >
+                    {#if Math.round(freq) != Math.round(closestPitch.frequency)}
+                        {Math.round(freq) > Math.round(closestPitch.frequency)
+                            ? ">"
+                            : "<"}
+                    {/if}
+                    {closestPitch.note}
+                </div>
+            </div>
+            <button
+                class="frequency-arith-button"
+                on:mousedown={() => (freqSliderVal = Math.log2((freq += 1)))}
+                >&plus 1
+            </button>
+            <button
+                class="frequency-arith-button"
+                on:click={() => (freqSliderVal = Math.log2((freq *= 2)))}
+                >&times 2
+            </button>
+        </div>
+    </div>
+    <div class="pan-wave-container">
+        <div class=" wave-select-container">
+            <button
+                class="wave-select-button {waveType}"
+                on:click={() =>
+                    showWaveSelector
+                        ? (showWaveSelector = false)
+                        : (showWaveSelector = true)}
+            />
+            {#if showWaveSelector}
+                <WaveType bind:waveType bind:showWaveSelector />
+            {/if}
+        </div>
+
+        <div class="slide-container pan">
+            <button
+                class="pan-button"
+                on:click={() =>
+                    showPanSelector
+                        ? (showPanSelector = false)
+                        : (showPanSelector = true)}
+            >
+                Pan
+            </button>
+            {#if showPanSelector}
+                <Pan bind:pan bind:showPanSelector />
+            {/if}
+        </div>
+    </div>
+</section>
+{#if showPitchSelector}
+    <PitchSelector
+        bind:showPitchSelector
+        on:message={handlePitchSelector}
+        bind:pitchName
+    />
+{/if}
