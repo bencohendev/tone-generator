@@ -32,6 +32,7 @@
         id = uuid.generate();
         newNode = createNewOscillator($audioCtx, freq, pan, sequence);
         newNode.id = id;
+        newNode.isPlaying = false;
         oscillatorArray = [...oscillatorArray, newNode];
     }
 
@@ -43,19 +44,17 @@
     function playAllHandler() {
         //checks if all are already playing
         let isAllPlaying = oscillatorArray.every(
-            (oscillator) => oscillator.onOffNode.gain.value === 1
+            (oscillator) => oscillator.isPlaying === true
         );
+
         //if allPlaying is true, pause. Otherwise play
         oscillatorArray.forEach(
-            (oscillator) =>
-                (oscillator.onOffNode.gain.value = isAllPlaying ? 0 : 1)
+            (oscillator) => (oscillator.isPlaying = isAllPlaying ? false : true)
         );
         oscillatorArray = oscillatorArray;
     }
     function muteAllHandler() {
-        oscillatorArray.forEach(
-            (oscillator) => (oscillator.onOffNode.gain.value = 0)
-        );
+        oscillatorArray.forEach((oscillator) => (oscillator.isPlaying = false));
         oscillatorArray = oscillatorArray;
     }
 
@@ -69,10 +68,9 @@
         return keyArray;
     }
 
-    async function handleSelectedOvertones(selectedOctave, selectedPitch) {
+    async function handleSelectedOvertones(selectedOctave) {
         keyArray = await keyHandler();
         let fundamentals = [];
-        console.log(selectedOctave);
         //I need a set of fundamental frequencies. I am given a note name, I create an array of notes
 
         switch (selectedOvertones) {
@@ -96,10 +94,12 @@
                     keyArray[0].frequency * selectedOctave,
                     keyArray[7].frequency * selectedOctave * 2,
                     keyArray[4].frequency * selectedOctave * 8,
+                    keyArray[10].frequency * selectedOctave * 16,
                 ];
                 addNewOscillator(fundamentals[0], -1);
                 addNewOscillator(fundamentals[1], 1);
                 addNewOscillator(fundamentals[2], -1);
+                addNewOscillator(fundamentals[3], 1);
                 selectedOvertones = "Select Overtone Set";
                 break;
         }
@@ -217,9 +217,7 @@
         <StaticOscillator
             {oscillator}
             {i}
-            pan={oscillator.panNode.positionX.value}
-            onOffVal={oscillator.onOffNode.gain.value}
-            freq={oscillator.oscNode.frequency.value}
+            bind:isPlaying={oscillator.isPlaying}
             on:closeStaticOscillator={handleCloseStaticOscillator}
         />
     {/each}

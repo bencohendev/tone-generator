@@ -8,44 +8,6 @@
     console.groupEnd();
 </script>
 
-<!--toggle showPanSelector if click outside of Pan Selector-->
-<svelte:window
-    on:click={(e) => {
-        console.log(e.target.classList.value);
-        if (!e.target.classList.value.includes("pan")) showPanSelector = false;
-    }}
-/>
-
-<div class="pan-controller" transition:fade>
-    <div class="pan-buttons">
-        <button class="pan-left-button" on:click={() => (pan = -1)}>L</button>
-        <button class="pan-center-button" on:click={() => (pan = 0)}>C</button>
-        <button class="pan-right-button" on:click={() => (pan = 1)}>R</button>
-    </div>
-    <div class="pan-slider">
-        <img
-            class="pan-left-icon"
-            src="../icons/pan.png"
-            alt="pan left"
-            on:click={() => (pan = -1)}
-        />
-        <input
-            type="range"
-            min="-1"
-            max="1"
-            step={0.01}
-            bind:value={pan}
-            class="slider pan"
-        />
-        <img
-            class="pan-right-icon"
-            src="../icons/pan.png"
-            alt="pan right"
-            on:click={() => (pan = 1)}
-        />
-    </div>
-</div>
-
 <style lang="scss">
     .pan-controller {
         display: grid;
@@ -115,3 +77,40 @@
         }
     }
 </style>
+
+<!--toggle showPanSelector if click outside of Pan Selector-->
+<svelte:window
+    on:click={(e) => {
+        if (!e.target.classList.value.includes("pan")) showPanSelector = false;
+    }}
+/>
+
+<div class="pan-controller" transition:fade>
+    <div class="pan-buttons">
+        <button class="pan-left-button" on:click={() => (pan = -1)}>L</button>
+        <button class="pan-center-button" on:click={() => (pan = 0)}>C</button>
+        <button class="pan-right-button" on:click={() => (pan = 1)}>R</button>
+    </div>
+    <div class="pan-slider">
+        <img
+            class="pan-left-icon"
+            src="../icons/pan.png"
+            alt="pan left"
+            on:click={() => (pan = -1)}
+        />
+        <input
+            type="range"
+            min="-1"
+            max="1"
+            step={0.01}
+            bind:value={pan}
+            class="slider pan"
+        />
+        <img
+            class="pan-right-icon"
+            src="../icons/pan.png"
+            alt="pan right"
+            on:click={() => (pan = 1)}
+        />
+    </div>
+</div>

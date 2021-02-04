@@ -11,9 +11,9 @@
 
     export let oscillator;
     export let i;
-    export let pan = pan ? pan : 1;
-    export let onOffVal = 0;
-    export let freq = freq ? freq : 440;
+    let pan = oscillator.initVals.pan;
+    export let isPlaying;
+    let freq = oscillator.initVals.freq;
 
     let vol = 50;
     let waveType = "sine";
@@ -35,21 +35,16 @@
 
     //turns off oscillator if destroyed
     onDestroy(() => {
-        oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+        if (isPlaying)
+            oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
     });
 
     onMount(() => {
-        initVals();
-    });
-
-    function initVals() {
-        freq = oscillator.initVals.freq;
-        pan = oscillator.initVals.pan;
-
         oscillator.oscNode.frequency.setValueAtTime(
             freq,
             $audioCtx.currentTime
         );
+        oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
 
         oscillator.volGainNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
 
@@ -57,7 +52,6 @@
             1,
             $audioCtx.currentTime
         );
-        oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
 
         oscillator.panNode.panningModel = "equalpower";
         if (oscillator.panNode.positionX) {
@@ -67,13 +61,12 @@
         } else {
             oscillator.panNode.setPosition(0, 0, -1);
         }
-        onOffVal = 0;
-    }
+    });
 
     function playHandler() {
-        if (onOffVal === 1) {
+        if (isPlaying) {
             oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
-        } else if (onOffVal === 0) {
+        } else if (!isPlaying) {
             oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
         }
     }
@@ -92,7 +85,6 @@
 
     //compensates for log difference between freq and freqSliderVal
     function changeFreqSlider() {
-        //console.log("changeslider: ", freq);
         freq = 2 ** freqSliderVal;
     }
 
@@ -108,7 +100,7 @@
         switch (key) {
             //space
             case 32:
-                onOffVal === 1 ? (onOffVal = 0) : (onOffVal = 1);
+                isPlaying ? (isPlaying = false) : (isPlaying = true);
                 break;
             //right arrow
             case 39:
@@ -149,7 +141,7 @@
     $: oscillator.panNode.setPosition(pan, 0, -1);
     //Wave Type Selector
     $: oscillator.oscNode.type = waveType;
-    $: playHandler(onOffVal);
+    $: playHandler(isPlaying);
     //   $: changeFreqSlider(freqSliderVal);
 
     //volume control
@@ -157,7 +149,6 @@
         vol / 100,
         $audioCtx.currentTime
     );
-    //console.log("freqwatch: ", freq);
     console.groupEnd();
 </script>
 
@@ -320,11 +311,11 @@
     </div>
     <div class="play-vol-container">
         <button
-            class="play-button {onOffVal === 1 ? 'playing' : 'paused'}"
+            class="play-button {isPlaying ? 'playing' : 'paused'}"
             on:click={() => {
-                onOffVal === 1 ? (onOffVal = 0) : (onOffVal = 1);
+                isPlaying ? (isPlaying = false) : (isPlaying = true);
             }}
-            >{onOffVal === 1 ? "Pause" : "Play"}
+            >{isPlaying ? "Pause" : "Play"}
         </button>
         <div class="slide-container volume">
             <img

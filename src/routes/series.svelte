@@ -1,11 +1,9 @@
 <script>
     import SeriesAdvancedControls from "../components/SeriesAdvancedControls.svelte";
-
     import { audioCtx, allPitches } from "../store.js";
     import { onDestroy, onMount } from "svelte";
     import PitchSelector from "../components/PitchSelector.svelte";
     import uuid from "shortid";
-
     import { createNewOscillator } from "../helpers/NewOscillator.svelte";
 
     console.group("series");
@@ -236,11 +234,6 @@
 </script>
 
 <style lang="scss">
-    .note-number-container {
-        input {
-            max-width: 4rem;
-        }
-    }
     .play-once-container {
         margin: 1rem 0;
     }
@@ -253,7 +246,6 @@
         margin-bottom: 0.25rem;
     }
 
-    .note-select-container,
     .instrument-select-container,
     .bpm-container {
         text-align: center;
@@ -295,11 +287,6 @@
         display: grid;
         grid-template-columns: auto auto;
         justify-content: center;
-
-        .note-selector {
-            width: 5rem;
-            margin: 0rem 0.5rem;
-        }
     }
 
     .advanced-toggle {
