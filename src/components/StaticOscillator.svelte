@@ -12,7 +12,7 @@
     export let oscillator;
     export let i;
     export let pan = pan ? pan : 1;
-    export let onOffVal;
+    export let onOffVal = 0;
     export let freq = freq ? freq : 440;
 
     let vol = 50;
@@ -44,11 +44,30 @@
 
     function initVals() {
         freq = oscillator.initVals.freq;
+        pan = oscillator.initVals.pan;
 
         oscillator.oscNode.frequency.setValueAtTime(
             freq,
             $audioCtx.currentTime
         );
+
+        oscillator.volGainNode.gain.setValueAtTime(0.5, $audioCtx.currentTime);
+
+        oscillator.sequenceGainNode.gain.setValueAtTime(
+            1,
+            $audioCtx.currentTime
+        );
+        oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+
+        oscillator.panNode.panningModel = "equalpower";
+        if (oscillator.panNode.positionX) {
+            oscillator.panNode.positionX.value = pan;
+            oscillator.panNode.positionY.value = 0;
+            oscillator.panNode.positionZ.value = -1;
+        } else {
+            oscillator.panNode.setPosition(0, 0, -1);
+        }
+        onOffVal = 0;
     }
 
     function playHandler() {
@@ -381,9 +400,7 @@
                         ? "~"
                         : ""}{parseFloat(freq.toFixed(2))}
                 {/if}
-                {#key freq}
-                    {freq}
-                {/key}
+
                 Hz
                 <div
                     class="frequency-label pitch"

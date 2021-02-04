@@ -11,19 +11,20 @@
             oscNode = audioCtx.createOscillator();
             oscNode.started = false;
             oscNode.playing = false;
+
             //initialize node values
-            oscNode.frequency.value = freq;
-            volGainNode.gain.value = 0.5;
-            sequenceGainNode.gain.value = sequence;
-            onOffNode.gain.value = 0;
-            panNode.panningModel = "equalpower";
-            if (panNode.positionX) {
-                panNode.positionX.value = pan;
-                panNode.positionY.value = 0;
-                panNode.positionZ.value = -1;
-            } else {
-                panNode.setPosition(0, 0, -1);
-            }
+            // oscNode.frequency.value = freq;
+            // volGainNode.gain.value = 0.5;
+            // sequenceGainNode.gain.value = sequence;
+            // onOffNode.gain.value = 0;
+            // panNode.panningModel = "equalpower";
+            // if (panNode.positionX) {
+            //     panNode.positionX.value = pan;
+            //     panNode.positionY.value = 0;
+            //     panNode.positionZ.value = -1;
+            // } else {
+            //     panNode.setPosition(0, 0, -1);
+            // }
 
             //connect node chain
             oscNode.connect(volGainNode);

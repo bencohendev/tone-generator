@@ -1,13 +1,7 @@
 <script>
     import { onMount } from "svelte";
 
-    import {
-        audioCtx,
-        pitches,
-        octaves,
-        pitchNames,
-        pitchObj,
-    } from "../store.js";
+    import { audioCtx, octaves, pitchObj } from "../store.js";
     import uuid from "shortid";
     import StaticOscillator from "../components/StaticOscillator.svelte";
     import { createNewOscillator } from "../helpers/NewOscillator.svelte";
@@ -77,18 +71,18 @@
 
     async function handleSelectedOvertones(selectedOctave, selectedPitch) {
         keyArray = await keyHandler();
+        let fundamentals = [];
         console.log(selectedOctave);
         //I need a set of fundamental frequencies. I am given a note name, I create an array of notes
 
         switch (selectedOvertones) {
             case "1 - 3 - 5":
                 oscillatorArray = [];
-                let fundamentals = [
+                fundamentals = [
                     keyArray[0].frequency * selectedOctave,
                     keyArray[7].frequency * selectedOctave * 2,
                     keyArray[4].frequency * selectedOctave * 8,
                 ];
-                console.log("fundamentals", fundamentals);
                 addNewOscillator(fundamentals[0], -1);
                 addNewOscillator(fundamentals[1], 1);
                 addNewOscillator(fundamentals[2], -1);
@@ -98,19 +92,14 @@
                 break;
             case "1 - 3 - 5 - 7":
                 oscillatorArray = [];
-                addNewOscillator(selectedPitch * selectedOctave.multiplier, -1);
-                addNewOscillator(
-                    selectedPitch * selectedOctave.multiplier * 3,
-                    1
-                );
-                addNewOscillator(
-                    selectedPitch * selectedOctave.multiplier * 5.0396842,
-                    1
-                );
-                addNewOscillator(
-                    selectedPitch * selectedOctave.multiplier * 8,
-                    -1
-                );
+                fundamentals = [
+                    keyArray[0].frequency * selectedOctave,
+                    keyArray[7].frequency * selectedOctave * 2,
+                    keyArray[4].frequency * selectedOctave * 8,
+                ];
+                addNewOscillator(fundamentals[0], -1);
+                addNewOscillator(fundamentals[1], 1);
+                addNewOscillator(fundamentals[2], -1);
                 selectedOvertones = "Select Overtone Set";
                 break;
         }
