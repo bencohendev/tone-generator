@@ -77,9 +77,9 @@
             case "1 - 3 - 5":
                 oscillatorArray = [];
                 fundamentals = [
-                    keyArray[0].frequency * selectedOctave,
-                    keyArray[7].frequency * selectedOctave * 2,
-                    keyArray[4].frequency * selectedOctave * 8,
+                    keyArray[0].frequency * selectedOctave.multiplier,
+                    keyArray[7].frequency * selectedOctave.multiplier * 2,
+                    keyArray[4].frequency * selectedOctave.multiplier * 8,
                 ];
                 addNewOscillator(fundamentals[0], -1);
                 addNewOscillator(fundamentals[1], 1);
@@ -91,10 +91,10 @@
             case "1 - 3 - 5 - 7":
                 oscillatorArray = [];
                 fundamentals = [
-                    keyArray[0].frequency * selectedOctave,
-                    keyArray[7].frequency * selectedOctave * 2,
-                    keyArray[4].frequency * selectedOctave * 8,
-                    keyArray[10].frequency * selectedOctave * 16,
+                    keyArray[0].frequency * selectedOctave.multiplier,
+                    keyArray[7].frequency * selectedOctave.multiplier * 2,
+                    keyArray[4].frequency * selectedOctave.multiplier * 8,
+                    keyArray[10].frequency * selectedOctave.multiplier * 16,
                 ];
                 addNewOscillator(fundamentals[0], -1);
                 addNewOscillator(fundamentals[1], 1);
@@ -189,15 +189,11 @@
                     id="octave-select"
                     bind:value={selectedOctave}
                 >
-                    <option value={$octaves[3].multiplier}>Octave</option>
+                    <option value={$octaves[3]}>Octave</option>
                     {#each $octaves as octave}
-                        <option
-                            label={octave.label}
-                            value={octave.multiplier}
-                        />
+                        <option label={octave.label} value={octave} />
                     {/each}
                 </select>
-
                 <!-- svelte-ignore a11y-no-onchange -->
                 <select
                     name="overtone-series-select"
