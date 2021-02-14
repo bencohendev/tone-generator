@@ -47,9 +47,12 @@
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
         id = uuid.generate();
         newNode = createNewOscillator($audioCtx, freq, pan, series);
+        newNode.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
         newNode.id = id;
         //counter for number of pitches played in sequence
         newNode.i = 0;
+        newNode.oscNode.start();
+
         oscillatorArray = [newNode];
     });
 
@@ -260,7 +263,9 @@
             padding: 1rem 2.5rem;
         }
     }
-
+    .pitch-selector {
+        margin-bottom: 1rem;
+    }
     .bpm-container {
         label {
             margin: 0 1rem;

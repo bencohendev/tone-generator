@@ -37,7 +37,10 @@
                 let id = uuid.generate();
                 newNode = createNewOscillator($audioCtx, freq, pan, series);
                 newNode.id = id;
+                //matches counter to first oscillator in order to sync if user adds extra intervals while the sequencer is running
                 newNode.i = oscillatorArray[0].i;
+                newNode.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+                newNode.oscNode.start();
                 oscillatorArray = [...oscillatorArray, newNode];
             }
         }
@@ -148,6 +151,20 @@
 
     console.groupEnd();
 </script>
+
+<style lang="scss">
+    .interval-mode-container {
+        display: grid;
+        div {
+            margin: 1rem 0;
+        }
+    }
+
+    .key-mode-input-container {
+        margin-bottom: 0.5rem;
+        display: grid;
+    }
+</style>
 
 <section class="advanced-container">
     <div class="pitch-display-container">
@@ -283,24 +300,3 @@
         </div>
     </div>
 </section>
-
-<style lang="scss">
-    .interval-mode-container {
-        display: grid;
-        div {
-            margin: 1rem 0;
-        }
-    }
-
-    .note-display-container {
-        margin-bottom: 2rem;
-        button {
-            margin-top: 0.5rem;
-        }
-    }
-
-    .key-mode-input-container {
-        margin-bottom: 0.5rem;
-        display: grid;
-    }
-</style>

@@ -11,18 +11,21 @@
 
     export let oscillator;
     export let i;
-    let pan = oscillator.initVals.pan;
     export let isPlaying;
-    let freq = oscillator.initVals.freq;
 
+    let freq = oscillator.initVals.freq;
+    let pan = oscillator.initVals.pan;
     let vol = 50;
     let waveType = "sine";
+
     let showPitchSelector = false;
     let showWaveSelector = false;
     let showPanSelector = false;
+
     let inputFrequency = false;
     let pitchName;
     let closestPitch;
+
     //uses logarithm to make slider with 440 as middle value
     let freqSliderVal = Math.log2(freq);
 
@@ -61,6 +64,7 @@
         } else {
             oscillator.panNode.setPosition(0, 0, -1);
         }
+        oscillator.oscNode.start();
     });
 
     function playHandler() {
