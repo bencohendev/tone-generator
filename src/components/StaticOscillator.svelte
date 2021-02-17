@@ -65,13 +65,25 @@
             oscillator.panNode.setPosition(0, 0, -1);
         }
         oscillator.oscNode.start();
+
+        console.log($audioCtx);
     });
 
     function playHandler() {
+        if ($audioCtx.state === "suspended") $audioCtx.resume();
+
         if (isPlaying) {
-            oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
+            oscillator.onOffNode.gain.setTargetAtTime(
+                0.9,
+                $audioCtx.currentTime,
+                0.01
+            );
         } else if (!isPlaying) {
-            oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+            oscillator.onOffNode.gain.setTargetAtTime(
+                0,
+                $audioCtx.currentTime,
+                0.01
+            );
         }
     }
 
@@ -151,7 +163,8 @@
     //volume control
     $: oscillator.volGainNode.gain.setValueAtTime(
         vol / 100,
-        $audioCtx.currentTime
+        $audioCtx.currentTime,
+        0.001
     );
     console.groupEnd();
 </script>

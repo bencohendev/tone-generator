@@ -67,9 +67,10 @@
         } else if (!play && oscillator.onOffNode) {
             oscillatorArray.map((oscillator) => {
                 oscillator.i = 0;
-                oscillator.onOffNode.gain.setValueAtTime(
+                oscillator.onOffNode.gain.setTargetAtTime(
                     0,
-                    $audioCtx.currentTime
+                    $audioCtx.currentTime,
+                    0.01
                 );
             });
         }
