@@ -80,7 +80,11 @@
         let pitchToPlay;
         oscillatorArray.map((oscillator) => {
             //on/off oscillator volume to full volume
-            oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
+            oscillator.onOffNode.gain.setTargetAtTime(
+                1,
+                $audioCtx.currentTime,
+                0.01
+            );
             if (oscillator.i < parseInt(numOfPitches) && play) {
                 //chooses and plays a random pitch from within the set range
                 pitchToPlay =
@@ -92,14 +96,15 @@
                 oscillator.sequenceGainNode.gain.setTargetAtTime(
                     1,
                     $audioCtx.currentTime,
-                    0.0001
+                    0.01
                 );
                 oscillator.i++;
             } else {
                 //if player has played requested number of pitches either leave a blank and restart, or turn off depending on playOnce
-                oscillator.sequenceGainNode.gain.setValueAtTime(
+                oscillator.sequenceGainNode.gain.setTargetAtTime(
                     0,
-                    $audioCtx.currentTime
+                    $audioCtx.currentTime,
+                    0.01
                 );
                 if (playOnce) {
                     play = false;
@@ -112,7 +117,7 @@
                 oscillator.sequenceGainNode.gain.setTargetAtTime(
                     0,
                     $audioCtx.currentTime,
-                    0.001
+                    0.01
                 );
             }, bpm - bpm * 0.25);
         });
