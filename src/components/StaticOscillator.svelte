@@ -39,7 +39,11 @@
     //turns off oscillator if destroyed
     onDestroy(() => {
         if (isPlaying)
-            oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+            oscillator.onOffNode.gain.setTargetAtTime(
+                0,
+                $audioCtx.currentTime,
+                0.01
+            );
     });
 
     onMount(() => {
@@ -65,13 +69,25 @@
             oscillator.panNode.setPosition(0, 0, -1);
         }
         oscillator.oscNode.start();
+
+        console.log($audioCtx);
     });
 
     function playHandler() {
+        if ($audioCtx.state === "suspended") $audioCtx.resume();
+
         if (isPlaying) {
-            oscillator.onOffNode.gain.setValueAtTime(1, $audioCtx.currentTime);
+            oscillator.onOffNode.gain.setTargetAtTime(
+                0.9,
+                $audioCtx.currentTime,
+                0.01
+            );
         } else if (!isPlaying) {
-            oscillator.onOffNode.gain.setValueAtTime(0, $audioCtx.currentTime);
+            oscillator.onOffNode.gain.setTargetAtTime(
+                0,
+                $audioCtx.currentTime,
+                0.01
+            );
         }
     }
 
@@ -140,18 +156,23 @@
                 : a;
         });
     }
-
+    $: console.log(oscillator.panNode);
     //pan control
-    $: oscillator.panNode.setPosition(pan, 0, -1);
+    $: oscillator.panNode.positionX.setTargetAtTime(
+        pan,
+        $audioCtx.currentTime,
+        0.01
+    );
     //Wave Type Selector
     $: oscillator.oscNode.type = waveType;
     $: playHandler(isPlaying);
     //   $: changeFreqSlider(freqSliderVal);
 
     //volume control
-    $: oscillator.volGainNode.gain.setValueAtTime(
+    $: oscillator.volGainNode.gain.setTargetAtTime(
         vol / 100,
-        $audioCtx.currentTime
+        $audioCtx.currentTime,
+        0.01
     );
     console.groupEnd();
 </script>
