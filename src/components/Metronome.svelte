@@ -35,15 +35,10 @@
     // with next interval (in case the timer is late)
     var nextNoteTime = 0.0; // when the next note is due.
     var noteResolution = 0; // 0 == 16th, 1 == 8th, 2 == quarter note
-    var noteLength = 0.05; // length of "beep" (in seconds)
     var notesInQueue = []; // the notes that have been put into the web audio,
     // and may or may not have played yet. {note, time}
     var timerWorker = null; // The Web Worker used to fire timer messages
     var unlocked = false;
-    let tickTrack;
-    let tickTrackUp;
-    let tick;
-    let tickUp;
     let bufferLoader;
 
     let id;
@@ -92,7 +87,7 @@
 
     function nextNote() {
         // Advance current note and time by a 16th note...
-        var secondsPerBeat = 60.0 / bpm; // Notice this picks up the CURRENT
+        let secondsPerBeat = 60.0 / bpm; // Notice this picks up the CURRENT
         // bpm value to calculate beat length.
         nextNoteTime += 0.25 * secondsPerBeat; // Add beat length to last beat time
 
@@ -109,8 +104,10 @@
         if (noteResolution == 1 && beatNumber % 2) return; // we're not playing non-8th 16th notes
         if (noteResolution == 2 && beatNumber % 4) return; // we're not playing non-quarter 8th notes
 
-        console.log(beatNumber, $audioCtx.currentTime);
-        if (!beatNumber % 16 === 0) playFile($audioCtx, bufferLoader, "middle");
+        if (!beatNumber % 16 === 0) {
+            playFile($audioCtx, bufferLoader, "middle");
+            console.log("played");
+        }
         // beat 0 == high pitch
         //  console.log(bufferLoader);
         else if (beatNumber % 4 === 0)
@@ -125,6 +122,8 @@
     function scheduler() {
         // while there are notes that will need to play before the next interval,
         // schedule them and advance the pointer.
+
+        console.log({ nextNoteTime }, $audioCtx.currentTime, scheduleAheadTime);
         while (nextNoteTime < $audioCtx.currentTime + scheduleAheadTime) {
             scheduleNote(current16thNote, nextNoteTime);
             nextNote();
@@ -194,6 +193,21 @@
                 <input type="number" label="play speed" bind:value={bpm} />
             </label>
         </div>
+        <div class="subdivision-container">
+            <div>Subdivison:</div>
+            <label>
+                Quarter Notes
+                <input type="radio" value="2" bind:group={noteResolution} />
+            </label>
+            <label>
+                Eight Notes
+                <input type="radio" value="1" bind:group={noteResolution} />
+            </label>
+            <label>
+                Sixteenth Notes
+                <input type="radio" value="0" bind:group={noteResolution} />
+            </label>
+        </div>
         <div class="play-container">
             <button
                 class="play-button {play ? 'playing' : 'paused'}"
@@ -206,5 +220,3 @@
         </div>
     {/if}
 </section>
-<audio src="./audio/tick.wav" />
-<audio src="./audio/tick_up.wav" />

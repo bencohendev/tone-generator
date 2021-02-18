@@ -2,7 +2,7 @@
     export function playFile(context, bufferLoader, tick) {
         //   let startTime = context.currentTime;
         let source = context.createBufferSource();
-
+        console.log(source);
         switch (tick) {
             case "middle":
                 //   Connect graph
