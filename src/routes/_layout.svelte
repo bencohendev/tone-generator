@@ -1,5 +1,6 @@
 <script>
 	import Nav from "../components/Nav.svelte";
+	import Metronome from "../components/Metronome.svelte";
 	import { onMount } from "svelte";
 	import { pitchObj, allPitches, opacityToggle } from "../store.js";
 	let pitchArrayConstructor = [];
@@ -67,4 +68,5 @@
 <svelte:window bind:innerWidth={window} />
 <main class:add-bg-opacity={$opacityToggle} style="max-width: {maxWidth}px">
 	<slot />
+	<Metronome />
 </main>

@@ -69,8 +69,6 @@
             oscillator.panNode.setPosition(0, 0, -1);
         }
         oscillator.oscNode.start();
-
-        console.log($audioCtx);
     });
 
     function playHandler() {
@@ -156,7 +154,6 @@
                 : a;
         });
     }
-    $: console.log(oscillator.panNode);
     //pan control
     $: oscillator.panNode.positionX.setTargetAtTime(
         pan,
