@@ -216,7 +216,7 @@
             //volume control
             oscillatorArray.map((oscillator) =>
                 oscillator.volGainNode.gain.setTargetAtTime(
-                    vol / 100,
+                    vol * 0.01,
                     $audioCtx.currentTime,
                     0.001
                 )
