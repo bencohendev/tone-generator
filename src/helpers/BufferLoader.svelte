@@ -1,8 +1,8 @@
 <script context="module">
-    export function BufferLoader(context, urlList, callback) {
+    export function BufferLoader(context, urlList) {
         this.context = context;
         this.urlList = urlList;
-        this.onload = callback;
+        //  this.onload = callback;
         this.bufferList = new Array();
         this.loadCount = 0;
     }
@@ -25,8 +25,6 @@
                         return;
                     }
                     loader.bufferList[index] = buffer;
-                    if (++loader.loadCount == loader.urlList.length)
-                        loader.onload(loader.bufferList);
                 },
                 function (error) {
                     console.error("decodeAudioData error", error);

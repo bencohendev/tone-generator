@@ -19,7 +19,7 @@
     let metronome = false;
 
     //speed and pitch range
-    let bpm = 120;
+    let bpm = 60;
     let playSpeed = 120;
     let numOfPitches = 4;
 
@@ -28,7 +28,7 @@
     //new variables
     var startTime; // The start time of the entire sequence.
     var current16thNote; // What note is currently last scheduled?
-    var lookahead = 25.0; // How frequently to call scheduling function
+    var lookahead = 10.0; // How frequently to call scheduling function
     //(in milliseconds)
     var scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
     // This is calculated from lookahead, and overlaps
@@ -52,32 +52,17 @@
         audioCtx.set(new (window.AudioContext || window.webkitAudioContext)());
 
         // if we wanted to load audio files, etc., this is where we should do it.
-        bufferLoader = new BufferLoader(
-            $audioCtx,
-            ["./audio/tick.wav", "./audio/tick_up.wav"],
-            finishedLoading
-        );
+        bufferLoader = new BufferLoader($audioCtx, [
+            "./audio/tick.wav",
+            "./audio/tick_up.wav",
+        ]);
 
         bufferLoader.load();
 
-        // // get the audio element
-        // tick = document.querySelector("audio");
-
-        // // pass it into the audio context
-        // tickTrack = $audioCtx.createMediaElementSource(tick);
-        // tickTrack.connect($audioCtx.destination);
-
-        // tickUp = document.querySelector("audio");
-
-        // // pass it into the audio context
-        // tickTrackUp = $audioCtx.createMediaElementSource(tickUp);
-        // tickTrackUp.connect($audioCtx.destination);
-
-        timerWorker = new Worker("./metronomeworker.js");
         // console.log(timerWorker);
+        timerWorker = new Worker("./metronomeworker.js");
         timerWorker.onmessage = function (e) {
             if (e.data == "tick") {
-                // console.log("tick!");
                 scheduler();
             } else console.log("message: " + e.data);
         };
@@ -87,20 +72,6 @@
     onDestroy(() => {
         if (play) play = false;
     });
-
-    function finishedLoading(bufferList) {
-        // Create two sources and play them both together.
-        var source1 = $audioCtx.createBufferSource();
-        var source2 = $audioCtx.createBufferSource();
-        source1.buffer = bufferList[0];
-        source2.buffer = bufferList[1];
-
-        source1.connect($audioCtx.destination);
-        source2.connect($audioCtx.destination);
-        source1.start(0);
-        source2.start(0);
-        console.log(source1);
-    }
 
     $: {
         //checks to ensure node has been created
@@ -118,6 +89,7 @@
     $: playHandler(play);
 
     //new functions
+
     function nextNote() {
         // Advance current note and time by a 16th note...
         var secondsPerBeat = 60.0 / bpm; // Notice this picks up the CURRENT
@@ -137,13 +109,12 @@
         if (noteResolution == 1 && beatNumber % 2) return; // we're not playing non-8th 16th notes
         if (noteResolution == 2 && beatNumber % 4) return; // we're not playing non-quarter 8th notes
 
-        // create an oscillator
-        var osc = $audioCtx.createOscillator();
-        osc.connect($audioCtx.destination);
-        //  if (beatNumber % 16 === 0)
+        console.log(beatNumber, $audioCtx.currentTime);
+        if (!beatNumber % 16 === 0) playFile($audioCtx, bufferLoader, "middle");
         // beat 0 == high pitch
         //  console.log(bufferLoader);
-        //   else if (beatNumber % 4 === 0)
+        else if (beatNumber % 4 === 0)
+            playFile($audioCtx, bufferLoader, "high");
         // quarter notes = medium pitch
         //   source2.play(time);
         //  console.log(bufferList);
@@ -171,8 +142,6 @@
             }
 
             if (play) {
-                console.log(bufferLoader);
-                playFile($audioCtx, bufferLoader);
                 // start playing
                 current16thNote = 0;
                 nextNoteTime = $audioCtx.currentTime;
@@ -218,6 +187,12 @@
                 alt="volume"
                 on:click={() => (vol = 100)}
             />
+        </div>
+        <div class="bpm-container">
+            <label>
+                bpm:
+                <input type="number" label="play speed" bind:value={bpm} />
+            </label>
         </div>
         <div class="play-container">
             <button
