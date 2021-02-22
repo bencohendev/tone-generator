@@ -7,6 +7,7 @@
     import { createNewOscillator } from "../helpers/NewOscillator.svelte";
 
     console.group("series");
+    let unlocked = false;
     //oscillator creation
     let oscillator = {};
     let oscillatorArray = [];
@@ -61,6 +62,11 @@
     });
 
     let playHandler = () => {
+        if (!unlocked) {
+            $audioCtx.resume();
+            unlocked = true;
+        }
+
         if (play) {
             //sequencePlayer runs after waiting bpm. sequencePlayer ends in a call to playHandler
             setTimeout(sequencePlayer, bpm);

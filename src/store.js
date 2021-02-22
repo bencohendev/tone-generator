@@ -137,3 +137,4 @@ export let allPitches = writable([])
 
 export let opacityToggle = writable(false)
 
+export let unlocked = writable(false)

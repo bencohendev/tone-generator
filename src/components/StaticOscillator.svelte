@@ -13,6 +13,7 @@
     export let i;
     export let isPlaying;
 
+    let unlocked = false;
     let freq = oscillator.initVals.freq;
     let pan = oscillator.initVals.pan;
     let vol = 50;
@@ -72,7 +73,10 @@
     });
 
     function playHandler() {
-        if ($audioCtx.state === "suspended") $audioCtx.resume();
+        if (!unlocked) {
+            $audioCtx.resume();
+            unlocked = true;
+        }
 
         if (isPlaying) {
             oscillator.onOffNode.gain.setTargetAtTime(
