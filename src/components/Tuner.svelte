@@ -131,7 +131,7 @@
     .tuner-container {
         position: fixed;
         bottom: 10rem;
-        left: 50%;
+        left: 60%;
         .tuner-container-inner {
             position: relative;
             right: 4.8rem;
@@ -140,7 +140,7 @@
             box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
                 0px 3px 4px 0px rgba(0, 0, 0, 0.14),
                 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
-            background-color: rgba(47, 52, 55, 0.5);
+            background-color: #2f3437;
             border-radius: 0.5rem;
         }
         .tuner-button {

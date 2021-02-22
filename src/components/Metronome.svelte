@@ -133,9 +133,54 @@
 </script>
 
 <style lang="scss">
-    .metronome {
+    .metronome-container {
         position: fixed;
         bottom: 10rem;
+        left: 30%;
+
+        .metronome-container-inner {
+            text-align: center;
+            position: relative;
+            right: 4.8rem;
+            bottom: 1rem;
+            padding: 1rem;
+            box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
+                0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+                0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+            background-color: #2f3437;
+            border-radius: 0.5rem;
+            .bpm-beat-container {
+                .bpm-container,
+                .beat-container {
+                    width: 49%;
+                    display: inline-block;
+                    label {
+                        display: flex;
+                    }
+                    input {
+                        width: 3rem;
+                    }
+                }
+            }
+            .subdivision-button {
+                width: 3rem;
+                height: 3rem;
+                font-size: 2rem;
+
+                .subdivision-note {
+                    position: relative;
+                    right: 0.25rem;
+                }
+            }
+
+            .bpm-beat-container,
+            .slide-container,
+            .subdivision-container,
+            .play-container {
+                margin-bottom: 1rem;
+            }
+        }
+
         .metronome-button {
             box-shadow: 0px 0px 5px 9px rgba(0, 0, 0, 0.2),
                 0px 2px 2px 0px rgba(0, 0, 0, 0.14),
@@ -148,7 +193,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 10rem;
+
             input {
                 width: 60%;
                 margin: 0rem 0.5rem;
@@ -159,13 +204,93 @@
         }
     }
     @media only screen and (max-width: 768px) {
-        .metronome {
+        .metronome-container {
             bottom: 5rem;
         }
     }
 </style>
 
-<section class="metronome">
+<section class="metronome-container">
+    {#if metronome}
+        <div class="metronome-container-inner">
+            <div class="slide-container volume">
+                <img
+                    class="volume-low"
+                    src={vol === 0
+                        ? "../icons/volume-off-light.png"
+                        : "../icons/volume-low-light.png"}
+                    alt="volume"
+                    on:click={() => (vol = 0)}
+                />
+                <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    bind:value={vol}
+                    class="slider volume"
+                />
+                <img
+                    class="volume-full"
+                    src="../icons/volume-full-light.png"
+                    alt="volume"
+                    on:click={() => (vol = 100)}
+                />
+            </div>
+            <div class="bpm-beat-container">
+                <div class="bpm-container">
+                    <label>
+                        BPM:
+                        <input
+                            type="number"
+                            label="play speed"
+                            bind:value={bpm}
+                        />
+                    </label>
+                </div>
+                <div class="beat-container">
+                    <label>
+                        Beats:
+                        <input
+                            type="number"
+                            label="beat number"
+                            bind:value={numOfBeats}
+                        />
+                    </label>
+                </div>
+            </div>
+            <div class="subdivision-container">
+                <button
+                    class="subdivision-button"
+                    on:click={() => {
+                        noteResolution = 2;
+                    }}><div class="subdivision-note">&#119135</div></button
+                >
+                <button
+                    class="subdivision-button"
+                    on:click={() => {
+                        noteResolution = 1;
+                    }}><div class="subdivision-note">&#119136</div></button
+                >
+                <button
+                    class="subdivision-button"
+                    on:click={() => {
+                        noteResolution = 0;
+                    }}><div class="subdivision-note">&#119137</div></button
+                >
+            </div>
+
+            <div class="play-container">
+                <button
+                    class="play-button {play ? 'playing' : 'paused'}"
+                    on:click={() => {
+                        !play ? (play = true) : (play = false);
+                    }}
+                >
+                    {play ? "Stop" : "Start"}
+                </button>
+            </div>
+        </div>
+    {/if}
     <button
         class="metronome-button"
         on:click={() => {
@@ -177,70 +302,4 @@
             class="metronome-icon"
         /></button
     >
-    {#if metronome}
-        <div class="slide-container volume">
-            <img
-                class="volume-low"
-                src={vol === 0
-                    ? "../icons/volume-off-light.png"
-                    : "../icons/volume-low-light.png"}
-                alt="volume"
-                on:click={() => (vol = 0)}
-            />
-            <input
-                type="range"
-                min="0"
-                max="100"
-                bind:value={vol}
-                class="slider volume"
-            />
-            <img
-                class="volume-full"
-                src="../icons/volume-full-light.png"
-                alt="volume"
-                on:click={() => (vol = 100)}
-            />
-        </div>
-        <div class="bpm-container">
-            <label>
-                bpm:
-                <input type="number" label="play speed" bind:value={bpm} />
-            </label>
-        </div>
-        <div class="subdivision-container">
-            <div>Subdivison:</div>
-            <label>
-                Quarter Notes
-                <input type="radio" value={2} bind:group={noteResolution} />
-            </label>
-            <label>
-                Eight Notes
-                <input type="radio" value={1} bind:group={noteResolution} />
-            </label>
-            <label>
-                Sixteenth Notes
-                <input type="radio" value={0} bind:group={noteResolution} />
-            </label>
-        </div>
-        <div class="beat-num-container">
-            <label>
-                Number of Beats:
-                <input
-                    type="number"
-                    label="beat number"
-                    bind:value={numOfBeats}
-                />
-            </label>
-        </div>
-        <div class="play-container">
-            <button
-                class="play-button {play ? 'playing' : 'paused'}"
-                on:click={() => {
-                    !play ? (play = true) : (play = false);
-                }}
-            >
-                {play ? "Pause" : "Play"}
-            </button>
-        </div>
-    {/if}
 </section>
