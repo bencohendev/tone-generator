@@ -55,7 +55,7 @@
     };
 
     onMount(async () => {
-        const module = await import("../libs/gauge-js/dist/gauge");
+        const module = await import("gaugeJS");
         Gauge = module.default.Gauge;
     });
 
