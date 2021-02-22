@@ -3,18 +3,16 @@
     import { audioCtx, allPitches } from "../store";
     import { onMount } from "svelte";
 
-    let showTuner = false;
-    let isInTune = false;
-    let Gauge;
-    let testVal = 0;
-    let tunerElem;
-    let gauge;
-    let gaugeContainer;
-    let closestPitch;
-    let cents;
-    let tunerObj = {};
-    let freq;
-    var opts = {
+    let showTuner = false; //show tuner
+    let isInTune = false; //checks if frequency is within 7 cents of nearest pitch
+    let Gauge; //Gauge Class
+    let gaugeObj; //Gauge object we will create
+    let gaugeContainer; //Container where gauge will be displayed
+    let closestPitch; //closest pitch to frequency being detected
+    let cents; //cents sharp or flat calculated from closest pitch and current frequency
+
+    //Options for Gauge
+    let opts = {
         angle: 0, // The span of the gauge arc
         lineWidth: 0.14, // The line thickness
         radiusScale: 1, // Relative radius
@@ -25,19 +23,20 @@
         },
         limitMax: false, // If false, max value increases automatically if value > maxValue
         limitMin: false, // If true, the min value of the gauge will be fixed
-        colorStart: "#eb4034", // Colors
-        colorStop: "#eb4034", // just experiment with them
+        colorStart: "#eb4034",
+        colorStop: "#eb4034",
         percentColors: [
             [0.0, "#ed1000"],
             [0.5, "#059400"],
             [1.0, "#ed1000"],
         ],
-        staticLabels: {
-            font: "8px ", // Specifies font
-            labels: [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50], // Print labels at these values
-            color: "#000000", // Optional: Label text color
-            fractionDigits: 0, // Optional: Numerical precision. 0=round off.
-        },
+        //staticLabels are currently messing up when user interacts with anything else
+        // staticLabels: {
+        //     font: "8px ", // Specifies font
+        //     labels: [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50], // Print labels at these values
+        //     color: "#000000", // Optional: Label text color
+        //     fractionDigits: 0, // Optional: Numerical precision. 0=round off.
+        // },
         renderTicks: {
             divisions: 10,
             divWidth: 1.1,
@@ -48,16 +47,16 @@
             subWidth: 0.6,
             subColor: "#666666",
         },
-        strokeColor: "#E0E0E0", // to see which ones work best for you
+        strokeColor: "#E0E0E0",
         generateGradient: true,
         highDpiSupport: true, // High resolution support
     };
-
+    //Mount Gauge library async in order to avoid window reference error
     onMount(async () => {
         const module = await import("gaugeJS");
         Gauge = module.default.Gauge;
     });
-
+    //check if audio stream is active, get pitch, then run updatePitch and create Gauge
     async function startTuner() {
         if (!showTuner) {
             const analyserNode = await $audioCtx.createAnalyser();
@@ -65,14 +64,15 @@
                 .getUserMedia({ audio: true })
                 .then((stream) => {
                     showTuner = true;
-                    let sourceNode = $audioCtx.createMediaStreamSource(stream);
 
+                    let sourceNode = $audioCtx.createMediaStreamSource(stream);
                     sourceNode.connect(analyserNode);
+                    //PitchDetector library performs fourier transforms to get pitch
                     const detector = PitchDetector.forFloat32Array(
                         analyserNode.fftSize
                     );
                     const input = new Float32Array(detector.inputLength);
-
+                    //run updatePitch
                     updatePitch(
                         analyserNode,
                         detector,
@@ -82,13 +82,14 @@
                 })
                 .then(() => {
                     if (Gauge) {
-                        gauge = new Gauge(gaugeContainer).setOptions(opts); // create sexy gauge!
-                        gauge.maxValue = 50; // set max gauge value
-                        gauge.setMinValue(-50); // set min value
-                        gauge.set(0); // set actual value
+                        gaugeObj = new Gauge(gaugeContainer).setOptions(opts); // create gauge
+                        gaugeObj.maxValue = 50;
+                        gaugeObj.setMinValue(-50);
+                        gaugeObj.set(0);
                     }
                 })
                 .catch((e) => {
+                    //if no input detected
                     console.log(e);
                     alert("No Audio Source Found. Please Connect a Microphone");
                 });
@@ -98,32 +99,36 @@
     }
 
     async function updatePitch(analyserNode, detector, input, sampleRate) {
+        //get current frequency being detected from input
         analyserNode.getFloatTimeDomainData(input);
-        let [pitch] = detector.findPitch(input, sampleRate);
-        pitch = Math.round(pitch * 10) / 10;
+        let [frequency] = detector.findPitch(input, sampleRate);
+        frequency = Math.round(frequency * 10) / 10;
         //don't continue if calculated pitch is outside of appropriate frequency range
-        if (pitch > 50 && pitch < 22000) {
+        if (frequency > 50 && frequency < 22000) {
+            //get closeset pitch to current frequency
             closestPitch = await $allPitches.reduce((a, b) => {
-                return Math.abs(b.frequency - pitch) <
-                    Math.abs(a.frequency - pitch)
+                return Math.abs(b.frequency - frequency) <
+                    Math.abs(a.frequency - frequency)
                     ? b
                     : a;
             });
-
+            //get cents
             cents = Math.round(
-                1200 * Math.log2(closestPitch.frequency / pitch)
+                1200 * Math.log2(closestPitch.frequency / frequency)
             );
+            //check if pitch is "in tune"
             cents < 7 && cents > -7 ? (isInTune = true) : (isInTune = false);
-            if (gauge) {
-                gauge.set(cents);
+            if (gaugeObj) {
+                gaugeObj.set(cents); //change gauge value
             }
         }
 
         if (showTuner)
+            //loop update pitch
             setTimeout(function () {
                 updatePitch(analyserNode, detector, input, sampleRate);
             }, 100);
-        return (tunerObj = { pitch });
+        return frequency; //if we want to use frequency...
     }
 </script>
 
@@ -180,7 +185,7 @@
                     <div class="note">{closestPitch.note}</div>
                 {/if}
                 <!-- <div class="pitch">
-                {tunerObj.pitch}
+                {pitch}
             </div>
             <div>{cents}</div> -->
             </div>
