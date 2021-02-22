@@ -3,6 +3,7 @@
     import { audioCtx, allPitches } from "../store";
     import { onMount } from "svelte";
 
+    let unlocked = false;
     let showTuner = false; //show tuner
     let isInTune = false; //checks if frequency is within 7 cents of nearest pitch
     let Gauge; //Gauge Class
@@ -58,6 +59,11 @@
     });
     //check if audio stream is active, get pitch, then run updatePitch and create Gauge
     async function startTuner() {
+        if (!unlocked) {
+            $audioCtx.resume();
+            unlocked = true;
+        }
+
         if (!showTuner) {
             const analyserNode = await $audioCtx.createAnalyser();
             navigator.mediaDevices
@@ -119,7 +125,7 @@
             //check if pitch is "in tune"
             cents < 7 && cents > -7 ? (isInTune = true) : (isInTune = false);
             if (gaugeObj) {
-                gaugeObj.set(cents); //change gauge value
+                gaugeObj.set(cents * -1); //change gauge value
             }
         }
 

@@ -7,6 +7,8 @@
     import { createNewOscillator } from "../helpers/NewOscillator.svelte";
 
     $: console.group("static");
+    let unlocked = false;
+
     let oscillatorArray = [];
     let newNode;
     let pan = 0;
@@ -42,6 +44,11 @@
     }
 
     function playAllHandler() {
+        if (!unlocked) {
+            $audioCtx.resume();
+            unlocked = true;
+        }
+
         //checks if all are already playing
         let isAllPlaying = oscillatorArray.every(
             (oscillator) => oscillator.isPlaying === true

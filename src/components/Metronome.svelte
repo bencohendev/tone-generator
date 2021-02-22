@@ -57,9 +57,9 @@
     $: playHandler(play);
 
     function nextNote() {
-        console.log("nnt: ", nextNoteTime);
-        console.log("current: ", $audioCtx.currentTime);
-        console.log("sat: ", scheduleAheadTime);
+        // console.log("nnt: ", nextNoteTime);
+        // console.log("current: ", $audioCtx.currentTime);
+        // console.log("sat: ", scheduleAheadTime);
         // Advance current note and time by a 16th note...
         let secondsPerBeat = 60.0 / bpm; // Notice this picks up the CURRENT
         // bpm value to calculate beat length.
