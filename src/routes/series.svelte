@@ -52,7 +52,6 @@
         newNode.id = id;
         //counter for number of pitches played in sequence
         newNode.i = 0;
-        newNode.oscNode.start();
 
         oscillatorArray = [newNode];
     });
@@ -62,7 +61,8 @@
     });
 
     let playHandler = () => {
-        if (!unlocked) {
+        if (!unlocked && play) {
+            newNode.oscNode.start();
             $audioCtx.resume();
             unlocked = true;
         }

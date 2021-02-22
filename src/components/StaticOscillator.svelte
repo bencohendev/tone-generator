@@ -69,12 +69,12 @@
         } else {
             oscillator.panNode.setPosition(0, 0, -1);
         }
-        oscillator.oscNode.start();
     });
 
     function playHandler() {
-        if (!unlocked) {
+        if (!unlocked && isPlaying) {
             $audioCtx.resume();
+            oscillator.oscNode.start();
             unlocked = true;
         }
 

@@ -5,7 +5,7 @@
     import { onDestroy, onMount } from "svelte";
 
     console.group("metronome");
-    let unlocked = false;
+
     let vol = 50; //start volume at halfway
     let play = false;
     let showMetronome = false;
@@ -26,6 +26,7 @@
     var notesInQueue = []; // the notes that have been put into the web audio,
     // and may or may not have played yet. {note, time}
     var timerWorker = null; // The Web Worker used to fire timer messages
+    var unlocked = false;
     let bufferLoader;
 
     onMount(() => {
@@ -56,9 +57,9 @@
     $: playHandler(play);
 
     function nextNote() {
-        console.log("nnt: ", nextNoteTime);
-        console.log("current: ", $audioCtx.currentTime);
-        console.log("sat: ", scheduleAheadTime);
+        // console.log("nnt: ", nextNoteTime);
+        // console.log("current: ", $audioCtx.currentTime);
+        // console.log("sat: ", scheduleAheadTime);
         // Advance current note and time by a 16th note...
         let secondsPerBeat = 60.0 / bpm; // Notice this picks up the CURRENT
         // bpm value to calculate beat length.
@@ -96,7 +97,11 @@
     function playHandler(play) {
         if ($audioCtx) {
             if (!unlocked) {
-                $audioCtx.resume();
+                // play silent buffer to unlock the audio
+                var buffer = $audioCtx.createBuffer(1, 1, 22050);
+                var node = $audioCtx.createBufferSource();
+                node.buffer = buffer;
+                node.start(0);
                 unlocked = true;
             }
 
