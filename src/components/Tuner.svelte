@@ -2,7 +2,6 @@
     import { PitchDetector } from "pitchy";
     import { audioCtx, allPitches } from "../store";
     import { onMount } from "svelte";
-    //  import Gauge from "gaugeJS";
 
     let showTuner = false;
     let isInTune = false;
