@@ -9,7 +9,7 @@
     let testVal = 0;
     let tunerElem;
     let gauge;
-    let gaugeDemo;
+    let gaugeContainer;
     let closestPitch;
     let cents;
     let tunerObj = {};
@@ -33,7 +33,7 @@
             [1.0, "#ed1000"],
         ],
         staticLabels: {
-            font: "10px sans-serif", // Specifies font
+            font: "8px ", // Specifies font
             labels: [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50], // Print labels at these values
             color: "#000000", // Optional: Label text color
             fractionDigits: 0, // Optional: Numerical precision. 0=round off.
@@ -82,7 +82,7 @@
                 })
                 .then(() => {
                     if (Gauge) {
-                        gauge = new Gauge(gaugeDemo).setOptions(opts); // create sexy gauge!
+                        gauge = new Gauge(gaugeContainer).setOptions(opts); // create sexy gauge!
                         gauge.maxValue = 50; // set max gauge value
                         gauge.setMinValue(-50); // set min value
                         gauge.set(0); // set actual value
@@ -132,6 +132,17 @@
         position: fixed;
         bottom: 10rem;
         left: 50%;
+        .tuner-container-inner {
+            position: relative;
+            right: 4.8rem;
+            bottom: 1rem;
+            padding: 1rem;
+            box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
+                0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+                0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+            background-color: rgba(47, 52, 55, 0.5);
+            border-radius: 0.5rem;
+        }
         .tuner-button {
             box-shadow: 0px 0px 5px 9px rgba(0, 0, 0, 0.2),
                 0px 2px 2px 0px rgba(0, 0, 0, 0.14),
@@ -142,7 +153,8 @@
         }
         .tuner-info-container {
             color: red;
-            font-size: 2rem;
+            font-size: 1rem;
+            text-align: center;
             &.in-tune {
                 color: green;
             }
@@ -157,6 +169,24 @@
 </style>
 
 <section class="tuner-container">
+    {#if showTuner}
+        <div class="tuner-container-inner">
+            <canvas
+                id="tuner-gauge"
+                style="width: 170px; height: 90px;"
+                bind:this={gaugeContainer}
+            />
+            <div class="tuner-info-container {isInTune ? 'in-tune' : ''}">
+                {#if closestPitch}
+                    <div class="note">{closestPitch.note}</div>
+                {/if}
+                <!-- <div class="pitch">
+                {tunerObj.pitch}
+            </div>
+            <div>{cents}</div> -->
+            </div>
+        </div>
+    {/if}
     <button class="tuner-button" on:click={() => startTuner()}>
         <img
             src="./icons/tuning-fork-light.png"
@@ -164,17 +194,4 @@
             class="tuner-icon"
         />
     </button>
-    <!-- Create a canvas where the tuner will be rendered -->
-    {#if showTuner}
-        <canvas id="tuner-gauge" bind:this={gaugeDemo} />
-        <div class="tuner-info-container {isInTune ? 'in-tune' : ''}">
-            <div class="pitch">
-                {tunerObj.pitch}
-            </div>
-            <div>{cents}</div>
-            {#if closestPitch}
-                <div class="note">{closestPitch.note}</div>
-            {/if}
-        </div>
-    {/if}
 </section>
