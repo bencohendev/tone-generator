@@ -129,13 +129,12 @@
 
 <style lang="scss">
     .tuner-container {
-        position: fixed;
-        bottom: 10rem;
+        position: relative;
         left: 60%;
         .tuner-container-inner {
-            position: relative;
-            right: 4.8rem;
-            bottom: 1rem;
+            position: absolute;
+            right: -5.2rem;
+            bottom: 4rem;
             padding: 1rem;
             box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
                 0px 3px 4px 0px rgba(0, 0, 0, 0.14),
@@ -163,7 +162,7 @@
 
     @media only screen and (max-width: 768px) {
         .tuner-container {
-            bottom: 5rem;
+            left: 50%;
         }
     }
 </style>

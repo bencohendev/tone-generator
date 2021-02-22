@@ -134,16 +134,17 @@
 
 <style lang="scss">
     .metronome-container {
-        position: fixed;
-        bottom: 10rem;
+        position: relative;
+
         left: 30%;
 
         .metronome-container-inner {
-            text-align: center;
-            position: relative;
-            right: 4.8rem;
-            bottom: 1rem;
+            position: absolute;
+            right: -6.2rem;
+            bottom: 4rem;
+            width: 15rem;
             padding: 1rem;
+            text-align: center;
             box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
                 0px 3px 4px 0px rgba(0, 0, 0, 0.14),
                 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
@@ -166,7 +167,10 @@
                 width: 3rem;
                 height: 3rem;
                 font-size: 2rem;
-
+                margin: 0rem 0.5rem;
+                &.active {
+                    box-shadow: 0px 0px 4px 5px rgba(20, 108, 22, 1);
+                }
                 .subdivision-note {
                     position: relative;
                     right: 0.25rem;
@@ -178,6 +182,11 @@
             .subdivision-container,
             .play-container {
                 margin-bottom: 1rem;
+            }
+
+            .subdivision-container,
+            .play-container {
+                margin-top: 2rem;
             }
         }
 
@@ -205,7 +214,7 @@
     }
     @media only screen and (max-width: 768px) {
         .metronome-container {
-            bottom: 5rem;
+            left: 25%;
         }
     }
 </style>
@@ -261,18 +270,21 @@
             <div class="subdivision-container">
                 <button
                     class="subdivision-button"
+                    class:active={noteResolution === 2}
                     on:click={() => {
                         noteResolution = 2;
                     }}><div class="subdivision-note">&#119135</div></button
                 >
                 <button
                     class="subdivision-button"
+                    class:active={noteResolution === 1}
                     on:click={() => {
                         noteResolution = 1;
                     }}><div class="subdivision-note">&#119136</div></button
                 >
                 <button
                     class="subdivision-button"
+                    class:active={noteResolution === 0}
                     on:click={() => {
                         noteResolution = 0;
                     }}><div class="subdivision-note">&#119137</div></button
