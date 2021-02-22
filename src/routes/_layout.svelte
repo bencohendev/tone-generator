@@ -63,12 +63,17 @@
 
 <style lang="scss" global>
 	@import "../styles/global.scss";
+	.metronome-tuner-container {
+		display: flex;
+	}
 </style>
 
 <Nav {segment} />
 <svelte:window bind:innerWidth={window} />
 <main class:add-bg-opacity={$opacityToggle} style="max-width: {maxWidth}px">
 	<slot />
-	<Metronome />
-	<Tuner />
+	<div class="metronome-tuner-container">
+		<Metronome />
+		<Tuner />
+	</div>
 </main>
