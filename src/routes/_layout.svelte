@@ -65,6 +65,7 @@
 	@import "../styles/global.scss";
 	.metronome-tuner-container {
 		display: flex;
+		margin: 2rem 0;
 	}
 </style>
 
