@@ -34,8 +34,9 @@
 
         // use BufferLoader to load tick audio files
         bufferLoader = new BufferLoader($audioCtx, [
-            "./audio/tick.wav",
-            "./audio/tick_up.wav",
+            "./audio/high.wav",
+            "./audio/middle.wav",
+            "./audio/low.wav",
         ]);
 
         bufferLoader.load();
@@ -57,9 +58,6 @@
     $: playHandler(play);
 
     function nextNote() {
-        // console.log("nnt: ", nextNoteTime);
-        // console.log("current: ", $audioCtx.currentTime);
-        // console.log("sat: ", scheduleAheadTime);
         // Advance current note and time by a 16th note...
         let secondsPerBeat = 60.0 / bpm; // Notice this picks up the CURRENT
         // bpm value to calculate beat length.
@@ -78,17 +76,21 @@
         if (noteResolution == 1 && beatNumber % 2) return; // we're not playing non-8th 16th notes
         if (noteResolution == 2 && beatNumber % 4) return; // we're not playing non-quarter 8th notes
 
-        if (!beatNumber % 16 === 0) {
-            playFile($audioCtx, bufferLoader, "middle", vol);
-        } else if (beatNumber % 4 === 0)
+        if (beatNumber % 16 === 0) {
+            //on one
             playFile($audioCtx, bufferLoader, "high", vol);
-        // other 16th notes = low pitch
+        } else if (!beatNumber % 16 === 0 && beatNumber % 4 === 0) {
+            //on downbeats other than one
+            playFile($audioCtx, bufferLoader, "middle", vol);
+        } else if (!beatNumber % 16 === 0) {
+            //on eighth upbeats and any sixteenth
+            playFile($audioCtx, bufferLoader, "low", vol);
+        }
     }
 
     function scheduler() {
         // while there are notes that will need to play before the next interval,
         // schedule them and advance the pointer.
-
         while (nextNoteTime < $audioCtx.currentTime + scheduleAheadTime) {
             scheduleNote(current16thNote, nextNoteTime);
             nextNote();
@@ -177,7 +179,7 @@
         }
 
         .metronome-button {
-            box-shadow: 0px 0px 5px 9px rgba(0, 0, 0, 0.2),
+            box-shadow: 0px 0px 5px 5px rgba(0, 0, 0, 0.2),
                 0px 2px 2px 0px rgba(0, 0, 0, 0.14),
                 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
         }
