@@ -1,5 +1,6 @@
 <script>
     import { BufferLoader } from "../helpers/BufferLoader.svelte";
+    import { metronomeVisualizer } from "../helpers/MetronomeVisualizer.svelte";
     import { playFile } from "../helpers/PlayFile.svelte";
     import { audioCtx } from "../store.js";
     import { onDestroy, onMount } from "svelte";
@@ -9,6 +10,11 @@
     let vol = 50; //start volume at halfway
     let play = false;
     let showMetronome = false;
+    let downbeat = false;
+    let upbeat = false;
+    let visualizer;
+    let start;
+    let elapsed;
 
     //speed and number of beats
     let bpm = 60;
@@ -24,7 +30,7 @@
     var nextNoteTime = 0.0; // when the next note is due.
     var noteResolution = 2; // 0 == 16th, 1 == 8th, 2 == quarter note
     var notesInQueue = []; // the notes that have been put into the web audio,
-    // and may or may not have played yet. {note, time}
+    // and may or may not have played yet. {note, time} this is for visualization
     var timerWorker = null; // The Web Worker used to fire timer messages
     var unlocked = false;
     let bufferLoader;
@@ -79,12 +85,15 @@
         if (beatNumber % 16 === 0) {
             //on one
             playFile($audioCtx, bufferLoader, "high", vol);
+            showBeat(true, false);
         } else if (!beatNumber % 16 === 0 && beatNumber % 4 === 0) {
             //on downbeats other than one
             playFile($audioCtx, bufferLoader, "middle", vol);
+            showBeat(false, true);
         } else if (!beatNumber % 16 === 0) {
             //on eighth upbeats and any sixteenth
             playFile($audioCtx, bufferLoader, "low", vol);
+            showBeat(false, true);
         }
     }
 
@@ -117,6 +126,25 @@
             }
         }
     }
+    function showBeat(isDownbeat, isUpbeat) {
+        let start = $audioCtx.currentTime;
+        elapsed = start;
+        if (isDownbeat) {
+            // requestAnimationFrame(metronomeVisualizer);
+        }
+        if (isUpbeat) {
+            downbeat = false;
+            upbeat = true;
+            setTimeout(() => {
+                upbeat = false;
+            }, 250);
+        }
+    }
+    function clickHandler() {
+        downbeat ? (downbeat = false) : (downbeat = true);
+        metronomeVisualizer($audioCtx, visualizer, downbeat);
+    }
+
     console.groupEnd();
 </script>
 
@@ -177,14 +205,43 @@
                 margin-top: 2rem;
             }
         }
+        .metronome-visual {
+            position: absolute;
+            background-color: none;
+            border-radius: 100px;
+
+            &.downbeat {
+                left: -25px;
+                top: -25px;
+                width: 100px;
+                height: 100px;
+                box-shadow: 0px 3px 3px -2px rgba(255, 255, 255, 0.8),
+                    0px 3px 4px 0px rgba(255, 255, 255, 0.5),
+                    0px 1px 8px 0px rgba(255, 255, 255, 0.5);
+                background-color: rgba(255, 255, 255, 0.7);
+            }
+            &.upbeat {
+                left: -18.75px;
+                top: -18.75px;
+                width: 75px;
+                height: 75px;
+                width: 100px;
+                height: 100px;
+                box-shadow: 0px 3px 3px -2px rgba(255, 255, 255, 0.8),
+                    0px 3px 4px 0px rgba(255, 255, 255, 0.5),
+                    0px 1px 8px 0px rgba(255, 255, 255, 0.5);
+                background-color: black;
+            }
+        }
 
         .metronome-button {
+            position: absolute;
             box-shadow: 0px 0px 5px 5px rgba(0, 0, 0, 0.2),
                 0px 2px 2px 0px rgba(0, 0, 0, 0.14),
                 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
-        }
-        .metronome-icon {
-            width: 30px;
+            .metronome-icon {
+                width: 30px;
+            }
         }
         .volume {
             display: flex;
@@ -291,6 +348,13 @@
             </div>
         </div>
     {/if}
+    <button on:click={clickHandler}>test</button>
+    <canvas bind:this={visualizer} width="150" height="150" />
+    <!-- <div
+        class="metronome-visual {downbeat ? 'downbeat' : ''} {upbeat
+            ? 'upbeat'
+            : ''}"
+    /> -->
     <button
         class="metronome-button"
         on:click={() => {

@@ -27,9 +27,11 @@
         colorStart: "#eb4034",
         colorStop: "#eb4034",
         percentColors: [
-            [0.0, "#ed1000"],
-            [0.5, "#059400"],
-            [1.0, "#ed1000"],
+            [0.0, "#b81a1a"],
+            [0.25, "ffec1f"],
+            [0.5, "#146c16"],
+            [0.75, "ffec1f"],
+            [1.0, "#b81a1a"],
         ],
         //staticLabels are currently messing up when user interacts with anything else
         // staticLabels: {
