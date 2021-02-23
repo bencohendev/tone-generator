@@ -69,12 +69,24 @@
         } else {
             oscillator.panNode.setPosition(0, 0, -1);
         }
+        //     oscillator.oscNode.start();
     });
 
     function playHandler() {
         if (!unlocked && isPlaying) {
-            $audioCtx.resume();
-            oscillator.oscNode.start();
+            $audioCtx
+                .resume()
+                .then(() => {
+                    oscillator.oscNode.start();
+                })
+                .then(() => {
+                    oscillator.onOffNode.gain.setTargetAtTime(
+                        0.9,
+                        $audioCtx.currentTime,
+                        0.01
+                    );
+                });
+
             unlocked = true;
         }
 

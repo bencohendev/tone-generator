@@ -62,8 +62,14 @@
 
     let playHandler = () => {
         if (!unlocked && play) {
-            newNode.oscNode.start();
-            $audioCtx.resume();
+            $audioCtx
+                .resume()
+                .then(() => {
+                    newNode.oscNode.start();
+                })
+                .then(() => {
+                    setTimeout(sequencePlayer, bpm);
+                });
             unlocked = true;
         }
 
